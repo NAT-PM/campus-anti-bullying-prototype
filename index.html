@@ -6,11 +6,11 @@
 <title>校园防霸凌系统 · 1.0 可点击原型</title>
 <style>
 :root{
-  --bg:#f3f5f8; --card:#fff; --ink:#17233d; --mut:#5e6c84; --line:#e2e7ee;
-  --primary:#1d4e89; --primary-2:#2c62a8; --primary-bg:#eaf1fa;
-  --danger:#c7442e; --warn:#d97706; --ok:#1f9d55; --amber:#e6a700;
-  --l1:#d97706; --l2:#e05e2f; --l3:#c7442e;
-  --radius:6px; --shadow:0 1px 3px rgba(23,35,61,.08);
+  --bg:#f5f8f6; --card:#fff; --ink:#243b33; --mut:#6d8379; --line:#e4ece7;
+  --primary:#2f9e6e; --primary-2:#27855c; --primary-bg:#e6f4ec;
+  --danger:#d65c4a; --warn:#e07b39; --ok:#2f9e6e; --amber:#d9a13b;
+  --l1:#d9a13b; --l2:#e07b39; --l3:#d65c4a;
+  --radius:10px; --shadow:0 2px 10px rgba(36,59,51,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
@@ -21,9 +21,9 @@ input,select,textarea{font:inherit}
 .mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
 
 /* ---------- 登录页 ---------- */
-.login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#12294d 0%,#1d4e89 55%,#2c62a8 100%)}
-.login-card{width:880px;max-width:94vw;background:var(--card);border-radius:10px;display:flex;overflow:hidden;box-shadow:0 12px 40px rgba(9,20,40,.35)}
-.login-brand{width:44%;background:#f0f4f9;padding:36px 28px;display:flex;flex-direction:column;gap:14px}
+.login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#e9f4ee 0%,#f2f7f3 60%,#f7faf8 100%)}
+.login-card{width:880px;max-width:94vw;background:var(--card);border-radius:16px;display:flex;overflow:hidden;box-shadow:0 14px 44px rgba(36,59,51,.14);border:1px solid var(--line)}
+.login-brand{width:44%;background:#eef7f1;padding:36px 28px;display:flex;flex-direction:column;gap:14px}
 .login-brand .logo{font-size:20px;font-weight:700;color:var(--primary)}
 .login-brand .tag{font-size:13px;color:var(--mut);line-height:1.7}
 .login-brand .rule{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;font-size:12.5px;color:var(--mut);line-height:1.8}
@@ -51,13 +51,13 @@ input,select,textarea{font:inherit}
 
 /* ---------- 主框架 ---------- */
 .app-view{display:flex;height:100vh;overflow:hidden}
-.sidebar{width:208px;flex:none;background:#12294d;color:#cfdcee;display:flex;flex-direction:column}
-.sidebar .logo{padding:16px 18px;font-size:15px;font-weight:700;color:#fff;border-bottom:1px solid rgba(255,255,255,.08);letter-spacing:.5px}
+.sidebar{width:208px;flex:none;background:#fff;border-right:1px solid var(--line);color:var(--mut);display:flex;flex-direction:column}
+.sidebar .logo{padding:16px 18px;font-size:15px;font-weight:700;color:var(--primary);border-bottom:1px solid var(--line);letter-spacing:.5px}
 .sidebar nav{flex:1;padding:10px 8px;overflow:auto}
-.sidebar nav a{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:6px;color:#a9bcd6;text-decoration:none;font-size:13.5px;margin-bottom:2px}
-.sidebar nav a:hover{background:rgba(255,255,255,.06);color:#fff}
-.sidebar nav a.on{background:var(--primary);color:#fff;font-weight:600}
-.sidebar .foot{padding:12px 16px;font-size:11.5px;color:#7d94b4;border-top:1px solid rgba(255,255,255,.08)}
+.sidebar nav a{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;color:#5b7268;text-decoration:none;font-size:13.5px;margin-bottom:2px}
+.sidebar nav a:hover{background:#f0f7f3;color:var(--primary)}
+.sidebar nav a.on{background:var(--primary-bg);color:var(--primary);font-weight:600}
+.sidebar .foot{padding:12px 16px;font-size:11.5px;color:#9db2a8;border-top:1px solid var(--line)}
 .main{flex:1;display:flex;flex-direction:column;min-width:0}
 .topbar{height:52px;flex:none;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 18px}
 .topbar .crumb{font-size:15px;font-weight:700}
@@ -85,16 +85,16 @@ input,select,textarea{font:inherit}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .grid3{display:grid;grid-template-columns:2fr 1fr;gap:14px}
 table.list{width:100%;border-collapse:collapse;font-size:13px}
-table.list th{background:#f7f9fc;text-align:left;padding:9px 12px;color:var(--mut);font-weight:600;font-size:12.5px;border-bottom:1px solid var(--line);white-space:nowrap}
-table.list td{padding:9px 12px;border-bottom:1px solid #eef1f6;vertical-align:middle}
-table.list tr:hover td{background:#fafbfd}
+table.list th{background:#f2f7f4;text-align:left;padding:9px 12px;color:var(--mut);font-weight:600;font-size:12.5px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.list td{padding:9px 12px;border-bottom:1px solid #eef4f0;vertical-align:middle}
+table.list tr:hover td{background:#f6faf7}
 .badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
-.b-l1{background:#fdf1e3;color:var(--l1)} .b-l2{background:#fdeae3;color:var(--l2)} .b-l3{background:#fbe4e1;color:var(--l3)}
-.b-pending{background:#fbe4e1;color:var(--danger)} .b-handling{background:#fdf1e3;color:var(--warn)}
-.b-confirm{background:#eaf1fa;color:var(--primary)} .b-review{background:#efeafc;color:#6b46c1}
-.b-archived{background:#eef1f6;color:#7a8699} .b-up{background:#fdeaea;color:#b91c1c}
-.b-on{background:#e6f4ec;color:var(--ok)} .b-off{background:#eef1f6;color:#7a8699} .b-alarm{background:#fbe4e1;color:var(--l3)} .b-fault{background:#fdf1e3;color:#b45309}
-.b-skip{background:#eef1f6;color:#7a8699}
+.b-l1{background:#faf3e2;color:#c98a2e} .b-l2{background:#fdeee4;color:#d4682f} .b-l3{background:#fbe7e2;color:#c94f3c}
+.b-pending{background:#fbe7e2;color:#c94f3c} .b-handling{background:#fdeee4;color:#d4682f}
+.b-confirm{background:#e6f4ec;color:#27855c} .b-review{background:#e9f0fb;color:#5b7fd4}
+.b-archived{background:#edf2ef;color:#8ba096} .b-up{background:#fbe7e2;color:#c0392b}
+.b-on{background:#e6f4ec;color:#27855c} .b-off{background:#edf2ef;color:#8ba096} .b-alarm{background:#fbe7e2;color:#c94f3c} .b-fault{background:#fdeee4;color:#c98a2e}
+.b-skip{background:#edf2ef;color:#8ba096}
 .row-hot{background:#fff5f5!important}
 .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
 .filters select,.filters input{padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;font-size:12.5px}
@@ -138,7 +138,7 @@ table.list tr:hover td{background:#fafbfd}
 .replay .playbar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--primary);width:0%}
 
 /* 模态 */
-.modal-mask{position:fixed;inset:0;background:rgba(15,25,45,.45);display:flex;align-items:center;justify-content:center;z-index:50}
+.modal-mask{position:fixed;inset:0;background:rgba(36,59,51,.42);display:flex;align-items:center;justify-content:center;z-index:50}
 .modal{width:480px;max-width:92vw;background:#fff;border-radius:8px;box-shadow:0 16px 50px rgba(9,20,40,.3)}
 .modal .hd{padding:14px 18px;border-bottom:1px solid var(--line);font-weight:700;font-size:14.5px}
 .modal .bd{padding:16px 18px}
@@ -146,7 +146,7 @@ table.list tr:hover td{background:#fafbfd}
 
 /* toast */
 #toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:99;display:flex;flex-direction:column;gap:8px;align-items:center}
-.toast{background:#17233d;color:#fff;padding:9px 18px;border-radius:6px;font-size:13px;box-shadow:0 6px 20px rgba(9,20,40,.35);animation:tin .18s ease}
+.toast{background:#243b33;color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;box-shadow:0 6px 20px rgba(36,59,51,.3);animation:tin .18s ease}
 .toast.ok{background:var(--ok)} .toast.err{background:var(--danger)}
 @keyframes tin{from{opacity:0;transform:translateY(-6px)}to{opacity:1}}
 
@@ -272,7 +272,7 @@ const ROLE = {
   dean:{name:'德育处/校领导',user:'李主任',landing:'dashboard'},
   guest:{name:'只读访客',user:'访客账号',landing:'dashboard'}
 };
-const LEVELS = {1:{n:'一级·预警',c:'#d97706'},2:{n:'二级·告警',c:'#e05e2f'},3:{n:'三级·紧急',c:'#c7442e'}};
+const LEVELS = {1:{n:'一级·预警',c:'#d9a13b'},2:{n:'二级·告警',c:'#e07b39'},3:{n:'三级·紧急',c:'#d65c4a'}};
 const STATES = {
   pending:{n:'待接单'}, handling:{n:'处置中'}, teacher_confirm:{n:'待班主任确认'},
   dean_review:{n:'待德育处审核'}, archived:{n:'已归档'}
@@ -495,7 +495,7 @@ function pgDashboard(){
     const w=Math.round(p[1]/pmax*100);
     return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12.5px">
       <span style="width:60px;color:var(--mut)">${p[0]}</span>
-      <div style="flex:1;background:#eef1f6;border-radius:3px;height:14px"><div style="width:${w}%;height:100%;background:${p[0]==='夜间'?'#c7442e':p[0]==='下午'?'#e05e2f':'#e6a700'};border-radius:3px"></div></div>
+      <div style="flex:1;background:#eef2f0;border-radius:3px;height:14px"><div style="width:${w}%;height:100%;background:${p[0]==='夜间'?'#e07b39':p[0]==='下午'?'#d9a13b':'#9ed4b4'};border-radius:3px"></div></div>
       <b>${p[1]}</b></div>`;
   }).join('');
   const scope=S.role==='teacher'?'（数据范围：本班关联区域）':S.role==='guest'?'（只读）':'';
@@ -515,7 +515,7 @@ function pgDashboard(){
 }
 function svgDonut(data){
   const total=data.reduce((a,b)=>a+b[1],0);
-  const colors=['#1d4e89','#2c62a8','#4a7fc0','#8fb3dd'];
+  const colors=['#2f9e6e','#57b98c','#8ed0b1','#e2c06a'];
   let acc=0,segs='';
   data.forEach((d,i)=>{
     const frac=d[1]/total, r=42, c=2*Math.PI*r;
@@ -534,12 +534,12 @@ function svgLine(data){
   const pts=data.map((d,i)=>[pad+i*(W-pad*2)/(data.length-1), H-pad-(d[1]/max)*(H-pad*2)]);
   const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
   const area=line+` L ${pts[pts.length-1][0]} ${H-pad} L ${pts[0][0]} ${H-pad} Z`;
-  const dots=pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#1d4e89"/>`).join('');
+  const dots=pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#2f9e6e"/>`).join('');
   const labels=data.map((d,i)=>`<text x="${pts[i][0]}" y="${H-2}" text-anchor="middle" font-size="9" fill="#5e6c84">${d[0]}</text>`).join('');
   const vlabels=[0,Math.round(max/2),Math.round(max)].map((v,i)=>`<text x="2" y="${H-pad-(v/max)*(H-pad*2)+3}" font-size="9" fill="#5e6c84">${v}</text>`).join('');
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
-    <path d="${area}" fill="#eaf1fa" stroke="none"/>
-    <path d="${line}" fill="none" stroke="#1d4e89" stroke-width="2"/>
+    <path d="${area}" fill="#e6f4ec" stroke="none"/>
+    <path d="${line}" fill="none" stroke="#2f9e6e" stroke-width="2"/>
     ${dots}${labels}${vlabels}</svg>`;
 }
 
@@ -651,8 +651,8 @@ function replayHtml(o){
         <rect x="20" y="20" width="360" height="110" fill="#fff" stroke="#dfe4ea"/>
         <rect x="30" y="60" width="70" height="46" fill="#eef1f6" stroke="#d5dbe4"/><text x="65" y="88" text-anchor="middle" font-size="9" fill="#5e6c84">隔间</text>
         <rect x="310" y="34" width="52" height="30" fill="#eef1f6" stroke="#d5dbe4"/><text x="336" y="52" text-anchor="middle" font-size="9" fill="#5e6c84">门口</text>
-        <path id="rp-path" d="M336,96 L300,100 L262,88 L220,76 L178,80 L150,64 L120,70 L96,84" fill="none" stroke="#1d4e89" stroke-width="1.5" stroke-dasharray="4 3"/>
-        <circle id="rp-dot" r="5" fill="#c7442e" cx="336" cy="96"/>
+        <path id="rp-path" d="M336,96 L300,100 L262,88 L220,76 L178,80 L150,64 L120,70 L96,84" fill="none" stroke="#2f9e6e" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <circle id="rp-dot" r="5" fill="#d65c4a" cx="336" cy="96"/>
         <text x="336" y="116" text-anchor="middle" font-size="8.5" fill="#5e6c84">P1 进入</text>
         <text x="96" y="118" text-anchor="middle" font-size="8.5" fill="#5e6c84">P5 离开</text>
       </svg>
@@ -769,27 +769,27 @@ window.closeModal=closeModal;
 function pgMap(){
   const devs=S.devices;
   const pos={ 'R-001':[85,172],'R-002':[240,58],'R-003':[108,66],'R-004':[352,66],'R-005':[322,174],'R-006':[408,202],'R-007':[148,202],'R-008':[230,174] };
-  const col={online:'#1f9d55',offline:'#9aa7b8',alarm:'#c7442e',fault:'#d97706'};
+  const col={online:'#2f9e6e',offline:'#a9b8b1',alarm:'#d65c4a',fault:'#e07b39'};
   const dots=devs.map(d=>{
     const [x,y]=pos[d.id]||[200,120];
     return `<circle class="devdot" data-d="${d.id}" cx="${x}" cy="${y}" r="9" fill="${col[d.st]}" stroke="#fff" stroke-width="2.5"/>`;
   }).join('');
   const labels=devs.map(d=>{
     const [x,y]=pos[d.id]||[200,120];
-    return `<text x="${x}" y="${y-15}" text-anchor="middle" font-size="10" font-weight="600" fill="#17233d">${d.id}</text>`;
+    return `<text x="${x}" y="${y-15}" text-anchor="middle" font-size="10" font-weight="600" fill="#243b33">${d.id}</text>`;
   }).join('');
   return `<div class="card"><div class="hd">校园设备分布图<span class="tag">按设备类别切换（1.0 仅雷达）</span><div class="sp"></div>
     <span style="font-size:12px;color:var(--mut)">图例：</span>
-    <span style="font-size:12px"><span style="color:#1f9d55">●</span>在线 <span style="color:#9aa7b8">●</span>离线 <span style="color:#c7442e">●</span>告警中 <span style="color:#d97706">●</span>故障</span></div>
+    <span style="font-size:12px"><span style="color:#2f9e6e">●</span>在线 <span style="color:#a9b8b1">●</span>离线 <span style="color:#d65c4a">●</span>告警中 <span style="color:#e07b39">●</span>故障</span></div>
     <div class="bd"><div class="campus" id="campus">
       <svg viewBox="0 0 470 240" preserveAspectRatio="xMidYMid meet">
-        <rect x="30" y="26" width="150" height="76" fill="#e8eef7" stroke="#c9d5e8"/><text x="105" y="70" text-anchor="middle" font-size="12" fill="#5e6c84">1号教学楼</text>
-        <rect x="300" y="26" width="140" height="76" fill="#e8eef7" stroke="#c9d5e8"/><text x="370" y="70" text-anchor="middle" font-size="12" fill="#5e6c84">2号教学楼</text>
-        <rect x="212" y="54" width="56" height="24" fill="#f3ecd8" stroke="#e2d8b8"/><text x="240" y="70" text-anchor="middle" font-size="10" fill="#8a7b4d">天台</text>
-        <rect x="30" y="140" width="150" height="76" fill="#e8eef7" stroke="#c9d5e8"/><text x="105" y="184" text-anchor="middle" font-size="12" fill="#5e6c84">1号宿舍楼</text>
-        <rect x="300" y="140" width="140" height="76" fill="#e8eef7" stroke="#c9d5e8"/><text x="370" y="184" text-anchor="middle" font-size="12" fill="#5e6c84">实验楼</text>
-        <rect x="196" y="206" width="84" height="20" fill="#e3f0e0" stroke="#c3ddbe"/><text x="238" y="220" text-anchor="middle" font-size="10" fill="#4f7a48">操场/后巷</text>
-        <path d="M0,124 H470" stroke="#dfe4ea" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <rect x="30" y="26" width="150" height="76" fill="#eaf2ec" stroke="#cddcd2"/><text x="105" y="70" text-anchor="middle" font-size="12" fill="#6d8379">1号教学楼</text>
+        <rect x="300" y="26" width="140" height="76" fill="#eaf2ec" stroke="#cddcd2"/><text x="370" y="70" text-anchor="middle" font-size="12" fill="#6d8379">2号教学楼</text>
+        <rect x="212" y="54" width="56" height="24" fill="#f6eeda" stroke="#e6d9b4"/><text x="240" y="70" text-anchor="middle" font-size="10" fill="#8f7f4e">天台</text>
+        <rect x="30" y="140" width="150" height="76" fill="#eaf2ec" stroke="#cddcd2"/><text x="105" y="184" text-anchor="middle" font-size="12" fill="#6d8379">1号宿舍楼</text>
+        <rect x="300" y="140" width="140" height="76" fill="#eaf2ec" stroke="#cddcd2"/><text x="370" y="184" text-anchor="middle" font-size="12" fill="#6d8379">实验楼</text>
+        <rect x="196" y="206" width="84" height="20" fill="#e0efdc" stroke="#c3ddbc"/><text x="238" y="220" text-anchor="middle" font-size="10" fill="#5d8a55">操场/后巷</text>
+        <path d="M0,124 H470" stroke="#e8eeea" stroke-width="1.5" stroke-dasharray="5 4"/>
         ${labels}${dots}
       </svg>
     </div></div></div>
