@@ -185,80 +185,6 @@ table.list tr:hover td{background:#f6faf7}
 .ptree input{accent-color:var(--primary)}
 
 .demo-note{font-size:11.5px;color:var(--mut);border-top:1px dashed var(--line);margin-top:12px;padding-top:8px}
-/* ============ 主题：暗夜指挥舱 ============ */
-[data-theme="dark"]{
-  --bg:#0e1620; --card:#151f2b; --ink:#e6edf3; --mut:#8b9bb0; --line:#253349;
-  --primary:#38bdf8; --primary-2:#0ea5e9; --primary-bg:#0f2a3d;
-  --danger:#f87171; --warn:#fb923c; --ok:#34d399; --amber:#fbbf24;
-  --l1:#fbbf24; --l2:#fb923c; --l3:#f87171;
-  --radius:8px; --shadow:0 2px 14px rgba(0,0,0,.35);
-}
-[data-theme="dark"] body{background:var(--bg)}
-[data-theme="dark"] .sidebar{background:#0a1119;border-right:1px solid var(--line)}
-[data-theme="dark"] .sidebar .logo{color:var(--primary);border-bottom-color:var(--line)}
-[data-theme="dark"] .sidebar nav a{color:#7d93ad}
-[data-theme="dark"] .sidebar nav a:hover{background:#12202e;color:#fff}
-[data-theme="dark"] .sidebar nav a.on{background:var(--primary-bg);color:var(--primary)}
-[data-theme="dark"] .sidebar .foot{color:#4c5f76;border-top-color:var(--line)}
-[data-theme="dark"] .topbar{background:var(--card);border-bottom-color:var(--line)}
-[data-theme="dark"] .login-view{background:linear-gradient(160deg,#0a1119 0%,#0e1620 55%,#0f1c2a 100%)}
-[data-theme="dark"] .login-card{border-color:var(--line);box-shadow:0 14px 50px rgba(0,0,0,.55)}
-[data-theme="dark"] .login-brand{background:#0f1a26}
-[data-theme="dark"] .login-brand .rule{background:#131e2b}
-[data-theme="dark"] .filters input,.filters select,.field input,.field select,.field textarea{background:#0e1620;color:var(--ink)}
-[data-theme="dark"] .bell{background:var(--bg)}
-[data-theme="dark"] .rolebox select{background:#0e1620;color:var(--ink)}
-[data-theme="dark"] table.list th{background:#101a26}
-[data-theme="dark"] table.list td{border-bottom-color:#1d2a3b}
-[data-theme="dark"] table.list tr:hover td{background:#131f2c}
-[data-theme="dark"] .tag{background:#1b2939;color:#8b9bb0}
-[data-theme="dark"] .b-l1{background:rgba(251,191,36,.14);color:#fbbf24} [data-theme="dark"] .b-l2{background:rgba(251,146,60,.14);color:#fb923c} [data-theme="dark"] .b-l3{background:rgba(248,113,113,.14);color:#f87171}
-[data-theme="dark"] .b-pending{background:rgba(248,113,113,.14);color:#f87171} [data-theme="dark"] .b-handling{background:rgba(251,146,60,.14);color:#fb923c}
-[data-theme="dark"] .b-confirm{background:rgba(52,211,153,.14);color:#34d399} [data-theme="dark"] .b-review{background:rgba(125,211,252,.14);color:#7dd3fc}
-[data-theme="dark"] .b-archived{background:#1b2939;color:#64748b} [data-theme="dark"] .b-up{background:rgba(248,113,113,.2);color:#fca5a5}
-[data-theme="dark"] .b-on{background:rgba(52,211,153,.14);color:#34d399} [data-theme="dark"] .b-off{background:#1b2939;color:#64748b} [data-theme="dark"] .b-alarm{background:rgba(248,113,113,.14);color:#f87171} [data-theme="dark"] .b-fault{background:rgba(251,146,60,.14);color:#fb923c}
-[data-theme="dark"] .b-skip{background:#1b2939;color:#64748b}
-[data-theme="dark"] .row-hot{background:rgba(248,113,113,.08)!important}
-[data-theme="dark"] .steps .step .c{background:var(--bg);border-color:#2a3a52}
-[data-theme="dark"] .step.done .c{background:var(--ok);border-color:var(--ok)}
-[data-theme="dark"] .step.skip .c{background:#1b2939;border-color:#2a3a52}
-[data-theme="dark"] .notif-panel .it{border-bottom-color:#1d2a3b}
-[data-theme="dark"] .notif-panel .it:hover{background:#131f2c}
-[data-theme="dark"] .devpop .row b{color:var(--ink)}
-[data-theme="dark"] .empty{color:#64748b}
-[data-theme="dark"] .demo-note{color:#64748b;border-top-color:#1d2a3b}
-
-/* ============ 主题：政务蓝（紧凑） ============ */
-[data-theme="gov"]{
-  --bg:#f2f4f8; --card:#fff; --ink:#1f2d3d; --mut:#5b6b7f; --line:#d9dfe8;
-  --primary:#1a4e8a; --primary-2:#163f70; --primary-bg:#e8eef6;
-  --danger:#c0392b; --warn:#d4760e; --ok:#1e8449; --amber:#b7791f;
-  --l1:#b7791f; --l2:#d4760e; --l3:#c0392b;
-  --radius:4px; --shadow:none;
-}
-[data-theme="gov"] body{font-size:13px}
-[data-theme="gov"] .sidebar{background:#fff;border-right:1px solid var(--line)}
-[data-theme="gov"] .sidebar .logo{color:var(--primary);border-bottom-color:var(--line)}
-[data-theme="gov"] .sidebar nav a{color:#3d4f63;border-radius:3px}
-[data-theme="gov"] .sidebar nav a:hover{background:#eef2f7;color:var(--primary)}
-[data-theme="gov"] .sidebar nav a.on{background:var(--primary);color:#fff}
-[data-theme="gov"] .sidebar .foot{color:#8a99ab;border-top-color:var(--line)}
-[data-theme="gov"] .login-view{background:#eef2f7}
-[data-theme="gov"] .login-card{box-shadow:none;border:1px solid #d9dfe8;border-radius:6px}
-[data-theme="gov"] .login-brand{background:#f6f8fb}
-[data-theme="gov"] .card{border-radius:var(--radius);box-shadow:none}
-[data-theme="gov"] .card .hd{padding:10px 14px}
-[data-theme="gov"] .card .bd{padding:12px 14px}
-[data-theme="gov"] table.list th{background:#f6f8fb;padding:7px 10px}
-[data-theme="gov"] table.list td{padding:7px 10px}
-[data-theme="gov"] .btn{border-radius:3px}
-[data-theme="gov"] .stat{padding:10px 12px}
-[data-theme="gov"] .stat .v{font-size:21px}
-[data-theme="gov"] .topbar{height:48px}
-[data-theme="gov"] .steps .step .c{width:24px;height:24px;font-size:11px}
-[data-theme="gov"] .kv .it .v{font-size:13px}
-[data-theme="gov"] .demo-note{color:#8a99ab}
-
 @media (max-width:1100px){.grid2,.grid3{grid-template-columns:1fr}.stat-row{grid-template-columns:repeat(2,1fr)}.kv{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -298,13 +224,6 @@ table.list tr:hover td{background:#f6faf7}
       <div class="field"><label>密码</label><input id="login-pass" type="password" placeholder="任意密码（演示）" value="123456"></div>
       <div style="margin:6px 0 14px;font-size:12.5px;color:var(--mut)"><label><input type="checkbox" checked> 记住我（原型演示）</label></div>
       <button class="btn pri block" id="login-btn">登 录</button>
-      <div style="margin-top:14px;font-size:12px;color:var(--mut)">预览视觉风格：
-        <span class="role-chips" id="login-themes" style="display:inline-flex;margin:0">
-          <button class="chip" data-t="fresh">清新绿</button>
-          <button class="chip" data-t="dark">暗夜指挥舱</button>
-          <button class="chip" data-t="gov">政务蓝</button>
-        </span>
-      </div>
     </div>
   </div>
 </div>
@@ -325,11 +244,6 @@ table.list tr:hover td{background:#f6faf7}
         <span class="dot" id="bell-dot" hidden></span>
       </div>
       <div class="rolebox">
-        <select id="theme-switch" title="切换视觉风格">
-          <option value="fresh">🌿 清新绿</option>
-          <option value="dark">🌃 暗夜指挥舱</option>
-          <option value="gov">🏛️ 政务蓝</option>
-        </select>
         <div class="who"><b id="who-name"></b><span id="who-role"></span></div>
         <select id="role-switch" title="切换演示角色">
           <option value="admin">超级管理员</option>
@@ -448,7 +362,7 @@ function load(){
 }
 function DEFAULTS(){
   return {role:'',orders:seedOrders(),devices:seedDevices(),roles:seedRoles(),accounts:seedAccounts(),
-    settings:{skipTeacher:false,retainDays:30,theme:'fresh',
+    settings:{skipTeacher:false,retainDays:30,
       push:{l1:['popup','app'],l2:['popup','app','wechat'],l3:['popup','app','wechat','sms','phone']},
       rules:{l1:{types:['单人滞留','多人聚集'],stayMin:3,gatherN:3},
              l2:{types:['推搡拉扯','摔倒'],confMin:75,escalateMin:10},
@@ -459,27 +373,12 @@ function DEFAULTS(){
 function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S))}catch(e){}}
 function roleName(id){const r=(S.roles||[]).find(x=>x.id===id);return r?r.name:id}
 
-/* ================= 主题 ================= */
+/* ================= 视觉调色板（清新绿，已锁定） ================= */
 const THEME_PALETTE = {
   fresh:{ink:'#243b33',mut:'#6d8379',donut:['#2f9e6e','#57b98c','#8ed0b1','#e2c06a'],line:'#2f9e6e',area:'#e6f4ec',period:{am:'#9ed4b4',pm:'#d9a13b',night:'#e07b39'},
-    map:{bld:'#eaf2ec',bldS:'#cddcd2',roof:'#f6eeda',roofS:'#e6d9b4',yard:'#e0efdc',yardS:'#c3ddbc',road:'#e8eeea',txt:'#6d8379',on:'#2f9e6e',off:'#a9b8b1',alarm:'#d65c4a',fault:'#e07b39',devTxt:'#243b33',rp:'#2f9e6e',rpDot:'#d65c4a'}},
-  dark:{ink:'#e6edf3',mut:'#8b9bb0',donut:['#38bdf8','#34d399','#a3e635','#fbbf24'],line:'#34d399',area:'#13293a',period:{am:'#38bdf8',pm:'#fbbf24',night:'#f87171'},
-    map:{bld:'#16202e',bldS:'#2a3a52',roof:'#1c2433',roofS:'#3a4a63',yard:'#132a1f',yardS:'#1f4433',road:'#22303f',txt:'#7d93ad',on:'#34d399',off:'#4a5a70',alarm:'#f87171',fault:'#fb923c',devTxt:'#cbd8e6',rp:'#34d399',rpDot:'#f87171'}},
-  gov:{ink:'#1f2d3d',mut:'#5b6b7f',donut:['#1a4e8a','#3b6fb0','#7ba3d0','#c9a227'],line:'#1a4e8a',area:'#e8eef6',period:{am:'#7ba3d0',pm:'#b7791f',night:'#c0392b'},
-    map:{bld:'#eef2f7',bldS:'#c8d4e2',roof:'#f6f1e3',roofS:'#e2d9bd',yard:'#e4efe4',yardS:'#c2d8c2',road:'#dde3ec',txt:'#5b6b7f',on:'#1e8449',off:'#9aa8b8',alarm:'#c0392b',fault:'#d4760e',devTxt:'#1f2d3d',rp:'#1a4e8a',rpDot:'#c0392b'}}
+    map:{bld:'#eaf2ec',bldS:'#cddcd2',roof:'#f6eeda',roofS:'#e6d9b4',yard:'#e0efdc',yardS:'#c3ddbc',road:'#e8eeea',txt:'#6d8379',on:'#2f9e6e',off:'#a9b8b1',alarm:'#d65c4a',fault:'#e07b39',devTxt:'#243b33',rp:'#2f9e6e',rpDot:'#d65c4a'}}
 };
-function pal(){return THEME_PALETTE[S.settings.theme]||THEME_PALETTE.fresh}
-function applyTheme(){
-  document.documentElement.dataset.theme=S.settings.theme;
-  const ts=$('theme-switch');if(ts)ts.value=S.settings.theme;
-  document.querySelectorAll('#login-themes .chip').forEach(c=>c.classList.toggle('on',c.dataset.t===S.settings.theme));
-}
-function setTheme(t){
-  S.settings.theme=t;save();applyTheme();
-  if(!$('login-view').hidden){return}
-  route();
-  toast('已切换主题：'+({fresh:'清新绿',dark:'暗夜指挥舱',gov:'政务蓝'}[t]||t),'ok');
-}
+function pal(){return THEME_PALETTE.fresh}
 
 /* ================= 工具 ================= */
 const $=id=>document.getElementById(id);
@@ -535,16 +434,12 @@ function bindLogin(){
     enterApp();
   });
   $('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')$('login-btn').click()});
-  document.querySelectorAll('#login-themes .chip').forEach(c=>{
-    c.addEventListener('click',()=>setTheme(c.dataset.t));
-  });
 }
 function enterApp(){
   $('login-view').hidden=true; $('app-view').hidden=false;
   $('role-switch').value=S.role;
   $('who-name').textContent=ROLE[S.role].user;
   $('who-role').textContent=ROLE[S.role].name;
-  applyTheme();
   if(!MENUS[S.role].includes((location.hash||'').replace(/^#\/?/,'').split('/')[0]))location.hash='';
   location.hash='#/'+(ROLE[S.role].landing);
   route(); renderSidebar();
@@ -574,8 +469,6 @@ function bindTopbar(){
     location.hash='';
   });
   $('bell').addEventListener('click',()=>toggleNotif());
-  const ts=$('theme-switch');
-  if(ts)ts.addEventListener('change',e=>setTheme(e.target.value));
 }
 
 /* ================= 渲染：各页面 ================= */
@@ -1258,7 +1151,6 @@ function toggleNotif(){
 }
 
 /* ================= 启动 ================= */
-applyTheme();
 bindLogin();bindTopbar();
 if(S.role&&ROLE[S.role]){enterApp()}else{location.hash=''}
 </script>
