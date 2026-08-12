@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>校园防霸凌系统 · 1.0 可点击原型</title>
+<style>
+:root{
+  --bg:#f3f5f8; --card:#fff; --ink:#17233d; --mut:#5e6c84; --line:#e2e7ee;
+  --primary:#1d4e89; --primary-2:#2c62a8; --primary-bg:#eaf1fa;
+  --danger:#c7442e; --warn:#d97706; --ok:#1f9d55; --amber:#e6a700;
+  --l1:#d97706; --l2:#e05e2f; --l3:#c7442e;
+  --radius:6px; --shadow:0 1px 3px rgba(23,35,61,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font:14px/1.55 system-ui,-apple-system,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;color:var(--ink);background:var(--bg);font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit}
+[hidden]{display:none!important}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+
+/* ---------- 登录页 ---------- */
+.login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#12294d 0%,#1d4e89 55%,#2c62a8 100%)}
+.login-card{width:880px;max-width:94vw;background:var(--card);border-radius:10px;display:flex;overflow:hidden;box-shadow:0 12px 40px rgba(9,20,40,.35)}
+.login-brand{width:44%;background:#f0f4f9;padding:36px 28px;display:flex;flex-direction:column;gap:14px}
+.login-brand .logo{font-size:20px;font-weight:700;color:var(--primary)}
+.login-brand .tag{font-size:13px;color:var(--mut);line-height:1.7}
+.login-brand .rule{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;font-size:12.5px;color:var(--mut);line-height:1.8}
+.login-form{flex:1;padding:40px 36px}
+.login-form h1{font-size:20px;margin-bottom:4px}
+.login-form .sub{color:var(--mut);font-size:13px;margin-bottom:22px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:5px}
+.field input,.field select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+.field input:focus,.field select:focus{outline:2px solid var(--primary-bg);border-color:var(--primary)}
+.role-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.chip{padding:5px 10px;border:1px solid var(--line);border-radius:20px;font-size:12px;color:var(--mut);background:#fff}
+.chip.on{border-color:var(--primary);color:var(--primary);background:var(--primary-bg);font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;color:var(--ink);font-weight:600;font-size:13px;transition:filter .12s}
+.btn:hover{filter:brightness(.97)}
+.btn:active{filter:brightness(.93)}
+.btn.pri{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn.pri:hover{background:var(--primary-2)}
+.btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.ghost{background:transparent}
+.btn.sm{padding:4px 10px;font-size:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.block{width:100%}
+
+/* ---------- 主框架 ---------- */
+.app-view{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:208px;flex:none;background:#12294d;color:#cfdcee;display:flex;flex-direction:column}
+.sidebar .logo{padding:16px 18px;font-size:15px;font-weight:700;color:#fff;border-bottom:1px solid rgba(255,255,255,.08);letter-spacing:.5px}
+.sidebar nav{flex:1;padding:10px 8px;overflow:auto}
+.sidebar nav a{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:6px;color:#a9bcd6;text-decoration:none;font-size:13.5px;margin-bottom:2px}
+.sidebar nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+.sidebar nav a.on{background:var(--primary);color:#fff;font-weight:600}
+.sidebar .foot{padding:12px 16px;font-size:11.5px;color:#7d94b4;border-top:1px solid rgba(255,255,255,.08)}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{height:52px;flex:none;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 18px}
+.topbar .crumb{font-size:15px;font-weight:700}
+.topbar .sp{flex:1}
+.bell{position:relative;width:34px;height:34px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.bell .dot{position:absolute;top:-5px;right:-5px;background:var(--danger);color:#fff;font-size:10.5px;min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #fff}
+.rolebox{display:flex;align-items:center;gap:8px}
+.rolebox .who{text-align:right;line-height:1.25}
+.rolebox .who b{font-size:13px;display:block}
+.rolebox .who span{font-size:11.5px;color:var(--mut)}
+.rolebox select{padding:5px 8px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;font-size:12.5px}
+#content{flex:1;overflow:auto;padding:18px}
+
+/* ---------- 通用组件 ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:14px}
+.card .hd{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:700;font-size:14px;display:flex;align-items:center;gap:10px}
+.card .hd .sp{flex:1}
+.card .bd{padding:16px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px}
+.stat .k{font-size:12.5px;color:var(--mut)}
+.stat .v{font-size:24px;font-weight:700;margin-top:3px}
+.stat .v small{font-size:13px;color:var(--mut);font-weight:400}
+.stat .sub{font-size:11.5px;color:var(--mut);margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+table.list{width:100%;border-collapse:collapse;font-size:13px}
+table.list th{background:#f7f9fc;text-align:left;padding:9px 12px;color:var(--mut);font-weight:600;font-size:12.5px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.list td{padding:9px 12px;border-bottom:1px solid #eef1f6;vertical-align:middle}
+table.list tr:hover td{background:#fafbfd}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.b-l1{background:#fdf1e3;color:var(--l1)} .b-l2{background:#fdeae3;color:var(--l2)} .b-l3{background:#fbe4e1;color:var(--l3)}
+.b-pending{background:#fbe4e1;color:var(--danger)} .b-handling{background:#fdf1e3;color:var(--warn)}
+.b-confirm{background:#eaf1fa;color:var(--primary)} .b-review{background:#efeafc;color:#6b46c1}
+.b-archived{background:#eef1f6;color:#7a8699} .b-up{background:#fdeaea;color:#b91c1c}
+.b-on{background:#e6f4ec;color:var(--ok)} .b-off{background:#eef1f6;color:#7a8699} .b-alarm{background:#fbe4e1;color:var(--l3)} .b-fault{background:#fdf1e3;color:#b45309}
+.b-skip{background:#eef1f6;color:#7a8699}
+.row-hot{background:#fff5f5!important}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.filters select,.filters input{padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;font-size:12.5px}
+.filters .sp{flex:1}
+.tag{display:inline-block;background:#eef1f6;color:var(--mut);border-radius:4px;padding:1px 6px;font-size:11.5px;margin-left:4px}
+.empty{padding:40px;text-align:center;color:var(--mut);font-size:13px}
+
+/* 步骤条 */
+.steps{display:flex;align-items:flex-start;padding:6px 0 4px}
+.step{flex:1;position:relative;text-align:center}
+.step::before{content:"";position:absolute;top:14px;left:-50%;width:100%;height:2px;background:var(--line)}
+.step:first-child::before{display:none}
+.step .c{width:28px;height:28px;border-radius:50%;background:#fff;border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--mut);position:relative;z-index:1}
+.step.done .c{background:var(--ok);border-color:var(--ok);color:#fff}
+.step.cur .c{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 0 0 4px var(--primary-bg)}
+.step.skip .c{background:#eef1f6;border-color:#d8dfe8;color:#9aa7b8}
+.step.done::before,.step.cur::before{background:var(--ok)}
+.step .t{font-size:12px;color:var(--mut);margin-top:6px}
+.step.cur .t{color:var(--ink);font-weight:700}
+.step.done .t{color:var(--ok)}
+.step.skip .t{color:#9aa7b8}
+
+/* 详情 */
+.kv{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 18px}
+.kv .it .k{font-size:12px;color:var(--mut)}
+.kv .it .v{font-size:13.5px;font-weight:600;margin-top:1px}
+.tl{position:relative;padding-left:22px}
+.tl::before{content:"";position:absolute;left:7px;top:4px;bottom:4px;width:2px;background:var(--line)}
+.tl .it{position:relative;padding-bottom:14px}
+.tl .it::before{content:"";position:absolute;left:-19px;top:5px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--primary)}
+.tl .it .who{font-size:13px;font-weight:600}
+.tl .it .when{font-size:11.5px;color:var(--mut)}
+.tl .it .note{font-size:12.5px;color:var(--mut);margin-top:2px}
+
+/* 轨迹回放 */
+.replay-wrap{border:1px solid var(--line);border-radius:var(--radius);background:#fafbfd;overflow:hidden}
+.replay-head{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--mut)}
+.replay-head .sp{flex:1}
+.replay svg{display:block;width:100%;height:150px}
+.replay .playbar{height:6px;background:var(--line);position:relative}
+.replay .playbar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--primary);width:0%}
+
+/* 模态 */
+.modal-mask{position:fixed;inset:0;background:rgba(15,25,45,.45);display:flex;align-items:center;justify-content:center;z-index:50}
+.modal{width:480px;max-width:92vw;background:#fff;border-radius:8px;box-shadow:0 16px 50px rgba(9,20,40,.3)}
+.modal .hd{padding:14px 18px;border-bottom:1px solid var(--line);font-weight:700;font-size:14.5px}
+.modal .bd{padding:16px 18px}
+.modal .ft{padding:12px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+
+/* toast */
+#toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:99;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:#17233d;color:#fff;padding:9px 18px;border-radius:6px;font-size:13px;box-shadow:0 6px 20px rgba(9,20,40,.35);animation:tin .18s ease}
+.toast.ok{background:var(--ok)} .toast.err{background:var(--danger)}
+@keyframes tin{from{opacity:0;transform:translateY(-6px)}to{opacity:1}}
+
+/* 通知面板 */
+.notif-panel{position:absolute;top:44px;right:0;width:340px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 12px 34px rgba(9,20,40,.16);overflow:hidden;z-index:40}
+.notif-panel .hd{padding:10px 14px;border-bottom:1px solid var(--line);font-weight:700;font-size:13px;display:flex;justify-content:space-between}
+.notif-panel .it{padding:10px 14px;border-bottom:1px solid #f0f2f6;font-size:12.5px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.notif-panel .it:hover{background:#f7f9fc}
+.notif-panel .it .t{font-weight:600}
+.notif-panel .it .m{color:var(--mut);font-size:12px;margin-top:1px}
+
+/* 地图 */
+.campus{position:relative;background:#f2f6ec;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.campus svg{width:100%;height:auto;display:block}
+.devdot{cursor:pointer}
+.devpop{position:absolute;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 30px rgba(9,20,40,.18);padding:12px 14px;width:230px;font-size:12.5px;z-index:30}
+.devpop .nm{font-weight:700;font-size:13.5px;margin-bottom:4px}
+.devpop .row{display:flex;justify-content:space-between;padding:2px 0;color:var(--mut)}
+.devpop .row b{color:var(--ink)}
+
+/* 排班日历 */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .d{border:1px solid var(--line);border-radius:var(--radius);min-height:76px;padding:6px;background:#fff;font-size:12px}
+.cal .d .dn{color:var(--mut);font-size:11.5px}
+.cal .d .sh{display:block;margin-top:3px;padding:2px 5px;border-radius:4px;background:var(--primary-bg);color:var(--primary);font-size:11px}
+
+/* tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 14px;background:#fff}
+.tabs button{padding:10px 16px;border:none;background:none;font-weight:600;font-size:13.5px;color:var(--mut);border-bottom:2px solid transparent}
+.tabs button.on{color:var(--primary);border-bottom-color:var(--primary)}
+
+/* 权限树 */
+.ptree{font-size:13px}
+.ptree .grp{font-weight:700;margin:10px 0 4px}
+.ptree label{display:flex;align-items:center;gap:7px;padding:3px 0;font-weight:400;color:#33415c}
+.ptree input{accent-color:var(--primary)}
+
+.demo-note{font-size:11.5px;color:var(--mut);border-top:1px dashed var(--line);margin-top:12px;padding-top:8px}
+@media (max-width:1100px){.grid2,.grid3{grid-template-columns:1fr}.stat-row{grid-template-columns:repeat(2,1fr)}.kv{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- ================= 登录页 ================= -->
+<div id="login-view" class="login-view">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="logo">校园防霸凌系统</div>
+      <div class="tag">毫米波雷达 · 隐私盲区守护<br>1.0 版可点击原型（低保真）</div>
+      <div class="rule">
+        <b>演示角色说明</b><br>
+        · 安保：接单 / 处置 / 巡更<br>
+        · 班主任：确认本班工单（可配置跳过）<br>
+        · 德育处：审核归档<br>
+        · 访客：仅看板与设备地图（只读）<br>
+        · 超管：全部权限 + 系统设置
+      </div>
+      <div class="rule" style="background:#fdf6e8;border-color:#f0e2c0">
+        <b>演示数据</b>：以下所有告警/图表均为演示数据，仅用于走查流程
+      </div>
+    </div>
+    <div class="login-form">
+      <h1>登录管理平台</h1>
+      <div class="sub">任意账号密码即可登录，选择角色体验不同权限</div>
+      <div class="field"><label>演示角色</label>
+        <div class="role-chips" id="login-chips">
+          <button class="chip" data-r="admin">超级管理员</button>
+          <button class="chip on" data-r="guard">安保值班组</button>
+          <button class="chip" data-r="teacher">班主任</button>
+          <button class="chip" data-r="dean">德育处</button>
+          <button class="chip" data-r="guest">只读访客</button>
+        </div>
+      </div>
+      <div class="field"><label>账号</label><input id="login-user" placeholder="任意账号（演示）" value="zhangwei"></div>
+      <div class="field"><label>密码</label><input id="login-pass" type="password" placeholder="任意密码（演示）" value="123456"></div>
+      <div style="margin:6px 0 14px;font-size:12.5px;color:var(--mut)"><label><input type="checkbox" checked> 记住我（原型演示）</label></div>
+      <button class="btn pri block" id="login-btn">登 录</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 主应用 ================= -->
+<div id="app-view" class="app-view" hidden>
+  <aside class="sidebar">
+    <div class="logo">校园防霸凌系统</div>
+    <nav id="menu"></nav>
+    <div class="foot">1.0 原型 · 演示数据<br>低保真版本 v0.1</div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb" id="crumb"></div>
+      <div class="sp"></div>
+      <div class="bell" id="bell" title="通知中心">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+        <span class="dot" id="bell-dot" hidden></span>
+      </div>
+      <div class="rolebox">
+        <div class="who"><b id="who-name"></b><span id="who-role"></span></div>
+        <select id="role-switch" title="切换演示角色">
+          <option value="admin">超级管理员</option>
+          <option value="guard">安保值班组</option>
+          <option value="teacher">班主任</option>
+          <option value="dean">德育处</option>
+          <option value="guest">只读访客</option>
+        </select>
+        <button class="btn sm ghost" id="logout">退出</button>
+      </div>
+    </header>
+    <main id="content"></main>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="modal-root"></div>
+
+<script>
+'use strict';
+/* ================= 数据层 ================= */
+const ROLE = {
+  admin:{name:'超级管理员',user:'系统管理员',landing:'workbench'},
+  guard:{name:'安保值班组',user:'张伟',landing:'workbench'},
+  teacher:{name:'班主任',user:'王芳',landing:'workbench'},
+  dean:{name:'德育处/校领导',user:'李主任',landing:'dashboard'},
+  guest:{name:'只读访客',user:'访客账号',landing:'dashboard'}
+};
+const LEVELS = {1:{n:'一级·预警',c:'#d97706'},2:{n:'二级·告警',c:'#e05e2f'},3:{n:'三级·紧急',c:'#c7442e'}};
+const STATES = {
+  pending:{n:'待接单'}, handling:{n:'处置中'}, teacher_confirm:{n:'待班主任确认'},
+  dean_review:{n:'待德育处审核'}, archived:{n:'已归档'}
+};
+const STEPS = ['pending','handling','teacher_confirm','dean_review','archived'];
+
+function seedOrders(){
+  const L=(o)=>[{op:o,by:'系统',role:'告警引擎',time:'自动',note:'雷达事件触发，自动生成工单'}];
+  return [
+    {id:'WO20260812001',type:'暴力冲突',level:3,loc:'3号教学楼·男卫生间',dev:'R-003',src:'雷达',time:'2026-08-12 14:23',state:'pending',escalated:false,params:{people:5,dur:'2分40秒',conf:'87%'},handler:'',fap:false,log:L('生成')},
+    {id:'WO20260812002',type:'摔倒',level:2,loc:'1号宿舍楼·楼梯转角',dev:'R-001',src:'雷达',time:'2026-08-12 14:18',state:'pending',escalated:true,params:{people:1,dur:'持续',conf:'91%'},handler:'',fap:false,log:L('生成')},
+    {id:'WO20260812003',type:'多人聚集',level:2,loc:'教学楼后巷',dev:'R-007',src:'雷达',time:'2026-08-12 13:52',state:'handling',escalated:false,params:{people:6,dur:'8分10秒',conf:'78%'},handler:'张伟',fap:false,log:[{op:'生成',by:'系统',role:'告警引擎',time:'13:52',note:'雷达事件触发，自动生成工单'},{op:'接单',by:'张伟',role:'安保值班组',time:'13:55',note:'前往现场查看'}]},
+    {id:'WO20260812004',type:'推搡拉扯',level:2,loc:'2号教学楼·5F走廊',dev:'R-004',src:'雷达',time:'2026-08-12 13:40',state:'teacher_confirm',escalated:false,params:{people:3,dur:'1分20秒',conf:'83%'},handler:'张伟',fap:false,log:[{op:'生成',by:'系统',role:'告警引擎',time:'13:40',note:'雷达事件触发'},{op:'接单',by:'张伟',role:'安保值班组',time:'13:42',note:'到达现场'},{op:'处置',by:'张伟',role:'安保值班组',time:'13:48',note:'学生间口角推搡，已制止并批评教育，双方无伤'}]},
+    {id:'WO20260812005',type:'单人滞留',level:1,loc:'天台出入口',dev:'R-002',src:'雷达',time:'2026-08-12 12:10',state:'dean_review',escalated:false,params:{people:1,dur:'12分钟',conf:'74%'},handler:'李强',fap:false,log:[{op:'生成',by:'系统',role:'告警引擎',time:'12:10',note:'单人滞留超阈值'},{op:'接单',by:'李强',role:'安保值班组',time:'12:12',note:'上前询问'},{op:'处置',by:'李强',role:'安保值班组',time:'12:15',note:'学生在天台口打电话，已劝离'},{op:'确认',by:'王芳',role:'班主任',time:'12:30',note:'已与该生谈话，情况属实'}]},
+    {id:'WO20260812006',type:'摔倒',level:2,loc:'实验楼·消防通道',dev:'R-006',src:'雷达',time:'2026-08-11 16:02',state:'archived',escalated:false,params:{people:1,dur:'持续',conf:'85%'},handler:'李强',fap:true,log:[{op:'生成',by:'系统',role:'告警引擎',time:'16:02',note:'雷达事件触发'},{op:'接单',by:'李强',role:'安保值班组',time:'16:04',note:'查看'},{op:'处置',by:'李强',role:'安保值班组',time:'16:08',note:'标记误报：保洁蹲地擦洗地面'},{op:'审核',by:'李主任',role:'德育处',time:'16:20',note:'确认误报，归档'}]},
+    {id:'WO20260812007',type:'暴力冲突',level:3,loc:'3号教学楼·男卫生间',dev:'R-003',src:'雷达',time:'2026-08-11 09:30',state:'archived',escalated:false,params:{people:4,dur:'3分05秒',conf:'89%'},handler:'张伟',fap:false,log:[{op:'生成',by:'系统',role:'告警引擎',time:'09:30',note:'雷达事件触发'},{op:'接单',by:'张伟',role:'安保值班组',time:'09:31',note:'紧急到场'},{op:'处置',by:'张伟',role:'安保值班组',time:'09:40',note:'高年级学生围堵低年级学生，已制止并移交德育处'},{op:'确认',by:'王芳',role:'班主任',time:'10:05',note:'已联系双方家长'},{op:'审核',by:'李主任',role:'德育处',time:'10:30',note:'已约谈双方学生，记录在案'}]}
+  ];
+}
+function seedDevices(){
+  return [
+    {id:'R-001',loc:'1号宿舍楼·楼梯转角',st:'online',today:2},
+    {id:'R-002',loc:'天台出入口',st:'online',today:1},
+    {id:'R-003',loc:'3号教学楼·男卫生间',st:'alarm',today:5},
+    {id:'R-004',loc:'2号教学楼·5F走廊',st:'online',today:1},
+    {id:'R-005',loc:'实验楼·消防通道',st:'offline',today:0},
+    {id:'R-006',loc:'实验楼·后巷',st:'online',today:1},
+    {id:'R-007',loc:'教学楼后巷',st:'online',today:2},
+    {id:'R-008',loc:'杂物间',st:'fault',today:0}
+  ];
+}
+const DASH = {
+  month:128, today:7, onlineRate:'92%',
+  typeDist:[['暴力冲突',23],['摔倒',31],['多人聚集',42],['单人滞留',32]],
+  trend7:[['08-06',14],['08-07',19],['08-08',11],['08-09',24],['08-10',17],['08-11',36],['08-12',7]],
+  topSpots:[['3号教学楼·男卫生间',18],['教学楼后巷',12],['1号宿舍楼·楼梯转角',9],['天台出入口',7],['2号教学楼·5F走廊',5],['实验楼·消防通道',3]],
+  period:[['上午',45],['下午',58],['夜间',25]]
+};
+const MENUS = {
+  admin:['dashboard','workbench','orders','map','devices','patrol','schedule','perm','sys'],
+  guard:['dashboard','workbench','orders','map','patrol'],
+  teacher:['dashboard','workbench','orders'],
+  dean:['dashboard','workbench','orders'],
+  guest:['dashboard','map']
+};
+const MENU_META = {
+  dashboard:{n:'数据看板'}, workbench:{n:'工作台'}, orders:{n:'事件工单'},
+  map:{n:'设备地图'}, devices:{n:'设备管理'}, patrol:{n:'巡更管理'},
+  schedule:{n:'排班管理'}, perm:{n:'权限管理'}, sys:{n:'系统设置'}
+};
+const MENU_ITEMS=[['dashboard','数据看板'],['workbench','工作台'],['orders','事件工单'],['map','设备地图'],['devices','设备管理'],['patrol','巡更管理'],['schedule','排班管理'],['perm','权限管理'],['sys','系统设置']];
+const BTN_ITEMS=[['order_accept','接单'],['order_handle','填写处置结果'],['order_confirm','确认/审核'],['order_review','审核'],['export','导出 Excel'],['device_cfg','设备配置'],['patrol_check','巡更打卡'],['del','删除']];
+
+function seedRoles(){
+  return [
+    {id:'admin',name:'超级管理员',desc:'全部权限，锁定不可改',builtin:true,perms:{menu:MENUS.admin.slice(),btns:['order_accept','order_handle','order_confirm','order_review','export','device_cfg','patrol_check','del']}},
+    {id:'guard',name:'安保值班组',desc:'接单/处置/巡更',builtin:true,perms:{menu:MENUS.guard.slice(),btns:['order_accept','order_handle','patrol_check']}},
+    {id:'teacher',name:'班主任',desc:'本班只读+确认',builtin:true,perms:{menu:MENUS.teacher.slice(),btns:['order_confirm']}},
+    {id:'dean',name:'德育处/校领导',desc:'审核/归档/导出',builtin:true,perms:{menu:MENUS.dean.slice(),btns:['order_review','export']}},
+    {id:'guest',name:'只读访客',desc:'仅大屏与归档',builtin:true,perms:{menu:MENUS.guest.slice(),btns:[]}}
+  ];
+}
+function seedAccounts(){
+  return [
+    {user:'zhangwei',name:'张伟',role:'guard',phone:'138****0001',scope:'全校',last:'08-12 14:20',status:'on'},
+    {user:'lq',name:'李强',role:'guard',phone:'138****0002',scope:'全校',last:'08-12 13:05',status:'on'},
+    {user:'wangfang',name:'王芳',role:'teacher',phone:'139****3301',scope:'初二(3)班',last:'08-12 12:30',status:'on'},
+    {user:'lizr',name:'李主任',role:'dean',phone:'139****8812',scope:'—',last:'08-12 11:40',status:'on'},
+    {user:'guest01',name:'访客账号',role:'guest',phone:'—',scope:'—',last:'08-11 16:00',status:'off'}
+  ];
+}
+
+const LS_KEY='abs_proto_v1';
+let S = load();
+function load(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(raw){const d=JSON.parse(raw); if(d.orders){
+      const df=DEFAULTS();
+      d.roles=d.roles||df.roles;
+      d.accounts=d.accounts||df.accounts;
+      d.settings=Object.assign({},df.settings,d.settings||{});
+      d.settings.rules=Object.assign({},df.settings.rules,d.settings.rules||{});
+      return d;
+    }}
+  }catch(e){}
+  return DEFAULTS();
+}
+function DEFAULTS(){
+  return {role:'',orders:seedOrders(),devices:seedDevices(),roles:seedRoles(),accounts:seedAccounts(),
+    settings:{skipTeacher:false,retainDays:30,
+      push:{l1:['popup','app'],l2:['popup','app','wechat'],l3:['popup','app','wechat','sms','phone']},
+      rules:{l1:{types:['单人滞留','多人聚集'],stayMin:3,gatherN:3},
+             l2:{types:['推搡拉扯','摔倒'],confMin:75,escalateMin:10},
+             l3:{types:['暴力冲突'],confMin:80},
+             dedupMin:5}},
+    notifRead:{}};
+}
+function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S))}catch(e){}}
+function roleName(id){const r=(S.roles||[]).find(x=>x.id===id);return r?r.name:id}
+
+/* ================= 工具 ================= */
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;$('toast').appendChild(t);setTimeout(()=>t.remove(),2600)}
+function levelBadge(lv){return `<span class="badge b-l${lv}">${LEVELS[lv].n}</span>`}
+function stateBadge(st){return `<span class="badge b-${st==='teacher_confirm'?'confirm':st==='dean_review'?'review':st}">${STATES[st].n}</span>`}
+function devBadge(st){const m={online:['b-on','在线'],offline:['b-off','离线'],alarm:['b-alarm','告警中'],fault:['b-fault','故障']};return `<span class="badge ${m[st][0]}">${m[st][1]}</span>`}
+function can(perm){const r=S.role;if(r==='admin')return true;return (permissions[r]||[]).includes(perm)}
+const permissions={
+  guard:['order_accept','order_handle','patrol_check'],
+  teacher:['order_confirm'],
+  dean:['order_review'],
+  guest:[]
+};
+function pendingCount(){
+  return S.orders.filter(o=>['pending','handling'].includes(o.state)).length
+  + S.orders.filter(o=>o.state==='teacher_confirm' && (S.role==='teacher'||S.role==='admin')).length
+  + S.orders.filter(o=>o.state==='dean_review' && (S.role==='dean'||S.role==='admin')).length;
+}
+function findOrder(id){return S.orders.find(o=>o.id===id)}
+
+/* ================= 路由 ================= */
+function route(){
+  const h=location.hash.replace(/^#\/?/,'')||'workbench';
+  const [page,arg]=h.split('/');
+  const pageKey=page==='order'?'orders':page;   // 工单详情是 orders 的子路由
+  const allowed=MENUS[S.role]||[];
+  if(!allowed.includes(pageKey)){
+    location.hash='#/'+(allowed[0]||'dashboard');
+    return;
+  }
+  $('crumb').textContent=(page==='order'?'事件工单 · 工单详情':MENU_META[pageKey].n);
+  if(page==='order'&&arg){$('content').innerHTML=renderOrder(arg);bindOrderDetail()}
+  else renderPage(page);
+}
+function bindOrderDetail(){
+  const b=$('rp-btn');
+  if(b)b.addEventListener('click',startReplay);
+}
+window.addEventListener('hashchange',route);
+
+/* ================= 登录 ================= */
+let loginRole='guard';
+function bindLogin(){
+  $('login-chips').addEventListener('click',e=>{
+    const b=e.target.closest('.chip'); if(!b)return;
+    loginRole=b.dataset.r;
+    document.querySelectorAll('#login-chips .chip').forEach(c=>c.classList.toggle('on',c===b));
+  });
+  $('login-btn').addEventListener('click',()=>{
+    S.role=loginRole; save();
+    enterApp();
+  });
+  $('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')$('login-btn').click()});
+}
+function enterApp(){
+  $('login-view').hidden=true; $('app-view').hidden=false;
+  $('role-switch').value=S.role;
+  $('who-name').textContent=ROLE[S.role].user;
+  $('who-role').textContent=ROLE[S.role].name;
+  if(!MENUS[S.role].includes((location.hash||'').replace(/^#\/?/,'').split('/')[0]))location.hash='';
+  location.hash='#/'+(ROLE[S.role].landing);
+  route(); renderSidebar();
+}
+function renderSidebar(){
+  const allowed=MENUS[S.role];
+  $('menu').innerHTML=allowed.map(p=>`<a href="#/${p}" data-p="${p}">${MENU_META[p].n}</a>`).join('');
+  document.querySelectorAll('#menu a').forEach(a=>{
+    a.classList.toggle('on',a.dataset.p===routePage());
+  });
+}
+function routePage(){const p=(location.hash.replace(/^#\/?/,'')||'').split('/')[0];return p==='order'?'orders':p}
+function bindTopbar(){
+  $('role-switch').addEventListener('change',e=>{
+    S.role=e.target.value; save();
+    $('who-name').textContent=ROLE[S.role].user;
+    $('who-role').textContent=ROLE[S.role].name;
+    renderSidebar();
+    const cur=routePage();
+    if(!MENUS[S.role].includes(cur))location.hash='#/'+ROLE[S.role].landing;
+    else route();
+    toast('已切换为：'+ROLE[S.role].name,'ok');
+  });
+  $('logout').addEventListener('click',()=>{
+    S.role='';save();
+    $('app-view').hidden=true;$('login-view').hidden=false;
+    location.hash='';
+  });
+  $('bell').addEventListener('click',()=>toggleNotif());
+}
+
+/* ================= 渲染：各页面 ================= */
+function renderPage(p){
+  const map={dashboard:pgDashboard,workbench:pgWorkbench,orders:pgOrders,map:pgMap,devices:pgDevices,patrol:pgPatrol,schedule:pgSchedule,sys:pgSys,perm:pgPerm};
+  const fn=map[p]||pgWorkbench;
+  $('content').innerHTML=fn();
+  if(p==='orders')bindOrders();
+  if(p==='devices')bindDevices();
+  if(p==='patrol')bindPatrol();
+  if(p==='sys')bindSys();
+  if(p==='perm')bindPerm();
+  if(p==='map')bindMap();
+  renderBell();
+}
+
+/* ---- 数据看板 ---- */
+function pgDashboard(){
+  const d=DASH;
+  const donut=svgDonut(d.typeDist);
+  const line=svgLine(d.trend7);
+  const topBars=d.topSpots.map(s=>{
+    const w=Math.round(s[1]/d.topSpots[0][1]*100);
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12.5px">
+      <span style="width:150px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s[0]}</span>
+      <div style="flex:1;background:#eef1f6;border-radius:3px;height:14px"><div style="width:${w}%;height:100%;background:var(--primary);border-radius:3px"></div></div>
+      <b>${s[1]}</b></div>`;
+  }).join('');
+  const pmax=Math.max(...d.period.map(p=>p[1]));
+  const period=d.period.map(p=>{
+    const w=Math.round(p[1]/pmax*100);
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12.5px">
+      <span style="width:60px;color:var(--mut)">${p[0]}</span>
+      <div style="flex:1;background:#eef1f6;border-radius:3px;height:14px"><div style="width:${w}%;height:100%;background:${p[0]==='夜间'?'#c7442e':p[0]==='下午'?'#e05e2f':'#e6a700'};border-radius:3px"></div></div>
+      <b>${p[1]}</b></div>`;
+  }).join('');
+  const scope=S.role==='teacher'?'（数据范围：本班关联区域）':S.role==='guest'?'（只读）':'';
+  return `<div class="stat-row">
+    <div class="stat"><div class="k">本月告警总数</div><div class="v">${d.month}<small> 条</small></div><div class="sub">较上月 −12%</div></div>
+    <div class="stat"><div class="k">今日告警</div><div class="v">${d.today}<small> 条</small></div><div class="sub">三级 ${d.today>0?2:0} 条</div></div>
+    <div class="stat"><div class="k">未处置事件</div><div class="v" style="color:${pendingCount()>0?'var(--danger)':'inherit'}">${pendingCount()}<small> 条</small></div><div class="sub">含超时升级 ${S.orders.filter(o=>o.escalated&&o.state==='pending').length} 条</div></div>
+    <div class="stat"><div class="k">设备在线率</div><div class="v">${d.onlineRate}</div><div class="sub">雷达设备 ${S.devices.filter(x=>x.st==='online').length}/${S.devices.length} 在线</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="hd">事件类型分布<span class="tag">演示数据</span></div><div class="bd">${donut}</div></div>
+    <div class="card"><div class="hd">近 7 日告警趋势<span class="tag">演示数据</span></div><div class="bd">${line}</div></div>
+    <div class="card"><div class="hd">告警点位 TOP6<span class="tag">演示数据</span></div><div class="bd">${topBars}</div></div>
+    <div class="card"><div class="hd">时段分布<span class="tag">演示数据</span></div><div class="bd">${period}</div></div>
+  </div>
+  <div class="demo-note">看板数据为演示值；班主任角色自动按本班区域过滤；点击图表下钻工单列表（演示版未启用下钻）${scope}</div>`;
+}
+function svgDonut(data){
+  const total=data.reduce((a,b)=>a+b[1],0);
+  const colors=['#1d4e89','#2c62a8','#4a7fc0','#8fb3dd'];
+  let acc=0,segs='';
+  data.forEach((d,i)=>{
+    const frac=d[1]/total, r=42, c=2*Math.PI*r;
+    segs+=`<circle r="${r}" cx="60" cy="60" fill="none" stroke="${colors[i%4]}" stroke-width="16"
+      stroke-dasharray="${frac*c-1.5} ${c}" stroke-dashoffset="${-acc*c}" transform="rotate(-90 60 60)"/>`;
+    acc+=frac;
+  });
+  const legend=data.map((d,i)=>`<div style="display:flex;align-items:center;gap:6px;font-size:12.5px;margin-bottom:4px"><span style="width:9px;height:9px;border-radius:2px;background:${colors[i%4]}"></span>${d[0]}<b style="margin-left:auto">${d[1]}</b></div>`).join('');
+  return `<div style="display:flex;gap:18px;align-items:center">
+    <svg width="120" height="120" viewBox="0 0 120 120">${segs}<text x="60" y="57" text-anchor="middle" font-size="15" font-weight="700" fill="#17233d">${total}</text><text x="60" y="72" text-anchor="middle" font-size="10" fill="#5e6c84">本月</text></svg>
+    <div style="flex:1">${legend}</div></div>`;
+}
+function svgLine(data){
+  const W=340,H=110,pad=14;
+  const max=Math.max(...data.map(d=>d[1]))*1.15;
+  const pts=data.map((d,i)=>[pad+i*(W-pad*2)/(data.length-1), H-pad-(d[1]/max)*(H-pad*2)]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=line+` L ${pts[pts.length-1][0]} ${H-pad} L ${pts[0][0]} ${H-pad} Z`;
+  const dots=pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#1d4e89"/>`).join('');
+  const labels=data.map((d,i)=>`<text x="${pts[i][0]}" y="${H-2}" text-anchor="middle" font-size="9" fill="#5e6c84">${d[0]}</text>`).join('');
+  const vlabels=[0,Math.round(max/2),Math.round(max)].map((v,i)=>`<text x="2" y="${H-pad-(v/max)*(H-pad*2)+3}" font-size="9" fill="#5e6c84">${v}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+    <path d="${area}" fill="#eaf1fa" stroke="none"/>
+    <path d="${line}" fill="none" stroke="#1d4e89" stroke-width="2"/>
+    ${dots}${labels}${vlabels}</svg>`;
+}
+
+/* ---- 工作台 ---- */
+function pgWorkbench(){
+  const my=S.role;
+  const cand=S.orders.filter(o=>{
+    if(my==='teacher')return o.state==='teacher_confirm';
+    if(my==='dean')return o.state==='dean_review';
+    return ['pending','handling'].includes(o.state);
+  }).sort((a,b)=>b.time.localeCompare(a.time));
+  const items=cand.map(o=>{
+    const hot=o.state==='pending'&&o.escalated;
+    return `<div class="it" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid #eef1f6;cursor:pointer;${hot?'background:#fff5f5':''}" onclick="location.hash='#/order/${o.id}'">
+      ${levelBadge(o.level)} ${stateBadge(o.state)}${o.escalated&&o.state==='pending'?' <span class="badge b-up">已升级</span>':''}
+      <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13.5px">${esc(o.type)} · ${esc(o.loc)}</div>
+      <div style="font-size:12px;color:var(--mut)">${esc(o.id)} · ${esc(o.time)}${o.handler?' · 处置人:'+esc(o.handler):''}</div></div>
+      <span style="color:var(--mut);font-size:12px">${o.state==='pending'?'待接单':'处置中'}</span></div>`;
+  }).join('');
+  const empty=cand.length?'':`<div class="empty">当前没有待办工单 ✅</div>`;
+  const escRows=S.orders.filter(o=>o.escalated).map(o=>`<div style="font-size:12.5px;padding:5px 0;border-bottom:1px dashed #eef1f6">${esc(o.id)} · ${esc(o.type)} · <b style="color:var(--danger)">超时未接单，已升级</b></div>`).join('')||'<div style="font-size:12.5px;color:var(--mut)">今日无升级事件</div>';
+  return `<div class="grid3">
+    <div class="card">
+      <div class="hd">${my==='teacher'?'待我确认':my==='dean'?'待我审核':'待办工单'}<span class="tag">${cand.length}</span><div class="sp"></div><button class="btn sm" onclick="location.hash='#/orders'">全部工单 →</button></div>
+      ${empty}${items}
+    </div>
+    <div>
+      <div class="stat" style="margin-bottom:12px"><div class="k">今日告警</div><div class="v">${DASH.today}<small> 条</small></div></div>
+      <div class="stat" style="margin-bottom:12px"><div class="k">设备在线率</div><div class="v">${DASH.onlineRate}</div><div class="sub">${S.devices.filter(x=>x.st==='online').length}/${S.devices.length} 台在线</div></div>
+      <div class="card"><div class="hd">超时升级提醒</div><div class="bd">${escRows}</div></div>
+      ${can('patrol_check')?`<div class="card"><div class="hd">今日巡更</div><div class="bd"><div style="font-size:12.5px;color:var(--mut)">围墙线 3/8 点已打卡</div><div style="height:8px;background:#eef1f6;border-radius:4px;margin:6px 0"><div style="width:38%;height:100%;background:var(--ok);border-radius:4px"></div></div><button class="btn sm" onclick="location.hash='#/patrol'">去巡更 →</button></div></div>`:''}
+    </div>
+  </div>`;
+}
+
+/* ---- 工单列表 ---- */
+function pgOrders(){
+  const rows=S.orders.slice().sort((a,b)=>b.time.localeCompare(a.time)).map(o=>{
+    const hot=o.state==='pending'&&o.escalated;
+    return `<tr class="${hot?'row-hot':''}">
+      <td class="mono">${esc(o.id)}</td><td>${esc(o.time)}</td><td>${esc(o.loc)}</td>
+      <td>${esc(o.type)}</td><td>${esc(o.src)}</td><td>${levelBadge(o.level)}</td>
+      <td>${stateBadge(o.state)}${o.escalated?' <span class="badge b-up">已升级</span>':''}${o.fap?' <span class="badge b-off">误报</span>':''}</td>
+      <td>${esc(o.handler||'—')}</td><td><a href="#/order/${o.id}">查看</a></td></tr>`;
+  }).join('');
+  return `<div class="card">
+    <div class="filters">
+      <select id="f-state"><option value="">全部状态</option><option>待接单</option><option>处置中</option><option>待班主任确认</option><option>待德育处审核</option><option>已归档</option></select>
+      <select><option value="">全部级别</option><option>一级·预警</option><option>二级·告警</option><option>三级·紧急</option></select>
+      <select><option value="">全部类型</option><option>暴力冲突</option><option>摔倒</option><option>多人聚集</option><option>单人滞留</option></select>
+      <input placeholder="工单编号模糊查询" style="width:190px">
+      <input type="date" value="2026-08-01"><span style="color:var(--mut)">—</span><input type="date" value="2026-08-12">
+      <div class="sp"></div>
+      <button class="btn sm" onclick="toast('已导出 Excel（原型演示，导出计入审计日志）','ok')">导出 Excel</button>
+    </div>
+    <table class="list"><thead><tr><th>工单编号</th><th>发生时间</th><th>位置</th><th>类型</th><th>来源</th><th>级别</th><th>状态</th><th>处置人</th><th>操作</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <div class="demo-note">筛选为演示态；导出/查看操作将写入审计日志（原型仅演示 toast）</div>
+  </div>`;
+}
+function bindOrders(){}
+
+/* ---- 工单详情（核心） ---- */
+function renderOrder(id){
+  const o=findOrder(id);
+  if(!o){toast('工单不存在','err');location.hash='#/orders';return}
+  const stepsHtml=STEPS.map((s,i)=>{
+    const idx=STEPS.indexOf(o.state);
+    let cls='';
+    if(s==='teacher_confirm'&&S.settings.skipTeacher){cls='skip';}
+    else if(i<idx)cls='done';
+    else if(i===idx)cls='cur';
+    const t=STATES[s].n+(s==='teacher_confirm'&&S.settings.skipTeacher?'<br><span style="font-size:10.5px;color:#9aa7b8">已配置跳过</span>':'');
+    const mark=(s==='teacher_confirm'&&S.settings.skipTeacher)?'—':(i<idx?'✓':(i+1));
+    return `<div class="step ${cls}"><div class="c">${mark}</div><div class="t">${t}</div></div>`;
+  }).join('');
+  const logHtml=o.log.slice().reverse().map(l=>`<div class="it"><div class="who">${esc(l.op)} <span style="color:var(--mut);font-weight:400">· ${esc(l.by)}（${esc(l.role)}）</span></div>
+    <div class="when">${esc(l.time)}</div>${l.note?`<div class="note">${esc(l.note)}</div>`:''}</div>`).join('');
+  const actions=actionBar(o);
+  return `<div class="card"><div class="bd">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span class="mono" style="font-weight:700">${esc(o.id)}</span>${levelBadge(o.level)}${stateBadge(o.state)}${o.escalated?'<span class="badge b-up">超时已升级</span>':''}${o.fap?'<span class="badge b-off">误报</span>':''}
+      <div class="sp"></div><button class="btn sm ghost" onclick="location.hash='#/orders'">← 返回列表</button>
+    </div>
+    <div class="steps">${stepsHtml}</div>
+  </div></div>
+  <div class="card"><div class="hd">基本信息</div><div class="bd"><div class="kv">
+    <div class="it"><div class="k">发生时间</div><div class="v">${esc(o.time)}</div></div>
+    <div class="it"><div class="k">位置</div><div class="v">${esc(o.loc)}</div></div>
+    <div class="it"><div class="k">设备</div><div class="v mono">${esc(o.dev)}</div></div>
+    <div class="it"><div class="k">来源</div><div class="v">${esc(o.src)}</div></div>
+    <div class="it"><div class="k">人数</div><div class="v">${o.params.people} 人</div></div>
+    <div class="it"><div class="k">持续</div><div class="v">${esc(o.params.dur)}</div></div>
+    <div class="it"><div class="k">置信度</div><div class="v">${esc(o.params.conf)}</div></div>
+    <div class="it"><div class="k">处置人</div><div class="v">${esc(o.handler||'—')}</div></div>
+  </div></div></div>
+  <div class="grid2">
+    <div class="card"><div class="hd">取证 · 轨迹回放<span class="tag">示意</span></div><div class="bd">${replayHtml(o)}</div></div>
+    <div class="card"><div class="hd">处置记录</div><div class="bd"><div class="tl">${logHtml}</div></div></div>
+  </div>
+  <div class="card"><div class="hd">处置操作</div><div class="bd">${actions}</div></div>`;
+}
+function replayHtml(o){
+  return `<div class="replay-wrap">
+    <div class="replay-head"><span>${esc(o.loc)} · 事件时段前后 20 秒</span><span class="sp"></span>
+      <span id="rp-time" class="mono">0.0s</span><button class="btn sm" id="rp-btn">播放</button></div>
+    <div class="replay">
+      <svg viewBox="0 0 400 150" preserveAspectRatio="xMidYMid meet">
+        <rect x="20" y="20" width="360" height="110" fill="#fff" stroke="#dfe4ea"/>
+        <rect x="30" y="60" width="70" height="46" fill="#eef1f6" stroke="#d5dbe4"/><text x="65" y="88" text-anchor="middle" font-size="9" fill="#5e6c84">隔间</text>
+        <rect x="310" y="34" width="52" height="30" fill="#eef1f6" stroke="#d5dbe4"/><text x="336" y="52" text-anchor="middle" font-size="9" fill="#5e6c84">门口</text>
+        <path id="rp-path" d="M336,96 L300,100 L262,88 L220,76 L178,80 L150,64 L120,70 L96,84" fill="none" stroke="#1d4e89" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <circle id="rp-dot" r="5" fill="#c7442e" cx="336" cy="96"/>
+        <text x="336" y="116" text-anchor="middle" font-size="8.5" fill="#5e6c84">P1 进入</text>
+        <text x="96" y="118" text-anchor="middle" font-size="8.5" fill="#5e6c84">P5 离开</text>
+      </svg>
+      <div class="playbar"><div class="fill" id="rp-fill"></div></div>
+    </div>
+    <div class="demo-note" style="border:none;margin:0;padding:6px 12px">轨迹为示意动画：${o.params.people} 人 · 持续 ${esc(o.params.dur)} · 置信度 ${esc(o.params.conf)}</div>
+  </div>`;
+}
+let rpTimer=null;
+function startReplay(){
+  const dot=$('rp-dot'),fill=$('rp-fill'),tm=$('rp-time'),btn=$('rp-btn');
+  if(!dot)return;
+  const path=$('rp-path');
+  const len=path.getTotalLength();
+  let t=0,dir=1,last=performance.now();
+  if(rpTimer){clearInterval(rpTimer);rpTimer=null}
+  btn.textContent='暂停';
+  rpTimer=setInterval(()=>{
+    const now=performance.now();const dt=(now-last)/1000;last=now;
+    t+=dt*0.35*dir;
+    if(t>1){t=1;dir=-1;tm.textContent='10.0s'}
+    if(t<0){t=0;dir=1;tm.textContent='0.0s'}
+    const p=path.getPointAtLength(t*len);
+    dot.setAttribute('cx',p.x);dot.setAttribute('cy',p.y);
+    fill.style.width=(t*100)+'%';
+    tm.textContent=(t*10).toFixed(1)+'s';
+  },30);
+  btn.onclick=()=>{clearInterval(rpTimer);rpTimer=null;btn.textContent='播放';btn.onclick=startReplay};
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){
+    clearInterval(rpTimer);rpTimer=null;btn.textContent='播放';tm.textContent='5.0s';
+    const p=path.getPointAtLength(len/2);dot.setAttribute('cx',p.x);dot.setAttribute('cy',p.y);fill.style.width='50%';
+  }
+}
+function actionBar(o){
+  const r=S.role;
+  const b=[];
+  if(o.state==='pending'&&(r==='guard'||r==='admin')){
+    b.push(`<button class="btn pri" onclick="doAccept('${o.id}')">接单</button><span style="color:var(--mut);font-size:12.5px">限时 ${S.settings.rules.l2.escalateMin} 分钟内接单${o.escalated?'，已超时升级':''}</span>`);
+  }else if(o.state==='handling'&&(o.handler===ROLE[r].user||r==='admin')){
+    b.push(`<button class="btn pri" onclick="openHandle('${o.id}')">填写处置结果</button>`);
+  }else if(o.state==='teacher_confirm'&&(r==='teacher'||r==='admin')){
+    b.push(`<button class="btn ok" onclick="doConfirm('${o.id}',true)">确认</button><button class="btn danger" onclick="doReject('${o.id}')">驳回</button>`);
+  }else if(o.state==='dean_review'&&(r==='dean'||r==='admin')){
+    b.push(`<button class="btn ok" onclick="doReview('${o.id}',true)">审核通过</button><button class="btn danger" onclick="doReview('${o.id}',false)">驳回</button>`);
+  }
+  if(o.state==='archived'){
+    b.push(`<span style="color:var(--mut);font-size:13px">工单已归档，只读不可再编辑</span>`);
+  }
+  if(!b.length){
+    b.push(`<span style="color:var(--mut);font-size:13px">当前角色无此状态的操作权限（演示角色切换可体验）</span>`);
+  }
+  return `<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">${b.join('')}</div>`;
+}
+function doAccept(id){
+  const o=findOrder(id);o.state='handling';o.handler=ROLE[S.role].user;
+  o.log.push({op:'接单',by:o.handler,role:ROLE[S.role].name,time:new Date().toLocaleTimeString('zh-CN',{hour12:false}),note:'前往现场处置'});
+  save();toast('已接单，开始 10 分钟处置计时','ok');route();
+}
+function openHandle(id){modalHandle(id)}
+function doConfirm(id,ok){
+  const o=findOrder(id);
+  if(ok){o.state='dean_review';o.log.push({op:'确认',by:ROLE[S.role].user,role:ROLE[S.role].name,time:nowT(),note:'情况属实，提交德育处审核'});save();toast('已确认，工单进入德育处审核','ok')}
+  else{modalReject(id,'teacher_confirm')}
+  route();
+}
+function doReview(id,ok){
+  const o=findOrder(id);
+  if(ok){o.state='archived';o.log.push({op:'审核通过',by:ROLE[S.role].user,role:ROLE[S.role].name,time:nowT(),note:'处置合规，归档'});save();toast('已归档','ok')}
+  else{modalReject(id,'dean_review')}
+  route();
+}
+function nowT(){return new Date().toLocaleTimeString('zh-CN',{hour12:false})}
+
+/* ---- 处置结果模态 ---- */
+function modalHandle(id){
+  const o=findOrder(id);
+  $('modal-root').innerHTML=`<div class="modal-mask" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><div class="hd">填写处置结果 · ${esc(o.id)}</div><div class="bd">
+      <div class="field"><label>处置说明</label><textarea id="h-note" rows="4" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius)" placeholder="现场情况、处置措施……"></textarea></div>
+      <div class="field"><label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="h-fap" style="accent-color:var(--warn)"> 标记为误报（计入误报率统计，目标 &lt;20%）</label></div>
+      <div class="field" id="h-fap-reason" hidden><label>误报原因</label><select style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius)">
+        <option>临时聚集（如值日/排队）</option><option>保洁/维修作业</option><option>设备误判</option><option>其他</option></select></div>
+    </div><div class="ft"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" onclick="submitHandle('${id}')">提交</button></div></div></div>`;
+  $('h-fap').addEventListener('change',e=>{$('h-fap-reason').hidden=!e.target.checked});
+}
+function submitHandle(id){
+  const o=findOrder(id);
+  const note=$('h-note').value.trim()||'（未填写说明）';
+  const fap=$('h-fap').checked;
+  o.fap=fap;
+  o.state=S.settings.skipTeacher?'dean_review':'teacher_confirm';
+  o.log.push({op:'处置'+(fap?'（误报）':''),by:ROLE[S.role].user,role:ROLE[S.role].name,time:nowT(),note:fap?('标记误报：'+($('h-fap-reason select')?.value||'设备误判')):note});
+  save();closeModal();
+  toast(S.settings.skipTeacher?'已提交，直接进入德育处审核（班主任确认已配置跳过）':'已提交，等待班主任确认','ok');
+  route();
+}
+function modalReject(id,toState){
+  $('modal-root').innerHTML=`<div class="modal-mask" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><div class="hd">驳回工单</div><div class="bd">
+      <div class="field"><label>驳回原因（必填）</label><textarea id="r-note" rows="3" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius)" placeholder="如：处置记录不完整，退回补充……"></textarea></div>
+    </div><div class="ft"><button class="btn" onclick="closeModal()">取消</button><button class="btn danger" onclick="submitReject('${id}','${toState}')">驳回退回处置中</button></div></div></div>`;
+}
+function submitReject(id,toState){
+  const o=findOrder(id);
+  const note=$('r-note').value.trim()||'未填写原因';
+  o.state='handling';
+  o.log.push({op:'驳回退回',by:ROLE[S.role].user,role:ROLE[S.role].name,time:nowT(),note});
+  save();closeModal();toast('已驳回，工单退回处置中');route();
+}
+function closeModal(){$('modal-root').innerHTML=''}
+window.closeModal=closeModal;
+
+/* ---- 设备地图 ---- */
+function pgMap(){
+  const devs=S.devices;
+  const pos={ 'R-001':[85,172],'R-002':[240,58],'R-003':[108,66],'R-004':[352,66],'R-005':[322,174],'R-006':[408,202],'R-007':[148,202],'R-008':[230,174] };
+  const col={online:'#1f9d55',offline:'#9aa7b8',alarm:'#c7442e',fault:'#d97706'};
+  const dots=devs.map(d=>{
+    const [x,y]=pos[d.id]||[200,120];
+    return `<circle class="devdot" data-d="${d.id}" cx="${x}" cy="${y}" r="9" fill="${col[d.st]}" stroke="#fff" stroke-width="2.5"/>`;
+  }).join('');
+  const labels=devs.map(d=>{
+    const [x,y]=pos[d.id]||[200,120];
+    return `<text x="${x}" y="${y-15}" text-anchor="middle" font-size="10" font-weight="600" fill="#17233d">${d.id}</text>`;
+  }).join('');
+  return `<div class="card"><div class="hd">校园设备分布图<span class="tag">按设备类别切换（1.0 仅雷达）</span><div class="sp"></div>
+    <span style="font-size:12px;color:var(--mut)">图例：</span>
+    <span style="font-size:12px"><span style="color:#1f9d55">●</span>在线 <span style="color:#9aa7b8">●</span>离线 <span style="color:#c7442e">●</span>告警中 <span style="color:#d97706">●</span>故障</span></div>
+    <div class="bd"><div class="campus" id="campus">
+      <svg viewBox="0 0 470 240" preserveAspectRatio="xMidYMid meet">
+        <rect x="30" y="26" width="150" height="76" fill="#e8eef7" stroke="#c9d5e8"/><text x="105" y="70" text-anchor="middle" font-size="12" fill="#5e6c84">1号教学楼</text>
+        <rect x="300" y="26" width="140" height="76" fill="#e8eef7" stroke="#c9d5e8"/><text x="370" y="70" text-anchor="middle" font-size="12" fill="#5e6c84">2号教学楼</text>
+        <rect x="212" y="54" width="56" height="24" fill="#f3ecd8" stroke="#e2d8b8"/><text x="240" y="70" text-anchor="middle" font-size="10" fill="#8a7b4d">天台</text>
+        <rect x="30" y="140" width="150" height="76" fill="#e8eef7" stroke="#c9d5e8"/><text x="105" y="184" text-anchor="middle" font-size="12" fill="#5e6c84">1号宿舍楼</text>
+        <rect x="300" y="140" width="140" height="76" fill="#e8eef7" stroke="#c9d5e8"/><text x="370" y="184" text-anchor="middle" font-size="12" fill="#5e6c84">实验楼</text>
+        <rect x="196" y="206" width="84" height="20" fill="#e3f0e0" stroke="#c3ddbe"/><text x="238" y="220" text-anchor="middle" font-size="10" fill="#4f7a48">操场/后巷</text>
+        <path d="M0,124 H470" stroke="#dfe4ea" stroke-width="1.5" stroke-dasharray="5 4"/>
+        ${labels}${dots}
+      </svg>
+    </div></div></div>
+    <div class="card"><div class="hd">设备概览<span class="tag">演示数据</span></div>
+    <table class="list"><thead><tr><th>设备编号</th><th>类型</th><th>安装位置</th><th>状态</th><th>今日告警</th><th>操作</th></tr></thead><tbody>
+    ${devs.map(d=>`<tr><td class="mono">${d.id}</td><td>雷达</td><td>${esc(d.loc)}</td><td>${devBadge(d.st)}</td><td>${d.today}</td><td><a href="#/devices">配置</a></td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+function bindMap(){
+  document.querySelectorAll('.devdot').forEach(c=>{
+    c.addEventListener('click',()=>{
+      const d=S.devices.find(x=>x.id===c.dataset.d);
+      const box=$('campus').getBoundingClientRect();
+      const cx=+c.getAttribute('cx')/470*box.width;
+      const cy=+c.getAttribute('cy')/240*box.height;
+      document.querySelectorAll('.devpop').forEach(p=>p.remove());
+      const pop=document.createElement('div');
+      pop.className='devpop';
+      pop.style.left=Math.min(cx+14,box.width-240)+'px';
+      pop.style.top=Math.max(cy-60,4)+'px';
+      pop.innerHTML=`<div class="nm">${d.id} · 毫米波雷达</div>
+        <div class="row"><span>安装位置</span><b>${esc(d.loc)}</b></div>
+        <div class="row"><span>状态</span><b>${devBadge(d.st)}</b></div>
+        <div class="row"><span>今日告警</span><b>${d.today} 条</b></div>
+        <div class="row"><span>监测范围</span><b>半径 6m</b></div>
+        <div style="margin-top:8px;display:flex;gap:6px"><button class="btn sm" onclick="toast('跳转设备详情（演示）')">详情</button><button class="btn sm" onclick="location.hash='#/devices'">配置</button></div>`;
+      $('campus').appendChild(pop);
+    });
+  });
+}
+
+/* ---- 设备管理 ---- */
+function pgDevices(){
+  return `<div class="card"><div class="hd">设备列表<span class="tag">雷达 × ${S.devices.length}</span><div class="sp"></div>
+    <select style="padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius)"><option>全部状态</option><option>在线</option><option>离线</option><option>告警中</option><option>故障</option></select></div>
+    <table class="list"><thead><tr><th>设备编号</th><th>类型</th><th>安装位置</th><th>状态</th><th>今日告警</th><th>最近心跳</th><th>操作</th></tr></thead><tbody>
+    ${S.devices.map(d=>`<tr><td class="mono">${d.id}</td><td>毫米波雷达</td><td>${esc(d.loc)}</td><td>${devBadge(d.st)}</td><td>${d.today}</td><td class="mono">${d.st==='offline'?'—':'14:5'+Math.floor(Math.random()*10)}:2${Math.floor(Math.random()*10)}</td><td><button class="btn sm" onclick="openDevCfg('${d.id}')">配置</button></td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+function bindDevices(){window.openDevCfg=openDevCfg}
+function openDevCfg(id){
+  const d=S.devices.find(x=>x.id===id);
+  $('modal-root').innerHTML=`<div class="modal-mask" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><div class="hd">设备配置 · ${d.id}<span style="color:var(--mut);font-weight:400;font-size:12.5px">（${esc(d.loc)}）</span></div><div class="bd">
+      <div class="field"><label>警戒区域（示意：在平面图框选多边形）</label><div style="height:90px;border:1px dashed #c3cdda;border-radius:var(--radius);background:#fafbfd;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:12.5px">🗺 平面图区域框选（演示占位）</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field"><label>逗留时长阈值</label><input value="180" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"> <span style="font-size:11.5px;color:var(--mut)">秒</span></div>
+        <div class="field"><label>聚集人数阈值</label><input value="3" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"> <span style="font-size:11.5px;color:var(--mut)">人</span></div>
+      </div>
+      <div class="field"><label>灵敏度</label><select style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"><option>中</option><option>低</option><option>高</option></select></div>
+      <div class="field"><label><input type="checkbox" style="accent-color:var(--primary)"> 启用静默时段（大扫除/维修期间免报警）</label></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field"><label>静默开始</label><input type="time" value="09:00" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+        <div class="field"><label>静默结束</label><input type="time" value="10:00" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+      </div>
+    </div><div class="ft"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" onclick="toast('配置已保存并 MQTT 下发至边缘盒（演示）','ok');closeModal()">保存并下发</button></div></div></div>`;
+}
+
+/* ---- 巡更管理 ---- */
+let patrolTab='route';
+function pgPatrol(){
+  const tabs=[['route','路线配置'],['record','巡更记录'],['report','巡更报表']].map(t=>`<button class="${patrolTab===t[0]?'on':''}" data-t="${t[0]}">${t[1]}</button>`).join('');
+  let body='';
+  if(patrolTab==='route'){
+    body=`<table class="list"><thead><tr><th>路线名称</th><th>点位数量</th><th>间隔时长</th><th>关联班次</th><th>状态</th><th>操作</th></tr></thead><tbody>
+      <tr><td>教学楼线</td><td>6</td><td>30 分钟</td><td>早/中班</td><td><span class="badge b-on">启用</span></td><td><button class="btn sm">编辑</button></td></tr>
+      <tr><td>宿舍线</td><td>5</td><td>40 分钟</td><td>夜班</td><td><span class="badge b-on">启用</span></td><td><button class="btn sm">编辑</button></td></tr>
+      <tr><td>围墙线</td><td>8</td><td>60 分钟</td><td>全天</td><td><span class="badge b-on">启用</span></td><td><button class="btn sm">编辑</button></td></tr>
+    </tbody></table>
+    <div style="padding:12px 16px"><button class="btn pri" onclick="toast('新建路线：选点位+排序+间隔（演示）')">+ 新建路线</button></div>`;
+  }else if(patrolTab==='record'){
+    body=`<table class="list"><thead><tr><th>日期</th><th>路线</th><th>点位</th><th>应巡时间</th><th>实际打卡</th><th>打卡人</th><th>状态</th></tr></thead><tbody>
+      <tr><td>08-12</td><td>围墙线</td><td>西北角</td><td>14:00</td><td>14:02</td><td>张伟</td><td><span class="badge b-on">正常</span></td></tr>
+      <tr><td>08-12</td><td>围墙线</td><td>北门岗</td><td>14:30</td><td>—</td><td>—</td><td><span class="badge b-pending">漏巡</span></td></tr>
+      <tr><td>08-12</td><td>围墙线</td><td>东侧后巷</td><td>15:00</td><td>14:58</td><td>李强</td><td><span class="badge b-on">正常</span></td></tr>
+      <tr><td>08-12</td><td>教学楼线</td><td>3F 走廊</td><td>15:10</td><td>15:12</td><td>张伟</td><td><span class="badge b-on">正常</span></td></tr>
+    </tbody></table>
+    <div class="demo-note">漏巡自动推送值班组+超管；补卡需超管审批（防事后补签）</div>`;
+  }else{
+    body=`<div class="grid2">
+      <div class="card"><div class="hd">今日完成率</div><div class="bd"><div style="font-size:30px;font-weight:700">83%</div><div style="font-size:12.5px;color:var(--mut)">24/29 点位完成 · 漏巡 5</div><div style="height:8px;background:#eef1f6;border-radius:4px;margin-top:8px"><div style="width:83%;height:100%;background:var(--ok);border-radius:4px"></div></div></div></div>
+      <div class="card"><div class="hd">漏巡 TOP</div><div class="bd"><div style="font-size:12.5px;line-height:2">· 北门岗 —— 3 次<br>· 天台出入口 —— 2 次<br>· 操场东角 —— 2 次</div></div></div>
+    </div>`;
+  }
+  return `<div class="card"><div class="hd" style="padding:0"><div class="tabs" style="border:none;width:100%">${tabs}</div></div><div class="bd">${body}</div></div>`;
+}
+function bindPatrol(){
+  document.querySelectorAll('#content .tabs button').forEach(b=>b.addEventListener('click',()=>{patrolTab=b.dataset.t;renderPage('patrol')}));
+}
+
+/* ---- 排班管理 ---- */
+function pgSchedule(){
+  const days=[['周一','12'],['周二','13'],['周三','14'],['周四','15'],['周五','16'],['周六','17'],['周日','18']];
+  const cells=days.map((d,i)=>{
+    const sh= i===1?`<span class="sh">早班 · 张伟</span><span class="sh">中班 · 李强</span>`:
+      i===3?`<span class="sh">早班 · 李强</span>`:
+      i===5?`<span class="sh">夜班 · 张伟</span>`:'';
+    return `<div class="d"><div class="dn">${d[0]} ${d[1]}日</div>${sh}${i===2?'<span style="font-size:11px;color:var(--danger)">换班待审</span>':''}</div>`;
+  }).join('');
+  return `<div class="card"><div class="hd">值班排班（8 月第 3 周）<span class="tag">电话/短信推送按当前班次路由</span><div class="sp"></div><button class="btn sm" onclick="toast('新建班次（演示）')">+ 班次模板</button></div>
+    <div class="bd"><div class="cal">${cells}</div></div></div>
+    <div class="card"><div class="hd">班次模板</div><table class="list"><thead><tr><th>班次</th><th>时间</th><th>人数</th><th>操作</th></tr></thead><tbody>
+    <tr><td>早班</td><td>07:00–15:00</td><td>2</td><td><button class="btn sm">编辑</button></td></tr>
+    <tr><td>中班</td><td>15:00–23:00</td><td>2</td><td><button class="btn sm">编辑</button></td></tr>
+    <tr><td>夜班</td><td>23:00–07:00</td><td>2</td><td><button class="btn sm">编辑</button></td></tr></tbody></table></div>`;
+}
+
+/* ---- 系统管理 ---- */
+let sysTab='push';
+const ALERT_TYPES=['单人滞留','多人聚集','推搡拉扯','摔倒','暴力冲突'];
+function pgSys(){
+  const tabs=[['push','推送配置'],['rules','告警规则'],['retain','取证保留期'],['flow','审批流开关']].map(t=>`<button class="${sysTab===t[0]?'on':''}" data-t="${t[0]}">${t[1]}</button>`).join('');
+  let body='';
+  if(sysTab==='push'){
+    const rows=[1,2,3].map(lv=>{
+      const cur=S.settings.push['l'+lv]||[];
+      const ch=[['popup','平台弹窗'],['app','小程序通知'],['wechat','微信通知'],['sms','短信'],['phone','电话']];
+      const cells=ch.map(c=>`<label style="display:flex;align-items:center;gap:5px;font-size:12.5px;cursor:pointer"><input type="checkbox" data-lv="${lv}" data-ch="${c[0]}" ${cur.includes(c[0])?'checked':''} style="accent-color:var(--primary)">${c[1]}</label>`).join('');
+      return `<tr><td><b>${LEVELS[lv].n}</b><div style="font-size:11.5px;color:var(--mut)">${lv===1?'记录，无需强制处置':lv===2?`${S.settings.rules.l2.escalateMin} 分钟内接单处置，超时自动升级`:'立即处置，同步班主任'}</div></td><td><div style="display:flex;gap:14px;flex-wrap:wrap">${cells}</div></td></tr>`;
+    }).join('');
+    body=`<table class="list"><thead><tr><th>告警级别</th><th>推送渠道</th></tr></thead><tbody>${rows}</tbody></table>
+    <div style="padding:14px 16px;display:flex;gap:8px;align-items:center"><button class="btn pri" onclick="savePushCfg()">保存推送设置</button><span style="font-size:12px;color:var(--mut)">电话/短信接收人按值班排班表（当前班次）路由</span></div>`;
+  }else if(sysTab==='rules'){
+    const r=S.settings.rules;
+    const typeChk=(lvl)=>ALERT_TYPES.map(t=>`<label style="display:flex;align-items:center;gap:5px;font-size:12.5px;cursor:pointer"><input type="checkbox" data-lv="${lvl}" data-t="${t}" ${r[lvl].types.includes(t)?'checked':''} style="accent-color:var(--primary)">${t}</label>`).join('');
+    body=`<div class="bd">
+      <table class="list" style="margin-bottom:6px">
+        <thead><tr><th style="width:130px">级别</th><th>触发事件类型</th><th style="width:220px">判定参数</th></tr></thead>
+        <tbody>
+        <tr><td><b style="color:var(--l1)">一级·预警</b></td><td><div style="display:flex;gap:12px;flex-wrap:wrap">${typeChk('l1')}</div></td>
+          <td>滞留阈值 <input type="number" id="r-stay" value="${r.l1.stayMin}" style="width:56px;padding:5px 7px;border:1px solid var(--line);border-radius:var(--radius)"> 分钟<br>聚集人数 ≥ <input type="number" id="r-gather" value="${r.l1.gatherN}" style="width:56px;padding:5px 7px;border:1px solid var(--line);border-radius:var(--radius)"> 人</td></tr>
+        <tr><td><b style="color:var(--l2)">二级·告警</b></td><td><div style="display:flex;gap:12px;flex-wrap:wrap">${typeChk('l2')}</div></td>
+          <td>置信度 ≥ <input type="number" id="r-conf2" value="${r.l2.confMin}" style="width:56px;padding:5px 7px;border:1px solid var(--line);border-radius:var(--radius)"> %<br>限时处置 <input type="number" id="r-escalate" value="${r.l2.escalateMin}" style="width:56px;padding:5px 7px;border:1px solid var(--line);border-radius:var(--radius)"> 分钟</td></tr>
+        <tr><td><b style="color:var(--l3)">三级·紧急</b></td><td><div style="display:flex;gap:12px;flex-wrap:wrap">${typeChk('l3')}</div></td>
+          <td>置信度 ≥ <input type="number" id="r-conf3" value="${r.l3.confMin}" style="width:56px;padding:5px 7px;border:1px solid var(--line);border-radius:var(--radius)"> %</td></tr>
+        </tbody>
+      </table>
+      <div style="padding:4px 0 12px"><span style="font-size:12.5px;color:var(--mut)">通用：同设备同类型事件去重合并窗口</span>
+        <input type="number" id="r-dedup" value="${r.dedupMin}" style="width:56px;padding:5px 7px;border:1px solid var(--line);border-radius:var(--radius)"> 分钟</div>
+      <button class="btn pri" onclick="saveRules()">保存告警规则</button>
+      <div class="demo-note">规则保存后即生效：分级判定、限时处置（工单页联动显示）、去重合并窗口</div>
+    </div>`;
+  }else if(sysTab==='retain'){
+    body=`<div class="bd"><div class="field"><label>取证文件保留期（天）</label><input id="r-retain" type="number" value="${S.settings.retainDays}" style="width:160px;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+    <div style="font-size:12.5px;color:var(--mut)">默认 30 天，每日凌晨自动清理过期取证文件，清理动作写入审计日志</div>
+    <div style="margin-top:12px"><button class="btn pri" onclick="saveRetain()">保存</button></div></div>`;
+  }else{
+    body=`<div class="bd"><div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px">
+      <input type="checkbox" id="skipT" ${S.settings.skipTeacher?'checked':''} style="width:18px;height:18px;accent-color:var(--primary)"> 班主任确认环节（默认跳过）</label></div>
+    <div style="font-size:12.5px;color:var(--mut)">开启 = 处置结果提交后直接进入「德育处审核」；关闭 = 先经「班主任确认」再审核</div>
+    <div style="margin-top:12px"><button class="btn pri" onclick="toggleSkip()">保存</button></div></div>`;
+  }
+  return `<div class="card"><div class="hd" style="padding:0"><div class="tabs" style="border:none;width:100%">${tabs}</div></div><div class="bd" style="padding:0">${body}</div></div>`;
+}
+function bindSys(){
+  document.querySelectorAll('#content .tabs button').forEach(b=>b.addEventListener('click',()=>{sysTab=b.dataset.t;renderPage('sys')}));
+}
+function savePushCfg(){
+  const push={};
+  [1,2,3].forEach(lv=>{
+    push['l'+lv]=[...document.querySelectorAll(`#content input[data-lv="${lv}"]:checked`)].map(c=>c.dataset.ch);
+  });
+  S.settings.push=push;save();
+  toast('推送设置已保存','ok');
+}
+function saveRules(){
+  const getT=(lv)=>[...document.querySelectorAll(`#content input[data-lv="${lv}"][data-t]:checked`)].map(c=>c.dataset.t);
+  const num=(id,def)=>{const v=parseInt($(id).value,10);return isNaN(v)||v<=0?def:v};
+  S.settings.rules={
+    l1:{types:getT('l1'),stayMin:num('r-stay',3),gatherN:num('r-gather',3)},
+    l2:{types:getT('l2'),confMin:num('r-conf2',75),escalateMin:num('r-escalate',10)},
+    l3:{types:getT('l3'),confMin:num('r-conf3',80)},
+    dedupMin:num('r-dedup',5)
+  };
+  save();toast('告警规则已保存（分级判定/限时处置/去重窗口已生效）','ok');
+}
+function saveRetain(){
+  const v=parseInt($('r-retain').value,10);
+  S.settings.retainDays=isNaN(v)||v<1?30:v;save();
+  toast('取证保留期已保存：'+S.settings.retainDays+' 天（次日凌晨生效）','ok');
+}
+function toggleSkip(){
+  S.settings.skipTeacher=!S.settings.skipTeacher;save();
+  toast('班主任确认环节已'+(S.settings.skipTeacher?'配置跳过（处置后直接进德育处审核）':'启用（需班主任确认）'),'ok');
+  renderPage('sys');
+}
+
+/* ---- 权限管理（角色 + 账号 合并页） ---- */
+let permTab='roles';
+function pgPerm(){
+  const tabs=[['roles','角色管理'],['accounts','账号管理']].map(t=>`<button class="${permTab===t[0]?'on':''}" data-t="${t[0]}">${t[1]}</button>`).join('');
+  return `<div class="card" style="margin-bottom:14px"><div class="hd" style="padding:0"><div class="tabs" style="border:none;width:100%">${tabs}</div></div></div>`+(permTab==='roles'?pgRoles():pgAccounts());
+}
+function bindPerm(){
+  document.querySelectorAll('#content .tabs button').forEach(b=>b.addEventListener('click',()=>{permTab=b.dataset.t;renderPage('perm')}));
+  if(permTab==='roles')bindRoles();
+}
+
+/* ---- 角色/账号（可配置版） ---- */
+let roleSel='guard';
+let permDirty=false;
+function pgRoles(){
+  const sel=S.roles.find(r=>r.id===roleSel)||S.roles[0];
+  roleSel=sel.id;permDirty=false;
+  const locked=sel.id==='admin';
+  const menuTree=MENU_ITEMS.map(([k,n])=>{
+    const on=sel.perms.menu.includes(k);
+    return `<label><input type="checkbox" data-cat="menu" data-k="${k}" ${on?'checked':''} ${locked?'disabled':''}> ${n}</label>`;
+  }).join('');
+  const btnTree=BTN_ITEMS.map(([k,n])=>{
+    const on=sel.perms.btns.includes(k);
+    return `<label><input type="checkbox" data-cat="btns" data-k="${k}" ${on?'checked':''} ${locked?'disabled':''}> ${n}</label>`;
+  }).join('');
+  return `<div class="grid3">
+    <div class="card"><div class="hd">角色列表<span class="tag">${S.roles.length}</span><div class="sp"></div><button class="btn sm pri" onclick="openRoleModal()">+ 新建角色</button></div>
+      <div class="bd" style="padding:8px">
+      ${S.roles.map(r=>`<div style="padding:9px 10px;border-radius:6px;cursor:pointer;border:1px solid transparent;${roleSel===r.id?'background:var(--primary-bg);border-color:#c9dcf2':''}" onclick="roleSel='${r.id}';renderPage('perm')">
+        <b style="font-size:13px">${esc(r.name)}</b>${r.builtin?'<span class="tag">内置</span>':''}<div style="font-size:11.5px;color:var(--mut)">${esc(r.desc)}</div></div>`).join('')}
+      </div></div>
+    <div class="card"><div class="hd">功能权限 · ${esc(sel.name)}
+      ${locked?'<span class="tag" style="color:var(--danger);background:#fbe4e1">内置超管锁定不可改</span>':''}
+      <div class="sp"></div><button class="btn sm pri" id="perm-save" ${locked?'disabled':''} onclick="savePerms()">保存权限</button></div>
+      <div class="bd"><div class="ptree">
+        <div class="grp">菜单权限</div>${menuTree}
+        <div class="grp">按钮权限</div>${btnTree}
+      </div>
+      <div class="demo-note">修改后点「保存权限」生效；自定义角色可在此勾选菜单与按钮权限</div></div></div>
+  </div>`;
+}
+function bindRoles(){
+  document.querySelectorAll('#content .ptree input[type=checkbox]:not(:disabled)').forEach(c=>{
+    c.addEventListener('change',()=>{
+      permDirty=true;
+      const b=$('perm-save');if(b){b.style.outline='2px solid var(--warn)';b.textContent='保存权限（有未保存修改）'}
+    });
+  });
+}
+function savePerms(){
+  const sel=S.roles.find(r=>r.id===roleSel);
+  if(!sel||sel.id==='admin')return;
+  sel.perms.menu=[...document.querySelectorAll('#content .ptree input[data-cat="menu"]:checked')].map(c=>c.dataset.k);
+  sel.perms.btns=[...document.querySelectorAll('#content .ptree input[data-cat="btns"]:checked')].map(c=>c.dataset.k);
+  save();permDirty=false;
+  const b=$('perm-save');if(b){b.style.outline='none';b.textContent='保存权限'}
+  toast('权限已保存：'+sel.name,'ok');
+}
+function openRoleModal(){
+  $('modal-root').innerHTML=`<div class="modal-mask" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><div class="hd">新建角色</div><div class="bd">
+      <div class="field"><label>角色名称（必填）</label><input id="nr-name" placeholder="如：宿管组" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+      <div class="field"><label>角色描述</label><input id="nr-desc" placeholder="如：负责宿舍区域巡查与告警处置" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+    </div><div class="ft"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" onclick="createRole()">创建</button></div></div></div>`;
+}
+function createRole(){
+  const name=$('nr-name').value.trim();
+  if(!name){toast('请填写角色名称','err');return}
+  const id='r'+Date.now().toString(36);
+  S.roles.push({id,name,desc:$('nr-desc').value.trim()||'自定义角色',builtin:false,perms:{menu:['dashboard','workbench'],btns:[]}});
+  save();closeModal();roleSel=id;renderPage('perm');
+  toast('角色已创建：'+name+'（可在右侧配置权限）','ok');
+}
+function pgAccounts(){
+  const rows=S.accounts;
+  const roleOpts=S.roles.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');
+  return `<div class="card"><div class="hd">账号管理<span class="tag">${rows.length} 个账号</span><div class="sp"></div>
+    <button class="btn pri sm" onclick="openAccModal()">+ 新建账号</button></div>
+    <div class="filters"><input id="acc-q" placeholder="姓名/账号模糊查询" oninput="filterAcc()">
+      <select id="acc-f-role" onchange="filterAcc()"><option value="">全部角色</option>${roleOpts}</select>
+      <select id="acc-f-status" onchange="filterAcc()"><option value="">全部状态</option><option value="on">启用</option><option value="off">禁用</option></select></div>
+    <table class="list"><thead><tr><th>账号</th><th>姓名</th><th>角色</th><th>手机号</th><th>负责区域/班级</th><th>最近登录</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody id="acc-tbody">${accRows(rows)}</tbody></table></div>`;
+}
+function accRows(rows){
+  return rows.map(a=>`<tr data-user="${esc(a.user)}">
+    <td class="mono">${esc(a.user)}</td><td>${esc(a.name)}</td><td>${esc(roleName(a.role))}</td>
+    <td>${esc(a.phone)}</td><td>${esc(a.scope)}</td><td>${esc(a.last||'—')}</td>
+    <td>${a.status==='on'?'<span class="badge b-on">启用</span>':'<span class="badge b-off">禁用</span>'}</td>
+    <td><a href="javascript:void 0" onclick="openAccModal('${esc(a.user)}')">编辑</a>
+        <span style="color:var(--line)">|</span>
+        <a href="javascript:void 0" onclick="toggleAcc('${esc(a.user)}')">${a.status==='on'?'禁用':'启用'}</a></td></tr>`).join('');
+}
+function filterAcc(){
+  const q=($('acc-q').value||'').trim().toLowerCase();
+  const fr=$('acc-f-role').value, fs=$('acc-f-status').value;
+  const list=S.accounts.filter(a=>
+    (!q||a.user.toLowerCase().includes(q)||a.name.toLowerCase().includes(q)) &&
+    (!fr||a.role===fr) && (!fs||a.status===fs));
+  $('acc-tbody').innerHTML=accRows(list);
+}
+function openAccModal(user){
+  const a=user?S.accounts.find(x=>x.user===user):null;
+  const roleOpts=S.roles.map(r=>`<option value="${r.id}" ${(a?a.role==r.id:r.id==='guard')?'selected':''}>${esc(r.name)}</option>`).join('');
+  $('modal-root').innerHTML=`<div class="modal-mask" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><div class="hd">${a?'编辑账号':'新建账号'}</div><div class="bd">
+      <div class="field"><label>登录账号${a?'（不可修改）':'（必填）'}</label><input id="ac-user" value="${a?esc(a.user):''}" ${a?'disabled':''} style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+      <div class="field"><label>登录密码</label><input id="ac-pass" type="password" value="123456" ${a?'':'value="123456"'} placeholder="${a?'留空则不修改':'默认 123456，首登强制修改'}" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+      <div class="field"><label>姓名（必填）</label><input id="ac-name" value="${a?esc(a.name):''}" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+      <div class="field"><label>手机号</label><input id="ac-phone" value="${a?esc(a.phone):''}" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field"><label>角色</label><select id="ac-role" style="width:100%;padding:9px;border:1px solid var(--line);border-radius:var(--radius)">${roleOpts}</select></div>
+        <div class="field"><label>负责区域/班级</label><input id="ac-scope" value="${a?esc(a.scope):''}" placeholder="班主任必填" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+      </div>
+    </div><div class="ft"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" onclick="saveAcc('${a?a.user:''}')">保存</button></div></div></div>`;
+}
+function saveAcc(user){
+  const name=$('ac-name').value.trim();
+  if(!name){toast('请填写姓名','err');return}
+  if(user){
+    const a=S.accounts.find(x=>x.user===user);
+    a.name=name;a.phone=$('ac-phone').value.trim();a.role=$('ac-role').value;a.scope=$('ac-scope').value.trim();
+    save();closeModal();renderPage('perm');toast('账号已更新：'+a.user,'ok');
+  }else{
+    const u=$('ac-user').value.trim();
+    if(!u){toast('请填写登录账号','err');return}
+    if(S.accounts.some(x=>x.user===u)){toast('账号已存在：'+u,'err');return}
+    S.accounts.push({user:u,name,role:$('ac-role').value,phone:$('ac-phone').value.trim(),scope:$('ac-scope').value.trim(),last:'—',status:'on'});
+    save();closeModal();renderPage('perm');toast('账号已创建：'+u+'（默认密码 123456）','ok');
+  }
+}
+function toggleAcc(user){
+  const a=S.accounts.find(x=>x.user===user);
+  a.status=a.status==='on'?'off':'on';
+  save();renderPage('perm');
+  toast((a.status==='on'?'已启用':'已禁用')+'：'+user,'ok');
+}
+function bindAccounts(){}
+
+/* ---- 通知中心 ---- */
+function renderBell(){
+  const n=pendingCount();
+  const dot=$('bell-dot');
+  dot.hidden=n===0;dot.textContent=n>99?'99+':n;
+}
+function toggleNotif(){
+  const old=document.querySelector('.notif-panel');
+  if(old){old.remove();return}
+  const items=[];
+  S.orders.filter(o=>o.state==='pending').forEach(o=>items.push([o,o.escalated?'超时未接单，已升级':'新告警待接单']));
+  S.orders.filter(o=>o.state==='handling').forEach(o=>items.push([o,'处置中']));
+  if(S.role==='teacher')S.orders.filter(o=>o.state==='teacher_confirm').forEach(o=>items.push([o,'待您确认']));
+  if(S.role==='dean')S.orders.filter(o=>o.state==='dean_review').forEach(o=>items.push([o,'待您审核']));
+  const html=items.map(([o,m])=>`<div class="it" onclick="location.hash='#/order/${o.id}';document.querySelector('.notif-panel')?.remove()">
+    <span class="badge b-l${o.level}">${LEVELS[o.level].n}</span><div><div class="t">${esc(o.type)} · ${esc(o.loc)}</div><div class="m">${esc(o.id)} · ${m}</div></div></div>`).join('');
+  const panel=document.createElement('div');
+  panel.className='notif-panel';
+  panel.style.position='fixed';
+  const bell=$('bell').getBoundingClientRect();
+  panel.style.top=(bell.bottom+8)+'px';
+  panel.style.right=(window.innerWidth-bell.right)+'px';
+  panel.innerHTML=`<div class="hd">通知中心<span>${items.length} 条</span></div>${html||'<div class="empty" style="padding:24px">暂无通知</div>'}`;
+  document.body.appendChild(panel);
+}
+
+/* ================= 启动 ================= */
+bindLogin();bindTopbar();
+if(S.role&&ROLE[S.role]){enterApp()}else{location.hash=''}
+</script>
+</body>
+</html>
