@@ -144,6 +144,28 @@ table.list tr:hover td{background:#f6faf7}
 .modal .bd{padding:16px 18px}
 .modal .ft{padding:12px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
 
+/* 逻辑标注面板（评审模式） */
+#annot-btn.on{background:var(--primary-bg);color:var(--primary);border-color:#cfe3d6}
+.annot-panel{position:fixed;top:52px;right:0;bottom:0;width:300px;background:#fdf8e3;border-left:1px solid #e8d9a8;box-shadow:-6px 0 20px rgba(120,90,20,.08);transform:translateX(100%);transition:transform .22s ease;z-index:35;overflow-y:auto;padding:0}
+body.annot-on .annot-panel{transform:none}
+body.annot-on #content{margin-right:300px}
+.annot-panel .annot-hd{padding:12px 16px;border-bottom:1px solid #efe2b4;display:flex;justify-content:space-between;align-items:center}
+.annot-panel .annot-item{padding:11px 16px;border-bottom:1px dashed #efe2b4}
+.annot-panel .annot-item .t{font-size:13px;font-weight:700;color:#6b5b1e;display:flex;gap:7px;align-items:baseline}
+.annot-panel .annot-item .t .n{color:#b8952e;font-size:12px}
+.annot-panel .annot-item .t .atag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px;flex:none}
+.atag-op{background:#e6f4ec;color:#27855c}
+.atag-jump{background:#e9f0fb;color:#5b7fd4}
+.atag-field{background:#faf3e2;color:#c98a2e}
+.atag-rule{background:#eef1f6;color:#8ba096}
+.annot-panel .annot-item .b{font-size:12px;color:#7d6f3a;line-height:1.6;margin-top:3px}
+.annot-panel .annot-item .b .li{text-indent:-14px;padding-left:14px;margin-bottom:2px}
+.annot-panel .annot-foot{padding:10px 16px;font-size:11px;color:#a8955a;display:flex;align-items:center;justify-content:space-between}
+
+/* ⓘ 悬停提示（评审模式） */
+.hint{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#fdf3cd;color:#b8952e;font-size:10.5px;font-weight:700;margin-left:6px;cursor:help;position:relative;vertical-align:middle}
+.tipbox{position:fixed;z-index:9999;background:#243b33;color:#fff;font-size:12px;line-height:1.6;padding:8px 12px;border-radius:6px;max-width:260px;text-align:left;box-shadow:0 6px 18px rgba(0,0,0,.25);pointer-events:none}
+
 /* toast */
 #toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:99;display:flex;flex-direction:column;gap:8px;align-items:center}
 .toast{background:#243b33;color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;box-shadow:0 6px 20px rgba(36,59,51,.3);animation:tin .18s ease}
@@ -174,7 +196,7 @@ table.list tr:hover td{background:#f6faf7}
 .cal .d .sh{display:block;margin-top:3px;padding:2px 5px;border-radius:4px;background:var(--primary-bg);color:var(--primary);font-size:11px}
 
 /* tabs */
-.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 14px;background:#fff}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 14px;background:#fff;overflow-x:auto}
 .tabs button{padding:10px 16px;border:none;background:none;font-weight:600;font-size:13.5px;color:var(--mut);border-bottom:2px solid transparent}
 .tabs button.on{color:var(--primary);border-bottom-color:var(--primary)}
 
@@ -239,6 +261,7 @@ table.list tr:hover td{background:#f6faf7}
     <header class="topbar">
       <div class="crumb" id="crumb"></div>
       <div class="sp"></div>
+      <button class="btn sm" id="annot-btn" title="评审模式：显示/隐藏功能逻辑标注">📌 标注</button>
       <div class="bell" id="bell" title="通知中心">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
         <span class="dot" id="bell-dot" hidden></span>
@@ -259,6 +282,11 @@ table.list tr:hover td{background:#f6faf7}
   </div>
 </div>
 
+<div id="annot-panel" class="annot-panel">
+  <div class="annot-hd"><b id="annot-title">逻辑标注</b><span style="font-size:11px;color:#a8955a" id="annot-count"></span></div>
+  <div id="annot-body"></div>
+  <div class="annot-foot"><span>演示模式自动隐藏</span><button class="btn sm" id="annot-export" onclick="exportAnnot()">导出清单</button></div>
+</div>
 <div id="toast"></div>
 <div id="modal-root"></div>
 
@@ -274,10 +302,15 @@ const ROLE = {
 };
 const LEVELS = {1:{n:'一级·预警',c:'#d9a13b'},2:{n:'二级·告警',c:'#e07b39'},3:{n:'三级·紧急',c:'#d65c4a'}};
 const STATES = {
-  pending:{n:'待接单'}, handling:{n:'处置中'}, teacher_confirm:{n:'待班主任确认'},
-  dean_review:{n:'待德育处审核'}, archived:{n:'已归档'}
+  pending:{n:'未处置'}, handling:{n:'处置中'},
+  teacher_confirm:{n:'审批中'}, dean_review:{n:'审批中'}, archived:{n:'已归档'}
 };
-const STEPS = ['pending','handling','teacher_confirm','dean_review','archived'];
+const STEPS = ['pending','handling','approving','archived'];
+const STEP_META = {
+  pending:{n:'未处置'}, handling:{n:'处置中'},
+  approving:{n:'审批中', sub:()=>S.settings.skipTeacher?'已跳过班主任确认':'班主任确认 → 德育处审核'},
+  archived:{n:'已归档'}
+};
 
 function seedOrders(){
   const L=(o)=>[{op:o,by:'系统',role:'告警引擎',time:'自动',note:'雷达事件触发，自动生成工单'}];
@@ -295,7 +328,7 @@ function seedDevices(){
   return [
     {id:'R-001',loc:'1号宿舍楼·楼梯转角',st:'online',today:2},
     {id:'R-002',loc:'天台出入口',st:'online',today:1},
-    {id:'R-003',loc:'3号教学楼·男卫生间',st:'alarm',today:5},
+    {id:'R-003',loc:'3号教学楼·男卫生间',st:'online',today:5},
     {id:'R-004',loc:'2号教学楼·5F走廊',st:'online',today:1},
     {id:'R-005',loc:'实验楼·消防通道',st:'offline',today:0},
     {id:'R-006',loc:'实验楼·后巷',st:'online',today:1},
@@ -311,20 +344,51 @@ const DASH = {
   period:[['上午',45],['下午',58],['夜间',25]]
 };
 const MENUS = {
-  admin:['dashboard','workbench','orders','map','devices','patrol','schedule','perm','sys'],
-  guard:['dashboard','workbench','orders','map','patrol'],
-  teacher:['dashboard','workbench','orders'],
-  dean:['dashboard','workbench','orders'],
+  admin:['dashboard','workbench','orders','map','devices','patrol','schedule','perm','sys','notifs','audit'],
+  guard:['dashboard','workbench','orders','map','patrol','notifs'],
+  teacher:['dashboard','workbench','orders','notifs'],
+  dean:['dashboard','workbench','orders','notifs'],
   guest:['dashboard','map']
 };
 const MENU_META = {
   dashboard:{n:'数据看板'}, workbench:{n:'工作台'}, orders:{n:'事件工单'},
   map:{n:'设备地图'}, devices:{n:'设备管理'}, patrol:{n:'巡更管理'},
-  schedule:{n:'排班管理'}, perm:{n:'权限管理'}, sys:{n:'系统设置'}
+  schedule:{n:'排班管理'}, perm:{n:'权限管理'}, sys:{n:'系统设置'}, notifs:{n:'通知中心'}, audit:{n:'审计日志'}
 };
-const MENU_ITEMS=[['dashboard','数据看板'],['workbench','工作台'],['orders','事件工单'],['map','设备地图'],['devices','设备管理'],['patrol','巡更管理'],['schedule','排班管理'],['perm','权限管理'],['sys','系统设置']];
+const MENU_ITEMS=[['dashboard','数据看板'],['workbench','工作台'],['orders','事件工单'],['map','设备地图'],['devices','设备管理'],['patrol','巡更管理'],['schedule','排班管理'],['perm','权限管理'],['sys','系统设置'],['notifs','通知中心'],['audit','审计日志']];
 const BTN_ITEMS=[['order_accept','接单'],['order_handle','填写处置结果'],['order_confirm','确认/审核'],['order_review','审核'],['export','导出 Excel'],['device_cfg','设备配置'],['patrol_check','巡更打卡'],['del','删除']];
 
+function seedPatchReqs(){return [
+  {id:'p1',who:'李强',when:'08-12 16:30',point:'围墙线·北门岗',plan:'14:30',reason:'临时处理校门口纠纷',st:'pending'},
+  {id:'p2',who:'张伟',when:'08-12 11:20',point:'宿舍线·3F',plan:'10:50',reason:'送受伤学生去医务室',st:'pending'}
+];}
+function seedAudit(){return [
+  {t:'2026-08-12 21:05',who:'系统管理员',ip:'192.168.1.10',act:'登录系统',res:'成功'},
+  {t:'2026-08-12 20:41',who:'系统管理员',ip:'192.168.1.10',act:'导出工单 Excel（WO20260812001~008）',res:'成功'},
+  {t:'2026-08-12 20:12',who:'李主任',ip:'192.168.1.32',act:'审核工单 WO20260812007',res:'通过'},
+  {t:'2026-08-12 19:47',who:'系统管理员',ip:'192.168.1.10',act:'修改告警规则（限时处置 15→10 分钟）',res:'成功'},
+  {t:'2026-08-12 19:30',who:'系统管理员',ip:'192.168.1.10',act:'新建账号 sunwu（安保值班组）',res:'成功'},
+  {t:'2026-08-12 18:55',who:'王芳',ip:'192.168.1.88',act:'确认工单 WO20260812004',res:'通过'},
+  {t:'2026-08-12 18:20',who:'张伟',ip:'192.168.1.55',act:'处置工单 WO20260812003（标记误报）',res:'成功'},
+  {t:'2026-08-12 17:40',who:'李强',ip:'192.168.1.56',act:'查看取证轨迹（WO20260812002）',res:'成功'},
+  {t:'2026-08-12 16:58',who:'系统管理员',ip:'192.168.1.10',act:'配置值班排班（8月第3周）',res:'成功'},
+  {t:'2026-08-12 16:12',who:'李主任',ip:'192.168.1.32',act:'查询审计日志',res:'成功'}
+];}
+function seedShifts(){return [
+  {id:'m',name:'早班',time:'07:00–15:00',n:2},
+  {id:'a',name:'中班',time:'15:00–23:00',n:2},
+  {id:'n',name:'夜班',time:'23:00–07:00',n:2}
+];}
+function seedTemplates(){return {
+  wechat:'【校园防霸凌】{time} 在 {location} 发生「{type}」事件（{level}），请值班人员立即处理。',
+  sms:'{location} 发生{level}事件：{type}（{time}），请立即到场处置并上报。',
+  confirm:'工单 {id}（{type}）已处置完毕，请班主任确认：{location} {time}'
+};}
+function logPush(act,res){
+  const who=ROLE[S.role]?ROLE[S.role].name:'—';
+  S.audit.unshift({t:new Date().toLocaleString('zh-CN',{hour12:false}).replace(/\//g,'-'),who,ip:'192.168.1.10',act,res:res||'成功'});
+  S.audit=S.audit.slice(0,60);save();
+}
 function seedRoles(){
   return [
     {id:'admin',name:'超级管理员',desc:'全部权限，锁定不可改',builtin:true,perms:{menu:MENUS.admin.slice(),btns:['order_accept','order_handle','order_confirm','order_review','export','device_cfg','patrol_check','del']}},
@@ -353,8 +417,14 @@ function load(){
       const df=DEFAULTS();
       d.roles=d.roles||df.roles;
       d.accounts=d.accounts||df.accounts;
+      d.audit=d.audit||df.audit;
+      d.shifts=d.shifts||df.shifts;
+      d.patchReqs=d.patchReqs||df.patchReqs;
       d.settings=Object.assign({},df.settings,d.settings||{});
       d.settings.rules=Object.assign({},df.settings.rules,d.settings.rules||{});
+      d.settings.templates=Object.assign({},df.settings.templates,d.settings.templates||{});
+      d.settings.safety=Object.assign({},df.settings.safety,d.settings.safety||{});
+      d.settings.school=Object.assign({},df.settings.school,d.settings.school||{});
       return d;
     }}
   }catch(e){}
@@ -362,7 +432,8 @@ function load(){
 }
 function DEFAULTS(){
   return {role:'',orders:seedOrders(),devices:seedDevices(),roles:seedRoles(),accounts:seedAccounts(),
-    settings:{skipTeacher:false,retainDays:30,
+    audit:seedAudit(),shifts:seedShifts(),patchReqs:seedPatchReqs(),
+    settings:{skipTeacher:false,retainDays:30,annot:true,templates:seedTemplates(),safety:{face:false},school:{name:'安软实验中学',campuses:['本部校区'],grades:['初一(1)班','初一(2)班','初二(1)班','初二(2)班','初三(1)班','高一(1)班','高一(2)班','高二(1)班','高三(1)班']},
       push:{l1:['popup','app'],l2:['popup','app','wechat'],l3:['popup','app','wechat','sms','phone']},
       rules:{l1:{types:['单人滞留','多人聚集'],stayMin:3,gatherN:3},
              l2:{types:['推搡拉扯','摔倒'],confMin:75,escalateMin:10},
@@ -385,8 +456,8 @@ const $=id=>document.getElementById(id);
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;$('toast').appendChild(t);setTimeout(()=>t.remove(),2600)}
 function levelBadge(lv){return `<span class="badge b-l${lv}">${LEVELS[lv].n}</span>`}
-function stateBadge(st){return `<span class="badge b-${st==='teacher_confirm'?'confirm':st==='dean_review'?'review':st}">${STATES[st].n}</span>`}
-function devBadge(st){const m={online:['b-on','在线'],offline:['b-off','离线'],alarm:['b-alarm','告警中'],fault:['b-fault','故障']};return `<span class="badge ${m[st][0]}">${m[st][1]}</span>`}
+function stateBadge(st){const c=st==='teacher_confirm'||st==='dean_review'?'confirm':st;return `<span class="badge b-${c}">${STATES[st].n}</span>`}
+function devBadge(st){const m={online:['b-on','在线'],offline:['b-off','离线'],fault:['b-fault','故障']};return `<span class="badge ${m[st][0]}">${m[st][1]}</span>`}
 function can(perm){const r=S.role;if(r==='admin')return true;return (permissions[r]||[]).includes(perm)}
 const permissions={
   guard:['order_accept','order_handle','patrol_check'],
@@ -414,6 +485,10 @@ function route(){
   $('crumb').textContent=(page==='order'?'事件工单 · 工单详情':MENU_META[pageKey].n);
   if(page==='order'&&arg){$('content').innerHTML=renderOrder(arg);bindOrderDetail()}
   else renderPage(page);
+  curPageKey=page==='order'?'order':pageKey;
+  renderAnnot(curPageKey);
+  injectHints(curPageKey);
+  renderSidebar();
 }
 function bindOrderDetail(){
   const b=$('rp-btn');
@@ -432,6 +507,7 @@ function bindLogin(){
   $('login-btn').addEventListener('click',()=>{
     S.role=loginRole; save();
     enterApp();
+    logPush('登录系统');
   });
   $('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')$('login-btn').click()});
 }
@@ -469,11 +545,13 @@ function bindTopbar(){
     location.hash='';
   });
   $('bell').addEventListener('click',()=>toggleNotif());
+  const ab=$('annot-btn');
+  if(ab)ab.addEventListener('click',()=>setAnnot(!S.settings.annot));
 }
 
 /* ================= 渲染：各页面 ================= */
 function renderPage(p){
-  const map={dashboard:pgDashboard,workbench:pgWorkbench,orders:pgOrders,map:pgMap,devices:pgDevices,patrol:pgPatrol,schedule:pgSchedule,sys:pgSys,perm:pgPerm};
+  const map={dashboard:pgDashboard,workbench:pgWorkbench,orders:pgOrders,map:pgMap,devices:pgDevices,patrol:pgPatrol,schedule:pgSchedule,sys:pgSys,perm:pgPerm,notifs:pgNotifs,audit:pgAudit};
   const fn=map[p]||pgWorkbench;
   $('content').innerHTML=fn();
   if(p==='orders')bindOrders();
@@ -481,7 +559,10 @@ function renderPage(p){
   if(p==='patrol')bindPatrol();
   if(p==='sys')bindSys();
   if(p==='perm')bindPerm();
+  if(p==='notifs')bindNotifs();
+  if(p==='audit')bindAudit();
   if(p==='map')bindMap();
+  injectHints(curPageKey);
   renderBell();
 }
 
@@ -489,6 +570,7 @@ function renderPage(p){
 function pgDashboard(){
   const d=DASH;
   const donut=svgDonut(d.typeDist);
+  const donutLegend=d.typeDist.map((x,i)=>`<div style="display:flex;align-items:center;gap:6px;font-size:12.5px;margin-bottom:6px"><span style="width:9px;height:9px;border-radius:2px;background:${pal().donut[i%4]}"></span><span style="color:var(--mut)">${x[0]}</span><b style="margin-left:auto">${x[1]}</b></div>`).join('');
   const line=svgLine(d.trend7);
   const topBars=d.topSpots.map(s=>{
     const w=Math.round(s[1]/d.topSpots[0][1]*100);
@@ -513,7 +595,10 @@ function pgDashboard(){
     <div class="stat"><div class="k">设备在线率</div><div class="v">${d.onlineRate}</div><div class="sub">雷达设备 ${S.devices.filter(x=>x.st==='online').length}/${S.devices.length} 在线</div></div>
   </div>
   <div class="grid2">
-    <div class="card"><div class="hd">事件类型分布<span class="tag">演示数据</span></div><div class="bd">${donut}</div></div>
+    <div class="card"><div class="hd">事件类型分布<span class="tag">演示数据</span></div><div class="bd" style="display:flex;align-items:center;gap:24px;min-height:170px">${donut}
+      <div style="flex:1;min-width:140px">${donutLegend}
+        <div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px;font-size:11.5px;color:var(--mut)">较上周 <b style="color:var(--danger)">+12%</b> · 主要来自「多人聚集」<br>点击图表下钻对应类型工单（演示版未启用）</div>
+      </div></div></div>
     <div class="card"><div class="hd">近 7 日告警趋势<span class="tag">演示数据</span></div><div class="bd">${line}</div></div>
     <div class="card"><div class="hd">告警点位 TOP6<span class="tag">演示数据</span></div><div class="bd">${topBars}</div></div>
     <div class="card"><div class="hd">时段分布<span class="tag">演示数据</span></div><div class="bd">${period}</div></div>
@@ -526,27 +611,34 @@ function svgDonut(data){
   let acc=0,segs='';
   data.forEach((d,i)=>{
     const frac=d[1]/total, r=42, c=2*Math.PI*r;
-    segs+=`<circle r="${r}" cx="60" cy="60" fill="none" stroke="${colors[i%4]}" stroke-width="16"
-      stroke-dasharray="${frac*c-1.5} ${c}" stroke-dashoffset="${-acc*c}" transform="rotate(-90 60 60)"/>`;
+    segs+=`<circle r="${r}" cx="75" cy="75" fill="none" stroke="${colors[i%4]}" stroke-width="16"
+      stroke-dasharray="${frac*c-1.5} ${c}" stroke-dashoffset="${-acc*c}" transform="rotate(-90 75 75)"/>`;
     acc+=frac;
   });
-  const legend=data.map((d,i)=>`<div style="display:flex;align-items:center;gap:6px;font-size:12.5px;margin-bottom:4px"><span style="width:9px;height:9px;border-radius:2px;background:${colors[i%4]}"></span>${d[0]}<b style="margin-left:auto">${d[1]}</b></div>`).join('');
-  return `<div style="display:flex;gap:18px;align-items:center">
-    <svg width="120" height="120" viewBox="0 0 120 120">${segs}<text x="60" y="57" text-anchor="middle" font-size="15" font-weight="700" fill="${pal().ink}">${total}</text><text x="60" y="72" text-anchor="middle" font-size="10" fill="${pal().mut}">本月</text></svg>
-    <div style="flex:1">${legend}</div></div>`;
+  return `<svg width="150" height="150" viewBox="0 0 150 150">${segs}<text x="75" y="72" text-anchor="middle" font-size="17" font-weight="700" fill="${pal().ink}">${total}</text><text x="75" y="90" text-anchor="middle" font-size="10" fill="${pal().mut}">本月告警</text></svg>`;
 }
 function svgLine(data){
-  const W=340,H=110,pad=14;
+  const W=340,H=120,pad=16;
   const max=Math.max(...data.map(d=>d[1]))*1.15;
   const pts=data.map((d,i)=>[pad+i*(W-pad*2)/(data.length-1), H-pad-(d[1]/max)*(H-pad*2)]);
-  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
-  const area=line+` L ${pts[pts.length-1][0]} ${H-pad} L ${pts[0][0]} ${H-pad} Z`;
-  const dots=pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${pal().line}"/>`).join('');
-  const labels=data.map((d,i)=>`<text x="${pts[i][0]}" y="${H-2}" text-anchor="middle" font-size="9" fill="${pal().mut}">${d[0]}</text>`).join('');
-  const vlabels=[0,Math.round(max/2),Math.round(max)].map((v,i)=>`<text x="2" y="${H-pad-(v/max)*(H-pad*2)+3}" font-size="9" fill="${pal().mut}">${v}</text>`).join('');
+  // 平滑贝塞尔曲线
+  let line='M'+pts[0][0].toFixed(1)+' '+pts[0][1].toFixed(1);
+  for(let i=0;i<pts.length-1;i++){
+    const p0=pts[i],p1=pts[i+1],mx=(p0[0]+p1[0])/2;
+    line+=' C'+mx.toFixed(1)+' '+p0[1].toFixed(1)+','+mx.toFixed(1)+' '+p1[1].toFixed(1)+','+p1[0].toFixed(1)+' '+p1[1].toFixed(1);
+  }
+  const area=line+` L ${pts[pts.length-1][0].toFixed(1)} ${H-pad} L ${pts[0][0].toFixed(1)} ${H-pad} Z`;
+  const grid=[0.25,0.5,0.75].map(f=>`<line x1="${pad}" y1="${(H-pad-f*(H-pad*2)).toFixed(1)}" x2="${W-pad}" y2="${(H-pad-f*(H-pad*2)).toFixed(1)}" stroke="${pal().mut}" stroke-opacity=".15" stroke-dasharray="3 4"/>`).join('');
+  const glow=`<path d="${line}" fill="none" stroke="${pal().line}" stroke-opacity=".3" stroke-width="6" stroke-linecap="round"/>`;
+  const dots=pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${i===pts.length-1?4.5:2.8}" fill="${i===pts.length-1?'#fff':pal().line}" stroke="${pal().line}" stroke-width="2"/>`).join('');
+  const labels=data.map((d,i)=>`<text x="${pts[i][0].toFixed(1)}" y="${H-2}" text-anchor="middle" font-size="9" fill="${pal().mut}">${d[0]}</text>`).join('');
+  const vlabels=[0,Math.round(max/2),Math.round(max)].map((v,i)=>`<text x="2" y="${(H-pad-(v/max)*(H-pad*2)+3).toFixed(1)}" font-size="9" fill="${pal().mut}">${v}</text>`).join('');
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
-    <path d="${area}" fill="${pal().area}" stroke="none"/>
-    <path d="${line}" fill="none" stroke="${pal().line}" stroke-width="2"/>
+    <defs><linearGradient id="lg-trend" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${pal().line}" stop-opacity=".4"/><stop offset="100%" stop-color="${pal().line}" stop-opacity=".02"/></linearGradient></defs>
+    ${grid}
+    <path d="${area}" fill="url(#lg-trend)"/>
+    ${glow}
+    <path d="${line}" fill="none" stroke="${pal().line}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
     ${dots}${labels}${vlabels}</svg>`;
 }
 
@@ -564,7 +656,7 @@ function pgWorkbench(){
       ${levelBadge(o.level)} ${stateBadge(o.state)}${o.escalated&&o.state==='pending'?' <span class="badge b-up">已升级</span>':''}
       <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13.5px">${esc(o.type)} · ${esc(o.loc)}</div>
       <div style="font-size:12px;color:var(--mut)">${esc(o.id)} · ${esc(o.time)}${o.handler?' · 处置人:'+esc(o.handler):''}</div></div>
-      <span style="color:var(--mut);font-size:12px">${o.state==='pending'?'待接单':'处置中'}</span></div>`;
+      <span style="color:var(--mut);font-size:12px">${o.state==='pending'?'未处置':'处置中'}</span></div>`;
   }).join('');
   const empty=cand.length?'':`<div class="empty">当前没有待办工单 ✅</div>`;
   const escRows=S.orders.filter(o=>o.escalated).map(o=>`<div style="font-size:12.5px;padding:5px 0;border-bottom:1px dashed #eef1f6">${esc(o.id)} · ${esc(o.type)} · <b style="color:var(--danger)">超时未接单，已升级</b></div>`).join('')||'<div style="font-size:12.5px;color:var(--mut)">今日无升级事件</div>';
@@ -594,13 +686,13 @@ function pgOrders(){
   }).join('');
   return `<div class="card">
     <div class="filters">
-      <select id="f-state"><option value="">全部状态</option><option>待接单</option><option>处置中</option><option>待班主任确认</option><option>待德育处审核</option><option>已归档</option></select>
+      <select id="f-state"><option value="">全部状态</option><option>未处置</option><option>处置中</option><option>审批中</option><option>已归档</option></select>
       <select><option value="">全部级别</option><option>一级·预警</option><option>二级·告警</option><option>三级·紧急</option></select>
       <select><option value="">全部类型</option><option>暴力冲突</option><option>摔倒</option><option>多人聚集</option><option>单人滞留</option></select>
       <input placeholder="工单编号模糊查询" style="width:190px">
       <input type="date" value="2026-08-01"><span style="color:var(--mut)">—</span><input type="date" value="2026-08-12">
       <div class="sp"></div>
-      <button class="btn sm" onclick="toast('已导出 Excel（原型演示，导出计入审计日志）','ok')">导出 Excel</button>
+      <button class="btn sm" onclick="logPush('导出工单 Excel（当前筛选）');toast('已导出 Excel（原型演示，导出计入审计日志）','ok')">导出 Excel</button>
     </div>
     <table class="list"><thead><tr><th>工单编号</th><th>发生时间</th><th>位置</th><th>类型</th><th>来源</th><th>级别</th><th>状态</th><th>处置人</th><th>操作</th></tr></thead>
     <tbody>${rows}</tbody></table>
@@ -613,14 +705,15 @@ function bindOrders(){}
 function renderOrder(id){
   const o=findOrder(id);
   if(!o){toast('工单不存在','err');location.hash='#/orders';return}
+  const idx=o.state==='archived'?3:(o.state==='dean_review'||o.state==='teacher_confirm')?2:o.state==='handling'?1:0;
   const stepsHtml=STEPS.map((s,i)=>{
-    const idx=STEPS.indexOf(o.state);
+    const m=STEP_META[s];
     let cls='';
-    if(s==='teacher_confirm'&&S.settings.skipTeacher){cls='skip';}
+    if(s==='approving'&&S.settings.skipTeacher){cls='skip';}
     else if(i<idx)cls='done';
     else if(i===idx)cls='cur';
-    const t=STATES[s].n+(s==='teacher_confirm'&&S.settings.skipTeacher?'<br><span style="font-size:10.5px;color:#9aa7b8">已配置跳过</span>':'');
-    const mark=(s==='teacher_confirm'&&S.settings.skipTeacher)?'—':(i<idx?'✓':(i+1));
+    const mark=(s==='approving'&&S.settings.skipTeacher)?'—':(i<idx?'✓':(i+1));
+    const t=m.n+(s==='approving'?`<br><span style="font-size:10.5px;color:#9aa7b8">${m.sub()}</span>`:'');
     return `<div class="step ${cls}"><div class="c">${mark}</div><div class="t">${t}</div></div>`;
   }).join('');
   const logHtml=o.log.slice().reverse().map(l=>`<div class="it"><div class="who">${esc(l.op)} <span style="color:var(--mut);font-weight:400">· ${esc(l.by)}（${esc(l.role)}）</span></div>
@@ -716,18 +809,18 @@ function actionBar(o){
 function doAccept(id){
   const o=findOrder(id);o.state='handling';o.handler=ROLE[S.role].user;
   o.log.push({op:'接单',by:o.handler,role:ROLE[S.role].name,time:new Date().toLocaleTimeString('zh-CN',{hour12:false}),note:'前往现场处置'});
-  save();toast('已接单，开始 10 分钟处置计时','ok');route();
+  save();logPush('接单：'+id);toast('已接单，开始 10 分钟处置计时','ok');route();
 }
 function openHandle(id){modalHandle(id)}
 function doConfirm(id,ok){
   const o=findOrder(id);
-  if(ok){o.state='dean_review';o.log.push({op:'确认',by:ROLE[S.role].user,role:ROLE[S.role].name,time:nowT(),note:'情况属实，提交德育处审核'});save();toast('已确认，工单进入德育处审核','ok')}
+  if(ok){o.state='dean_review';o.log.push({op:'确认',by:ROLE[S.role].user,role:ROLE[S.role].name,time:nowT(),note:'情况属实，提交德育处审核'});save();logPush('确认工单：'+id);toast('已确认，工单进入德育处审核','ok')}
   else{modalReject(id,'teacher_confirm')}
   route();
 }
 function doReview(id,ok){
   const o=findOrder(id);
-  if(ok){o.state='archived';o.log.push({op:'审核通过',by:ROLE[S.role].user,role:ROLE[S.role].name,time:nowT(),note:'处置合规，归档'});save();toast('已归档','ok')}
+  if(ok){o.state='archived';o.log.push({op:'审核通过',by:ROLE[S.role].user,role:ROLE[S.role].name,time:nowT(),note:'处置合规，归档'});save();logPush('审核归档：'+id);toast('已归档','ok')}
   else{modalReject(id,'dean_review')}
   route();
 }
@@ -753,7 +846,7 @@ function submitHandle(id){
   o.state=S.settings.skipTeacher?'dean_review':'teacher_confirm';
   o.log.push({op:'处置'+(fap?'（误报）':''),by:ROLE[S.role].user,role:ROLE[S.role].name,time:nowT(),note:fap?('标记误报：'+($('h-fap-reason select')?.value||'设备误判')):note});
   save();closeModal();
-  toast(S.settings.skipTeacher?'已提交，直接进入德育处审核（班主任确认已配置跳过）':'已提交，等待班主任确认','ok');
+  toast(S.settings.skipTeacher?'已提交，直接进入审批中（已跳过班主任确认）':'已提交，进入审批中（等待班主任确认）','ok');
   route();
 }
 function modalReject(id,toState){
@@ -787,7 +880,7 @@ function pgMap(){
   }).join('');
   return `<div class="card"><div class="hd">校园设备分布图<span class="tag">按设备类别切换（1.0 仅雷达）</span><div class="sp"></div>
     <span style="font-size:12px;color:var(--mut)">图例：</span>
-    <span style="font-size:12px"><span style="color:${pal().map.on}">●</span>在线 <span style="color:${pal().map.off}">●</span>离线 <span style="color:${pal().map.alarm}">●</span>告警中 <span style="color:${pal().map.fault}">●</span>故障</span></div>
+    <span style="font-size:12px"><span style="color:${pal().map.on}">●</span>在线 <span style="color:${pal().map.off}">●</span>离线 <span style="color:${pal().map.fault}">●</span>故障</span></div>
     <div class="bd"><div class="campus" id="campus">
       <svg viewBox="0 0 470 240" preserveAspectRatio="xMidYMid meet">
         <rect x="30" y="26" width="150" height="76" fill="${pal().map.bld}" stroke="${pal().map.bldS}"/><text x="105" y="70" text-anchor="middle" font-size="12" fill="${pal().map.txt}">1号教学楼</text>
@@ -831,7 +924,7 @@ function bindMap(){
 /* ---- 设备管理 ---- */
 function pgDevices(){
   return `<div class="card"><div class="hd">设备列表<span class="tag">雷达 × ${S.devices.length}</span><div class="sp"></div>
-    <select style="padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius)"><option>全部状态</option><option>在线</option><option>离线</option><option>告警中</option><option>故障</option></select></div>
+    <select style="padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius)"><option>全部状态</option><option>在线</option><option>离线</option><option>故障</option></select></div>
     <table class="list"><thead><tr><th>设备编号</th><th>类型</th><th>安装位置</th><th>状态</th><th>今日告警</th><th>最近心跳</th><th>操作</th></tr></thead><tbody>
     ${S.devices.map(d=>`<tr><td class="mono">${d.id}</td><td>毫米波雷达</td><td>${esc(d.loc)}</td><td>${devBadge(d.st)}</td><td>${d.today}</td><td class="mono">${d.st==='offline'?'—':'14:5'+Math.floor(Math.random()*10)}:2${Math.floor(Math.random()*10)}</td><td><button class="btn sm" onclick="openDevCfg('${d.id}')">配置</button></td></tr>`).join('')}
     </tbody></table></div>`;
@@ -858,7 +951,7 @@ function openDevCfg(id){
 /* ---- 巡更管理 ---- */
 let patrolTab='route';
 function pgPatrol(){
-  const tabs=[['route','路线配置'],['record','巡更记录'],['report','巡更报表']].map(t=>`<button class="${patrolTab===t[0]?'on':''}" data-t="${t[0]}">${t[1]}</button>`).join('');
+  const tabs=[['route','路线配置'],['record','巡更记录'],['patch','补卡审批'],['report','巡更报表']].map(t=>`<button class="${patrolTab===t[0]?'on':''}" data-t="${t[0]}">${t[1]}${t[0]==='patch'&&S.patchReqs.filter(p=>p.st==='pending').length?`（${S.patchReqs.filter(p=>p.st==='pending').length}）`:''}</button>`).join('');
   let body='';
   if(patrolTab==='route'){
     body=`<table class="list"><thead><tr><th>路线名称</th><th>点位数量</th><th>间隔时长</th><th>关联班次</th><th>状态</th><th>操作</th></tr></thead><tbody>
@@ -875,6 +968,11 @@ function pgPatrol(){
       <tr><td>08-12</td><td>教学楼线</td><td>3F 走廊</td><td>15:10</td><td>15:12</td><td>张伟</td><td><span class="badge b-on">正常</span></td></tr>
     </tbody></table>
     <div class="demo-note">漏巡自动推送值班组+超管；补卡需超管审批（防事后补签）</div>`;
+  }else if(patrolTab==='patch'){
+    const rows=S.patchReqs.map(p=>`<tr><td>${p.who}</td><td>${p.when}</td><td>${p.point}</td><td>应巡 ${p.plan}</td><td>${esc(p.reason)}</td><td>${p.st==='pending'?'<span class="badge b-pending">待审批</span>':p.st==='approved'?'<span class="badge b-on">已通过</span>':'<span class="badge b-off">已驳回</span>'}</td>
+      <td>${p.st==='pending'?`<button class="btn sm pri" onclick="approvePatch('${p.id}',true)">通过</button> <button class="btn sm" onclick="approvePatch('${p.id}',false)">驳回</button>`:'—'}</td></tr>`).join('');
+    body=`<table class="list"><thead><tr><th>申请人</th><th>申请时间</th><th>漏巡点位</th><th>应巡时间</th><th>原因</th><th>状态</th><th>操作</th></tr></thead><tbody>${rows||'<tr><td colspan="7" style="text-align:center;color:var(--mut);padding:26px">暂无补卡申请</td></tr>'}</tbody></table>
+    <div class="demo-note">补卡须超管审批，防事后补签滥用；审批动作写入审计日志</div>`;
   }else{
     body=`<div class="grid2">
       <div class="card"><div class="hd">今日完成率</div><div class="bd"><div style="font-size:30px;font-weight:700">83%</div><div style="font-size:12.5px;color:var(--mut)">24/29 点位完成 · 漏巡 5</div><div style="height:8px;background:#eef1f6;border-radius:4px;margin-top:8px"><div style="width:83%;height:100%;background:var(--ok);border-radius:4px"></div></div></div></div>
@@ -886,29 +984,78 @@ function pgPatrol(){
 function bindPatrol(){
   document.querySelectorAll('#content .tabs button').forEach(b=>b.addEventListener('click',()=>{patrolTab=b.dataset.t;renderPage('patrol')}));
 }
+function approvePatch(id,ok){
+  const p=S.patchReqs.find(x=>x.id===id);
+  if(!p)return;
+  p.st=ok?'approved':'rejected';
+  logPush((ok?'通过':'驳回')+'补卡申请：'+p.who+'（'+p.point+'）');
+  save();renderPage('patrol');
+  toast('补卡申请已'+(ok?'通过':'驳回'),'ok');
+}
 
 /* ---- 排班管理 ---- */
 function pgSchedule(){
   const days=[['周一','12'],['周二','13'],['周三','14'],['周四','15'],['周五','16'],['周六','17'],['周日','18']];
+  const cellShifts={1:[['早班','张伟'],['中班','李强']],3:[['早班','李强']],5:[['夜班','张伟']]};
   const cells=days.map((d,i)=>{
-    const sh= i===1?`<span class="sh">早班 · 张伟</span><span class="sh">中班 · 李强</span>`:
-      i===3?`<span class="sh">早班 · 李强</span>`:
-      i===5?`<span class="sh">夜班 · 张伟</span>`:'';
+    const sh=(cellShifts[i]||[]).map(s=>`<span class="sh">${s[0]} · ${s[1]} <a href="javascript:void 0" onclick="swapShift('${d[0]}','${s[0]}')" style="font-size:10px;color:var(--primary);margin-left:2px">换班</a></span>`).join('');
     return `<div class="d"><div class="dn">${d[0]} ${d[1]}日</div>${sh}${i===2?'<span style="font-size:11px;color:var(--danger)">换班待审</span>':''}</div>`;
   }).join('');
-  return `<div class="card"><div class="hd">值班排班（8 月第 3 周）<span class="tag">电话/短信推送按当前班次路由</span><div class="sp"></div><button class="btn sm" onclick="toast('新建班次（演示）')">+ 班次模板</button></div>
+  const shiftRows=S.shifts.map(s=>`<tr><td>${s.name}</td><td>${s.time}</td><td>${s.n}</td><td><button class="btn sm" onclick="editShift('${s.id}')">编辑</button></td></tr>`).join('');
+  return `<div class="card"><div class="hd">值班排班（8 月第 3 周）<span class="tag">电话/短信推送按当前班次路由</span><div class="sp"></div><button class="btn sm" onclick="addShift()">+ 班次模板</button></div>
     <div class="bd"><div class="cal">${cells}</div></div></div>
-    <div class="card"><div class="hd">班次模板</div><table class="list"><thead><tr><th>班次</th><th>时间</th><th>人数</th><th>操作</th></tr></thead><tbody>
-    <tr><td>早班</td><td>07:00–15:00</td><td>2</td><td><button class="btn sm">编辑</button></td></tr>
-    <tr><td>中班</td><td>15:00–23:00</td><td>2</td><td><button class="btn sm">编辑</button></td></tr>
-    <tr><td>夜班</td><td>23:00–07:00</td><td>2</td><td><button class="btn sm">编辑</button></td></tr></tbody></table></div>`;
+    <div class="card"><div class="hd">班次模板</div><table class="list"><thead><tr><th>班次</th><th>时间</th><th>人数</th><th>操作</th></tr></thead><tbody>${shiftRows}</tbody></table>
+    <div class="demo-note">临时换班/班次调整写入审计日志；推送路由自动取当前班次在岗人员</div></div>`;
+}
+function editShift(id){
+  const s=S.shifts.find(x=>x.id===id);if(!s)return;
+  $('modal-root').innerHTML=`<div class="modal-mask" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="hd">编辑班次模板 · ${s.name}</div>
+    <div class="bd">
+      <div class="field"><label>班次名称</label><input id="sh-name" value="${esc(s.name)}" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+      <div class="field"><label>时间区间</label><input id="sh-time" value="${esc(s.time)}" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius)" placeholder="如 07:00–15:00"></div>
+      <div class="field"><label>人数</label><input id="sh-n" type="number" value="${s.n}" style="width:100px;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+    </div>
+    <div class="ft"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" onclick="saveShift('${id}')">保存</button></div></div></div>`;
+}
+function saveShift(id){
+  const s=S.shifts.find(x=>x.id===id);if(!s)return;
+  s.name=$('sh-name').value||s.name;
+  s.time=$('sh-time').value||s.time;
+  s.n=parseInt($('sh-n').value,10)||s.n;
+  logPush('修改班次模板：'+s.name);
+  save();closeModal();renderPage('schedule');
+  toast('班次模板已保存','ok');
+}
+function addShift(){
+  S.shifts.push({id:'x'+Date.now().toString(36),name:'新班次',time:'09:00–18:00',n:1});
+  logPush('新建班次模板');
+  save();renderPage('schedule');
+  toast('已新建班次模板（可点编辑修改）','ok');
+}
+function swapShift(day,shiftName){
+  const opts=S.accounts.filter(a=>a.role==='guard').map(a=>`<option>${esc(a.name)}</option>`).join('');
+  $('modal-root').innerHTML=`<div class="modal-mask" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="hd">临时换班 · ${day} ${shiftName}</div>
+    <div class="bd">
+      <div class="field"><label>交接人员</label><select id="swap-person" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius)">${opts}</select></div>
+      <div class="field"><label>换班原因</label><textarea id="swap-reason" style="width:100%;min-height:60px;border:1px solid var(--line);border-radius:var(--radius);padding:8px" placeholder="如：临时有事，与李强对调"></textarea></div>
+    </div>
+    <div class="ft"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" onclick="submitSwap('${day}','${shiftName}')">提交换班</button></div></div></div>`;
+}
+function submitSwap(day,shiftName){
+  const reason=$('swap-reason').value.trim()||'未填写';
+  const person=$('swap-person').value;
+  logPush('临时换班：'+day+' '+shiftName+' → '+person+'（'+reason+'）');
+  closeModal();
+  toast('换班申请已提交（已记录审计）','ok');
 }
 
 /* ---- 系统管理 ---- */
 let sysTab='push';
 const ALERT_TYPES=['单人滞留','多人聚集','推搡拉扯','摔倒','暴力冲突'];
 function pgSys(){
-  const tabs=[['push','推送配置'],['rules','告警规则'],['retain','取证保留期'],['flow','审批流开关']].map(t=>`<button class="${sysTab===t[0]?'on':''}" data-t="${t[0]}">${t[1]}</button>`).join('');
+  const tabs=[['push','推送配置'],['rules','告警规则'],['templates','消息模板'],['safety','数据安全'],['school','学校信息'],['dict','点位字典'],['retain','取证保留期'],['flow','审批流开关']].map(t=>`<button class="${sysTab===t[0]?'on':''}" data-t="${t[0]}">${t[1]}</button>`).join('');
   let body='';
   if(sysTab==='push'){
     const rows=[1,2,3].map(lv=>{
@@ -939,6 +1086,36 @@ function pgSys(){
       <button class="btn pri" onclick="saveRules()">保存告警规则</button>
       <div class="demo-note">规则保存后即生效：分级判定、限时处置（工单页联动显示）、去重合并窗口</div>
     </div>`;
+  }else if(sysTab==='templates'){
+    const tp=S.settings.templates;
+    const rows=[['wechat','微信告警通知','发送对象：值班人员（二级以上）',tp.wechat],['sms','短信告警通知','发送对象：值班手机（三级）',tp.sms],['confirm','班主任确认通知','发送对象：班主任',tp.confirm]].map(([k,n,desc,v])=>`<tr><td style="width:180px"><b>${n}</b><div style="font-size:11.5px;color:var(--mut)">${desc}</div></td><td><textarea id="tp-${k}" style="width:100%;min-height:56px;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:12.5px">${esc(v)}</textarea></td></tr>`).join('');
+    body=`<table class="list"><thead><tr><th>模板</th><th>内容（支持占位符）</th></tr></thead><tbody>${rows}</tbody></table>
+    <div style="padding:12px 16px"><span style="font-size:12px;color:var(--mut)">可用占位符：</span><code style="font-size:11.5px;background:var(--bg);padding:2px 6px;border-radius:4px">{time}</code> <code>{location}</code> <code>{type}</code> <code>{level}</code> <code>{id}</code>
+    <button class="btn pri" style="margin-left:12px" onclick="saveTemplates()">保存模板</button></div>
+    <div class="demo-note">占位符在发送时替换为真实事件数据；模板变更即时生效</div>`;
+  }else if(sysTab==='safety'){
+    body=`<div class="bd"><div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px">
+      <input type="checkbox" id="s-face" ${S.settings.safety.face?'checked':''} style="width:18px;height:18px;accent-color:var(--primary)"> 人脸抓拍 / 人员识别功能总开关</label></div>
+    <div style="font-size:12.5px;color:var(--mut);line-height:1.8">合规说明：依据《个人信息保护法》《未成年人保护法》，人脸类功能默认关闭；开启后仅存储结构化特征（不存原始照片），支持随时关闭并立即停止采集。<br>1.0 版本默认关闭，2.0 摄像头方案启用。</div>
+    <div style="margin-top:12px"><button class="btn pri" onclick="saveSafety()">保存</button></div></div>`;
+  }else if(sysTab==='school'){
+    const sc=S.settings.school;
+    body=`<div class="bd">
+      <div class="field"><label>学校名称</label><input id="s-name" value="${esc(sc.name)}" style="width:320px;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+      <div class="field"><label>校区</label><input id="s-campus" value="${esc(sc.campuses.join('、'))}" style="width:320px;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+      <div class="field"><label>年级班级结构（顿号分隔）</label><input id="s-grades" value="${esc(sc.grades.join('、'))}" style="width:560px;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"></div>
+      <div style="font-size:12.5px;color:var(--mut)">年级班级结构是「数据范围权限」和「班主任推送」的基础数据</div>
+      <div style="margin-top:12px"><button class="btn pri" onclick="saveSchool()">保存</button></div></div>`;
+  }else if(sysTab==='dict'){
+    const devs=S.devices;
+    const grades=S.settings.school.grades;
+    const rows=devs.map(d=>{
+      const opts=grades.map(g=>`<option ${g===d.cls?'selected':''}>${g}</option>`).join('');
+      return `<tr><td>${d.id}</td><td>${esc(d.loc)}</td><td>${d.zone||'—'}</td><td><select data-dev="${d.id}" style="padding:4px 6px;border:1px solid var(--line);border-radius:var(--radius)"><option value="">未关联</option>${opts}</select></td></tr>`;
+    }).join('');
+    body=`<table class="list"><thead><tr><th>设备编号</th><th>安装位置</th><th>区域/楼栋</th><th>关联班级（数据范围依据）</th></tr></thead><tbody>${rows}</tbody></table>
+    <div style="padding:12px 16px"><button class="btn pri" onclick="saveDict()">保存映射</button></div>
+    <div class="demo-note">点位→区域→班级映射决定：班主任数据范围、班主任确认推送对象；区域按楼栋自动归组</div>`;
   }else if(sysTab==='retain'){
     body=`<div class="bd"><div class="field"><label>取证文件保留期（天）</label><input id="r-retain" type="number" value="${S.settings.retainDays}" style="width:160px;padding:8px;border:1px solid var(--line);border-radius:var(--radius)"></div>
     <div style="font-size:12.5px;color:var(--mut)">默认 30 天，每日凌晨自动清理过期取证文件，清理动作写入审计日志</div>
@@ -954,14 +1131,6 @@ function pgSys(){
 function bindSys(){
   document.querySelectorAll('#content .tabs button').forEach(b=>b.addEventListener('click',()=>{sysTab=b.dataset.t;renderPage('sys')}));
 }
-function savePushCfg(){
-  const push={};
-  [1,2,3].forEach(lv=>{
-    push['l'+lv]=[...document.querySelectorAll(`#content input[data-lv="${lv}"]:checked`)].map(c=>c.dataset.ch);
-  });
-  S.settings.push=push;save();
-  toast('推送设置已保存','ok');
-}
 function saveRules(){
   const getT=(lv)=>[...document.querySelectorAll(`#content input[data-lv="${lv}"][data-t]:checked`)].map(c=>c.dataset.t);
   const num=(id,def)=>{const v=parseInt($(id).value,10);return isNaN(v)||v<=0?def:v};
@@ -971,17 +1140,57 @@ function saveRules(){
     l3:{types:getT('l3'),confMin:num('r-conf3',80)},
     dedupMin:num('r-dedup',5)
   };
-  save();toast('告警规则已保存（分级判定/限时处置/去重窗口已生效）','ok');
+  save();logPush('修改告警规则');
+  toast('告警规则已保存（分级判定/限时处置/去重窗口已生效）','ok');
 }
 function saveRetain(){
   const v=parseInt($('r-retain').value,10);
   S.settings.retainDays=isNaN(v)||v<1?30:v;save();
+  logPush('修改取证保留期：'+S.settings.retainDays+' 天');
   toast('取证保留期已保存：'+S.settings.retainDays+' 天（次日凌晨生效）','ok');
 }
 function toggleSkip(){
   S.settings.skipTeacher=!S.settings.skipTeacher;save();
+  logPush('修改审批流配置（班主任确认'+(S.settings.skipTeacher?'跳过':'启用')+'）');
   toast('班主任确认环节已'+(S.settings.skipTeacher?'配置跳过（处置后直接进德育处审核）':'启用（需班主任确认）'),'ok');
   renderPage('sys');
+}
+function saveTemplates(){
+  ['wechat','sms','confirm'].forEach(k=>{
+    const el=$('tp-'+k);
+    if(el)S.settings.templates[k]=el.value;
+  });
+  save();logPush('修改消息模板');
+  toast('消息模板已保存','ok');
+}
+function saveSafety(){
+  S.settings.safety.face=$('s-face').checked;save();
+  logPush('修改数据安全开关（人脸功能'+(S.settings.safety.face?'开启':'关闭')+'）');
+  toast('数据安全设置已保存：人脸功能'+(S.settings.safety.face?'开启':'关闭'),'ok');
+}
+function saveSchool(){
+  S.settings.school.name=$('s-name').value||'未命名学校';
+  S.settings.school.campuses=$('s-campus').value.split(/[、,，]/).map(s=>s.trim()).filter(Boolean);
+  S.settings.school.grades=$('s-grades').value.split(/[、,，]/).map(s=>s.trim()).filter(Boolean);
+  save();logPush('修改学校信息');
+  toast('学校信息已保存','ok');
+}
+function saveDict(){
+  document.querySelectorAll('#content select[data-dev]').forEach(sel=>{
+    const d=S.devices.find(x=>x.id===sel.dataset.dev);
+    if(d)d.cls=sel.value;
+  });
+  save();logPush('修改区域点位字典');
+  toast('点位映射已保存','ok');
+}
+function savePushCfg(){
+  const push={};
+  [1,2,3].forEach(lv=>{
+    push['l'+lv]=[...document.querySelectorAll(`#content input[data-lv="${lv}"]:checked`)].map(c=>c.dataset.ch);
+  });
+  S.settings.push=push;save();
+  logPush('修改推送配置');
+  toast('推送设置已保存','ok');
 }
 
 /* ---- 权限管理（角色 + 账号 合并页） ---- */
@@ -1039,7 +1248,7 @@ function savePerms(){
   if(!sel||sel.id==='admin')return;
   sel.perms.menu=[...document.querySelectorAll('#content .ptree input[data-cat="menu"]:checked')].map(c=>c.dataset.k);
   sel.perms.btns=[...document.querySelectorAll('#content .ptree input[data-cat="btns"]:checked')].map(c=>c.dataset.k);
-  save();permDirty=false;
+  save();permDirty=false;logPush('修改角色权限：'+sel.name);
   const b=$('perm-save');if(b){b.style.outline='none';b.textContent='保存权限'}
   toast('权限已保存：'+sel.name,'ok');
 }
@@ -1055,7 +1264,7 @@ function createRole(){
   if(!name){toast('请填写角色名称','err');return}
   const id='r'+Date.now().toString(36);
   S.roles.push({id,name,desc:$('nr-desc').value.trim()||'自定义角色',builtin:false,perms:{menu:['dashboard','workbench'],btns:[]}});
-  save();closeModal();roleSel=id;renderPage('perm');
+  save();closeModal();roleSel=id;logPush('创建角色：'+name);renderPage('perm');
   toast('角色已创建：'+name+'（可在右侧配置权限）','ok');
 }
 function pgAccounts(){
@@ -1107,19 +1316,20 @@ function saveAcc(user){
   if(user){
     const a=S.accounts.find(x=>x.user===user);
     a.name=name;a.phone=$('ac-phone').value.trim();a.role=$('ac-role').value;a.scope=$('ac-scope').value.trim();
-    save();closeModal();renderPage('perm');toast('账号已更新：'+a.user,'ok');
+    save();closeModal();renderPage('perm');logPush('更新账号：'+user);toast('账号已更新：'+a.user,'ok');
   }else{
     const u=$('ac-user').value.trim();
     if(!u){toast('请填写登录账号','err');return}
     if(S.accounts.some(x=>x.user===u)){toast('账号已存在：'+u,'err');return}
     S.accounts.push({user:u,name,role:$('ac-role').value,phone:$('ac-phone').value.trim(),scope:$('ac-scope').value.trim(),last:'—',status:'on'});
-    save();closeModal();renderPage('perm');toast('账号已创建：'+u+'（默认密码 123456）','ok');
+    save();closeModal();renderPage('perm');logPush('创建账号：'+u);toast('账号已创建：'+u+'（默认密码 123456）','ok');
   }
 }
 function toggleAcc(user){
   const a=S.accounts.find(x=>x.user===user);
   a.status=a.status==='on'?'off':'on';
   save();renderPage('perm');
+  logPush((a.status==='on'?'启用':'禁用')+'账号：'+user);
   toast((a.status==='on'?'已启用':'已禁用')+'：'+user,'ok');
 }
 function bindAccounts(){}
@@ -1134,7 +1344,7 @@ function toggleNotif(){
   const old=document.querySelector('.notif-panel');
   if(old){old.remove();return}
   const items=[];
-  S.orders.filter(o=>o.state==='pending').forEach(o=>items.push([o,o.escalated?'超时未接单，已升级':'新告警待接单']));
+  S.orders.filter(o=>o.state==='pending').forEach(o=>items.push([o,o.escalated?'超时未处置，已升级':'新告警未处置']));
   S.orders.filter(o=>o.state==='handling').forEach(o=>items.push([o,'处置中']));
   if(S.role==='teacher')S.orders.filter(o=>o.state==='teacher_confirm').forEach(o=>items.push([o,'待您确认']));
   if(S.role==='dean')S.orders.filter(o=>o.state==='dean_review').forEach(o=>items.push([o,'待您审核']));
@@ -1146,8 +1356,301 @@ function toggleNotif(){
   const bell=$('bell').getBoundingClientRect();
   panel.style.top=(bell.bottom+8)+'px';
   panel.style.right=(window.innerWidth-bell.right)+'px';
-  panel.innerHTML=`<div class="hd">通知中心<span>${items.length} 条</span></div>${html||'<div class="empty" style="padding:24px">暂无通知</div>'}`;
+  panel.innerHTML=`<div class="hd">通知中心<span>${items.length} 条</span></div>${html||'<div class="empty" style="padding:24px">暂无通知</div>'}<div style="padding:8px 14px;border-top:1px solid var(--line);text-align:center"><a href="javascript:void 0" onclick="document.querySelector('.notif-panel')?.remove();location.hash='#/notifs'" style="font-size:12px;color:var(--primary)">查看全部通知 →</a></div>`;
   document.body.appendChild(panel);
+}
+
+/* ---- 通知中心（列表页） ---- */
+let notifTab='all';
+function notifList(){
+  const list=[];
+  S.orders.forEach(o=>{
+    if(o.state==='pending'||o.state==='handling')list.push({id:'n'+o.id,type:'alert',title:(o.state==='pending'?'未处置告警':'处置中')+' · '+o.type+'（'+LEVELS[o.level].n+'）',time:o.time,ref:o.id,read:!!S.notifRead[o.id]});
+  });
+  [['sys1','系统','每日 02:00 数据备份任务执行成功','08-12 02:00'],
+   ['sys2','系统','取证清理任务完成，清理 12 条过期记录','08-11 02:00'],
+   ['sys3','工单','工单 WO20260812002 已自动升级（超时未接单）','08-12 14:18']].forEach(s=>{
+    if(!list.find(x=>x.id===s[0]))list.push({id:s[0],type:s[1]==='系统'?'sys':'work',title:s[2],time:s[3],read:!!S.notifRead[s[0]]});
+  });
+  return list;
+}
+function pgNotifs(){
+  const all=notifList();
+  const tabs=[['all','全部'],['unread','未读'],['alert','告警'],['work','工单'],['sys','系统']].map(t=>`<button class="${notifTab===t[0]?'on':''}" data-t="${t[0]}">${t[1]}${t[0]==='unread'&&all.filter(n=>!n.read).length?`（${all.filter(n=>!n.read).length}）`:''}</button>`).join('');
+  const list=all.filter(n=>notifTab==='all'?true:notifTab==='unread'?!n.read:n.type===notifTab);
+  const rows=list.map(n=>`<tr style="cursor:pointer" onclick="openNotif('${n.id}')">
+    <td>${n.read?'':'<span class="dot" style="display:inline-block;width:7px;height:7px;background:var(--danger);border-radius:50%;margin-right:6px"></span>'}<span class="badge ${n.type==='alert'?'b-l3':n.type==='work'?'b-confirm':'b-archived'}">${n.type==='alert'?'告警':n.type==='work'?'工单':'系统'}</span></td>
+    <td>${esc(n.title)}</td><td style="color:var(--mut)">${n.time}</td><td>${n.read?'<span style="color:var(--mut)">已读</span>':'<b style="color:var(--danger)">未读</b>'}</td></tr>`).join('');
+  return `<div class="card"><div class="hd" style="padding:0"><div class="tabs" style="border:none;width:100%">${tabs}</div></div>
+    <table class="list"><thead><tr><th style="width:90px">类型</th><th>内容</th><th style="width:150px">时间</th><th style="width:70px">状态</th></tr></thead>
+    <tbody>${rows||'<tr><td colspan="4" style="text-align:center;color:var(--mut);padding:30px">暂无通知</td></tr>'}</tbody></table>
+    <div class="demo-note">站内通知全量留痕（与微信推送互补：站内全量、微信仅二级以上）；点击跳转对应工单</div></div>`;
+}
+function bindNotifs(){
+  document.querySelectorAll('#content .tabs button').forEach(b=>b.addEventListener('click',()=>{notifTab=b.dataset.t;renderPage('notifs')}));
+}
+function openNotif(id){
+  S.notifRead[id]=true;save();
+  const n=notifList().find(x=>x.id===id);
+  if(n&&n.ref)location.hash='#/order/'+n.ref;
+  else renderPage('notifs');
+}
+
+/* ---- 审计日志（仅超管） ---- */
+let auditFilter={who:'',res:'all'};
+function pgAudit(){
+  const rows=S.audit.filter(a=>(!auditFilter.who||a.who.includes(auditFilter.who))&&(auditFilter.res==='all'||a.res===auditFilter.res));
+  return `<div class="card"><div class="hd">操作审计日志<span class="tag">仅超管可查 · 不可删除 · 保存 60 天</span></div>
+    <div class="filters"><input placeholder="按操作人筛选" value="${esc(auditFilter.who)}" onchange="auditFilter.who=this.value;renderPage('audit')">
+      <select onchange="auditFilter.res=this.value;renderPage('audit')">
+        <option value="all" ${auditFilter.res==='all'?'selected':''}>全部结果</option>
+        <option value="成功" ${auditFilter.res==='成功'?'selected':''}>成功</option>
+        <option value="失败" ${auditFilter.res==='失败'?'selected':''}>失败</option>
+        <option value="通过" ${auditFilter.res==='通过'?'selected':''}>通过</option>
+        <option value="驳回" ${auditFilter.res==='驳回'?'selected':''}>驳回</option>
+      </select></div>
+    <table class="list"><thead><tr><th>时间</th><th>操作人</th><th>IP</th><th>操作内容</th><th>结果</th></tr></thead><tbody>
+    ${rows.map(a=>`<tr><td style="white-space:nowrap">${a.t}</td><td>${esc(a.who)}</td><td style="color:var(--mut)">${a.ip}</td><td>${esc(a.act)}</td><td>${a.res==='成功'||a.res==='通过'?'<span class="badge b-on">'+a.res+'</span>':a.res==='失败'?'<span class="badge b-pending">'+a.res+'</span>':'<span class="badge b-off">'+a.res+'</span>'}</td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--mut);padding:30px">无匹配记录</td></tr>'}
+    </tbody></table>
+    <div class="demo-note">记录范围：登录、导出、删除、查看取证、配置修改、账号变更、审批操作；实时写入，不可修改</div></div>`;
+}
+function bindAudit(){}
+
+/* ================= 逻辑标注（评审模式） ================= */
+const ANNOTATIONS = {
+  dashboard:[
+    {tag:'rule',t:'统计口径',b:'1、本月告警 = 本月1日0点至今事件数（含各级别）。2、未处置(统计值) = 未处置+处置中两种状态的工单数。3、设备在线率 = 在线设备/总设备（排除临时停用）。'},
+    {tag:'field',t:'顶部统计卡',b:'1、与工作台同口径、实时累加。2、班主任角色数据自动过滤为本班关联区域（数据范围权限）。'},
+    {tag:'jump',t:'图表下钻',b:'1、点击类型分布/时段趋势/点位TOP → 跳转工单列表并自动携带筛选条件。2、1.0 演示版未启用下钻。'},
+    {tag:'jump',t:'全局跳转入口',b:'1、左侧菜单切换任意页面。2、顶栏铃铛 → 通知中心页。3、工单状态变化实时反映在统计数字上。'},
+    {tag:'rule',t:'角色数据范围',b:'1、超管/德育处=全部（德育处只读）。2、班主任=本班区域。3、访客=仅大屏+归档。4、来源：账号管理→负责区域/班级。'}
+  ],
+  workbench:[
+    {tag:'rule',t:'待办按角色分流',b:'1、安保=未处置/处置中。2、班主任=待我确认（审批中第1环）。3、德育处=待我审核（审批中第2环）。4、超管=全部。'},
+    {tag:'jump',t:'待办 → 工单详情',b:'1、点击任意待办项 → 工单详情页（#/order/工单ID）。2、在详情页执行接单/处置/审批。'},
+    {tag:'op',t:'超时升级标红',b:'1、未处置超过限时（默认10分钟，可在 系统设置→告警规则 修改）未接单 → 标红+「已升级」标签。2、二次推送值班组、抄送超管。'},
+    {tag:'field',t:'统计卡（今日告警/未处置/在线率）',b:'1、与看板同口径。2、未处置>0 时顶栏铃铛红点显示待办数。'},
+    {tag:'jump',t:'铃铛 → 通知中心',b:'1、顶栏铃铛下拉为快捷通知（最新待办）。2、「查看全部通知」→ 通知中心列表页。'}
+  ],
+  orders:[
+    {tag:'op',t:'组合筛选',b:'1、时间范围/状态/位置/编号模糊查询为「与」关系组合条件。2、日期范围默认本月。'},
+    {tag:'op',t:'导出 Excel',b:'1、按当前筛选条件导出。2、导出操作写入审计日志（谁/何时/导出内容）。3、班主任无导出按钮权限。'},
+    {tag:'jump',t:'行点击 → 工单详情',b:'1、点击任意行 → 工单详情页（#/order/:id）。2、完整处置与审批在该页完成。'},
+    {tag:'field',t:'状态字段含义',b:'1、未处置（红）。2、处置中（黄）。3、审批中（蓝）=班主任确认+德育处审核两个环节。4、已升级（深红）=未处置超时。5、已归档（灰）=完结。'},
+    {tag:'field',t:'级别字段含义',b:'1、一级·预警=记录为主。2、二级·告警=限时处置（超时升级）。3、三级·紧急=立即处置并同步班主任。4、级别决定推送渠道与时限。'}
+  ],
+  order:[
+    {tag:'rule',t:'状态机流转',b:'1、未处置→处置中→审批中→已归档。2、审批中 = 班主任确认 + 德育处审核两个环节。3、班主任确认可在 系统设置→审批流开关 配置跳过，跳过时步骤条显示「已跳过班主任确认」。'},
+    {tag:'op',t:'接单（安保）',b:'1、点击「接单」→ 状态置为处置中，开始限时处置计时（限时=告警规则配置值，本页联动显示）。2、接单写审计日志。'},
+    {tag:'op',t:'填写处置结果',b:'1、处置说明必填。2、可勾选「标记误报」并选原因（临时聚集/设备误判/其他）。3、误报计入误报率统计（验收目标 <20%），反哺阈值调整。'},
+    {tag:'op',t:'确认 / 审核',b:'1、班主任确认：通过 → 德育处审核。2、德育处审核：通过 → 归档。3、驳回须填原因 → 工单退回「处置中」，处置人收到通知。'},
+    {tag:'field',t:'取证区（轨迹回放）',b:'1、雷达人体轨迹动画（演示数据）。2、2.0 接入实时取证。3、移动端仅看脱敏摘要。'},
+    {tag:'jump',t:'进入本页的入口',b:'1、工单列表行点击。2、工作台待办。3、通知中心点击（自动标记已读）。4、归档后页面只读。'}
+  ],
+  map:[
+    {tag:'rule',t:'设备状态判定',b:'1、在线=心跳<60s。2、离线=心跳超时。3、故障=上报异常码或连续5次心跳超时。'},
+    {tag:'op',t:'点位点击',b:'1、点击点位 → 弹层显示设备编号/位置/状态/今日告警。2、告警点位红色标注（演示版未启用实时闪烁）。'},
+    {tag:'field',t:'图例',b:'1、●绿=在线。2、●灰=离线。3、●橙=故障。'},
+    {tag:'jump',t:'底图与配置入口',b:'1、1.0 为演示底图。2、正式版支持上传校园平面图+坐标校准（DM-01）。3、设备参数配置在「设备管理」页。'}
+  ],
+  devices:[
+    {tag:'op',t:'配置抽屉',b:'1、警戒区域绘制/逗留阈值/聚集人数阈值/灵敏度 → 「保存并下发」即时生效。2、经 MQTT 下发至边缘盒。'},
+    {tag:'op',t:'静默模式',b:'1、按设备/批量设置静默时段（大扫除、维修）。2、期内事件只记录不告警、不生成工单。'},
+    {tag:'field',t:'状态列',b:'1、与设备地图同一套判定规则（心跳/工单/异常码）。'},
+    {tag:'jump',t:'设备定位',b:'1、设备编号与地图点位一一对应。2、演示版未启用「从列表跳转地图定位」。'}
+  ],
+  patrol:[
+    {tag:'op',t:'路线配置',b:'1、新建路线=选择点位+排序+间隔时长。2、路线关联值班班次（复用排班表）。3、到点自动生成巡更任务。'},
+    {tag:'rule',t:'打卡校验',b:'1、GPS 距离点位<50m 或扫码/NFC 匹配才允许打卡。2、防代打（打卡在小程序端）。'},
+    {tag:'op',t:'补卡审批',b:'1、漏巡可申请补卡 → 超管在「补卡审批」Tab 通过/驳回（防事后补签滥用）。2、审批动作写入审计日志。'},
+    {tag:'jump',t:'记录 → 报表',b:'1、巡更记录=每日明细（谁/几点/哪些点）。2、巡更报表=完成率统计（德育处/超管可查）。'}
+  ],
+  schedule:[
+    {tag:'op',t:'班次模板',b:'1、编辑班次时间/人数。2、「+班次模板」新建。3、修改写审计日志。'},
+    {tag:'op',t:'临时换班',b:'1、日历格子「换班」→ 选交接人员+原因 → 提交。2、写审计日志。3、换班后推送路由自动取新班次在岗人员。'},
+    {tag:'rule',t:'推送路由',b:'1、电话/短信推送按「当前时刻班次」在岗人员手机号路由（RB-06）。'}
+  ],
+  perm:[
+    {tag:'op',t:'新建角色',b:'1、填写名称+描述 → 创建（默认仅看板+工作台权限）。2、创建后在右侧勾选权限。'},
+    {tag:'op',t:'权限配置',b:'1、菜单权限（11项）+按钮权限（8项）勾选 → 「保存权限」生效。2、修改未保存时保存按钮变黄提示。3、内置超管锁定不可改。'},
+    {tag:'op',t:'账号管理',b:'1、新建/编辑账号（账号/姓名/角色/手机/负责区域班级）。2、启禁用、重置密码。3、重复账号拦截。4、默认密码 123456。'},
+    {tag:'field',t:'数据范围权限',b:'1、账号的「负责区域/班级」决定班主任看到的数据范围。2、角色决定菜单与按钮权限。'},
+    {tag:'jump',t:'Tab 切换',b:'1、角色管理 ⇄ 账号管理 同一页面内切换。2、两处操作均写审计日志。'}
+  ],
+  sys:[
+    {tag:'op',t:'推送配置',b:'1、级别×渠道矩阵勾选 → 「保存推送设置」。2、告警引擎按此分发。3、电话/短信接收人按值班排班表路由。'},
+    {tag:'op',t:'告警规则',b:'1、事件类型+判定参数（滞留阈值/聚集人数/置信度/限时分钟数/去重窗口）→ 保存即生效。2、限时值联动工单页显示。'},
+    {tag:'field',t:'置信度下限（关键参数）',b:'1、置信度 = 算法对「事件判断」的把握程度（0~100%）。2、雷达无画面，按人体轨迹特征（速度/方向/多人距离/姿态变化/持续时间）比对行为模型得出相似度分数。3、≥下限 → 判定为该级别并推送+生成工单；<下限 → 不告警。4、二级默认 ≥75%、三级默认 ≥80%（紧急事件要求更高把握，防「狼来了」）。'},
+    {tag:'rule',t:'置信度判断规则与示例',b:'1、判断规则：事件置信度 ≥ 该级别下限 → 判定成立；< 下限 → 不告警（仅记录或忽略）。2、示例①：摔倒事件置信度 82%，二级阈值 75% → 82≥75 → 触发二级告警。3、示例②：阈值调到 90% → 82<90 → 不告警（可能漏报真事件）。4、示例③：保洁蹲地擦地特征相似度 60% <75% → 不告警（避免误报）。5、调参方向：调低=更灵敏但误报多；调高=更严格但可能漏报 —— 达成「误报率<20%」的核心旋钮，上线后按实际误报标记数据调整。'},
+    {tag:'op',t:'消息模板',b:'1、微信/短信/班主任确认模板支持占位符 {time}{location}{type}{level}{id}。2、保存即时生效。'},
+    {tag:'op',t:'数据安全开关',b:'1、人脸抓拍/人员识别总开关（合规：默认关闭，仅存结构化特征）。2、1.0 默认关闭，2.0 启用。'},
+    {tag:'op',t:'学校信息 / 点位字典',b:'1、年级班级结构 + 设备→区域→班级映射。2、保存后作为「数据范围权限」和「班主任推送」的基础数据。'},
+    {tag:'rule',t:'取证保留期',b:'1、默认30天可调。2、每日凌晨自动清理过期取证文件，清理动作写入审计日志。'}
+  ],
+  notifs:[
+    {tag:'rule',t:'全量留痕',b:'1、站内通知全量记录（与微信推送互补：站内全量、微信仅二级以上）。'},
+    {tag:'op',t:'点击通知',b:'1、点击 → 自动标记已读。2、有工单引用的通知 → 跳转对应工单详情页。'},
+    {tag:'field',t:'未读角标',b:'1、顶栏铃铛红点 = 待办数（未处置+待我处理）。2、本页「未读」Tab 带数量。'},
+    {tag:'jump',t:'通知来源',b:'1、铃铛下拉「查看全部通知」→ 本页。2、工单状态变化/系统任务自动产生新通知。'}
+  ],
+  audit:[
+    {tag:'rule',t:'审计范围',b:'1、记录：登录、导出、删除、查看取证、配置修改、账号变更、审批操作。2、仅超管可查。'},
+    {tag:'rule',t:'不可篡改',b:'1、日志只追加、不可修改删除。2、保存 60 天（合规留痕）。'},
+    {tag:'op',t:'筛选',b:'1、按操作人模糊筛选。2、按结果（成功/失败/通过/驳回）筛选。3、组合生效。'},
+    {tag:'jump',t:'页面性质',b:'1、纯查询页，无跳转出口。2、实时写入（本次演示中的登录/换班/审批均已记录）。'}
+  ]
+};
+const ANNOT_NUMS=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
+/* ⓘ 悬停提示：元素选择器 → 提示文案 */
+const HINTS = {
+  dashboard:[
+    {sel:'#content .stat-row .stat:nth-child(1)',tip:'本月告警 = 本月1日0点至今事件数（含各级别）；与工作台同口径'},
+    {sel:'#content .stat-row .stat:nth-child(3)',tip:'未处置(统计值) = 未处置+处置中两种状态的工单数；超时升级的会额外标红'},
+    {sel:'#content .stat-row .stat:nth-child(2)',tip:'今日告警 = 今日0点起计数，实时累加'},
+    {sel:'#content .stat-row .stat:nth-child(4)',tip:'设备在线率 = 在线设备/总设备（排除临时停用）；心跳>60s 未上报判离线'},
+    {sel:'#content .grid2 .card:nth-child(1)',tip:'事件类型分布（饼图）：点击下钻工单列表并携带类型筛选（演示版未启用下钻）'},
+    {sel:'#content .grid2 .card:nth-child(2)',tip:'时段告警趋势（近7日折线）：点击下钻工单列表（演示版未启用下钻）'},
+    {sel:'#content .grid2 .card:nth-child(3)',tip:'点位 TOP 热点：点击下钻该点位工单（演示版未启用下钻）'},
+    {sel:'#content .grid2 .card:nth-child(4)',tip:'时段分布：上午/下午/夜间告警占比'}
+  ],
+  workbench:[
+    {sel:'#content .grid3 .card:first-child .hd',tip:'待办按角色分流：安保=未处置/处置中，班主任=待我确认，德育处=待我审核'},
+    {sel:'#content .grid3 .card:first-child .it',tip:'点击待办 → 工单详情页，在详情页完成接单/处置/审批'},
+    {sel:'#content .grid3 .card:last-child .stat .v',tip:'今日告警/未处置/在线率：与看板同口径，实时更新'}
+  ],
+  orders:[
+    {sel:'#content .filters input:nth-of-type(1)',tip:'工单编号模糊查询，全字段索引'},
+    {sel:'#content .filters input[type="date"]',tip:'时间范围：默认本月；与其余条件为「与」组合'},
+    {sel:'#content .filters .btn',tip:'导出按当前筛选条件生成 Excel；操作写入审计日志'},
+    {sel:'#content .list thead th:nth-child(7)',tip:'状态含义：未处置(红)、处置中(黄)、审批中(蓝)、已升级(深红)、已归档(灰)'},
+    {sel:'#content .list thead th:nth-child(6)',tip:'级别决定推送渠道与时限：一级记录为主/二级限时处置/三级立即处置'}
+  ],
+  order:[
+    {sel:'#content > .card:first-child .steps',tip:'状态机：未处置→处置中→审批中→已归档；审批中=班主任确认+德育处审核（班主任确认可在系统设置→审批流开关配置跳过）'},
+    {sel:'#content > .card:last-child .btn',tip:'二级告警限时10分钟内接单，超时自动升级提醒（数值可在 系统设置→告警规则 修改，本页联动显示）'},
+    {sel:'#content > .card .kv',tip:'基本信息快照：事件参数（人数/持续时间/置信度）来自雷达上报，落库即生成工单'},
+    {sel:'#content .grid2 .card:nth-child(2) .hd',tip:'处置记录时间线 = 全流程留痕（谁/何时/做了什么），审批驳回原因也在此记录'}
+  ],
+  map:[
+    {sel:'#campus',tip:'状态判定：在线=心跳<60s；离线=心跳超时；故障=异常码或连续5次心跳超时；点击点位查看详情弹层'},
+    {sel:'#campus + .bd, #content .hd .tag',tip:'底图：1.0 演示底图；正式版支持上传平面图+坐标校准'}
+  ],
+  devices:[
+    {sel:'#content .list',tip:'配置保存后即时生效，经 MQTT 下发至边缘盒；静默时段内事件只记录不告警'},
+    {sel:'#content .list thead th:nth-child(3)',tip:'状态判定同设备地图：在线/离线/故障'}
+  ],
+  patrol:[
+    {sel:'#content .bd .btn.pri',tip:'新建路线=选点位+排序+间隔时长；路线关联班次，到点自动生成巡更任务'},
+    {sel:'#content .list thead th:nth-child(7)',tip:'打卡校验：GPS<50m 或扫码/NFC 匹配才允许打卡；漏巡自动推送值班组+超管'},
+    {sel:'#content .tabs button[data-t="patch"]',tip:'漏巡补卡申请 → 超管审批（防事后补签）；审批写审计日志'}
+  ],
+  schedule:[
+    {sel:'#content .cal',tip:'日历格子显示当日班次人员；「换班」=临时换班（选交接人+原因，写审计日志）'},
+    {sel:'#content .list',tip:'班次模板：编辑时间/人数；电话/短信推送按当前时刻班次在岗人员手机号路由'}
+  ],
+  perm:[
+    {sel:'#perm-save',tip:'权限修改后需点「保存权限」才生效；修改未保存时按钮变黄；内置超管锁定不可改'},
+    {sel:'#content .grid3 .card:first-child .bd .btn.pri, #content .card .hd .btn.pri',tip:'新建角色：默认仅看板+工作台权限，创建后右侧配置权限'},
+    {sel:'#content .tabs button[data-t="accounts"]',tip:'账号管理：新建/编辑/启禁用；账号的「负责区域/班级」决定班主任数据范围'},
+    {sel:'#content .filters input',tip:'账号查询：姓名模糊 + 角色下拉 + 状态下拉，组合筛选'}
+  ],
+  sys:[
+    {sel:'#content .bd .btn.pri',tip:'保存后生效：告警引擎按矩阵分发；电话/短信接收人按值班排班表路由'},
+    {sel:'#content input[data-lv]',tip:'级别×渠道矩阵：一级=弹窗+小程序；二级以上加微信；三级加短信+电话（值班手机）'},
+    {sel:'#content textarea',tip:'模板占位符发送时替换：{time}{location}{type}{level}{id}；保存即时生效'},
+    {sel:'#content #s-face',tip:'人脸抓拍/人员识别总开关：《个保法》《未保法》合规要求默认关闭；仅存结构化特征'},
+    {sel:'#content #r-conf2',tip:'二级置信度下限（默认75%）：判定把握≥75%才报二级告警。示例：摔倒置信82%>75% → 触发；保洁擦地60%<75% → 不告警'},
+    {sel:'#content #r-conf3',tip:'三级置信度下限（默认80%）：暴力冲突要求更高把握。示例：置信70%<80% → 不告警（防狼来了）'},
+    {sel:'#content #r-stay',tip:'一级滞留阈值（分钟）：单人停留超此时长 → 一级预警（如天台入口滞留）'},
+    {sel:'#content #r-gather',tip:'一级聚集人数阈值：≥该人数聚集超时 → 一级预警（如楼道扎堆）'},
+    {sel:'#content #r-escalate',tip:'二级限时处置分钟数：超时未接单自动升级，工单页联动显示'},
+    {sel:'#content #r-dedup',tip:'同设备同类型事件去重合并窗口：防告警风暴'},
+    {sel:'#content input[type="number"]',tip:'判定参数：保存后分级判定/限时处置（联动工单页）/去重窗口立即生效'}
+  ],
+  notifs:[
+    {sel:'#content .tabs button[data-t="unread"]',tip:'未读数量 = 顶栏铃铛红点数（待办数）；点击通知自动已读'},
+    {sel:'#content .list tbody tr',tip:'点击 → 自动标记已读；有工单引用的通知跳转对应工单详情页'}
+  ],
+  audit:[
+    {sel:'#content .filters input',tip:'按操作人姓名模糊筛选'},
+    {sel:'#content .filters select',tip:'按操作结果筛选（成功/失败/通过/驳回）'},
+    {sel:'#content .list',tip:'日志只追加不可修改删除（合规留痕）；保存 60 天；仅超管可查'}
+  ]
+};
+let curPageKey='';
+function showTip(ev,text){
+  hideTip();
+  const t=document.createElement('div');
+  t.className='tipbox';
+  t.textContent=text;
+  document.body.appendChild(t);
+  const r=ev.currentTarget.getBoundingClientRect();
+  const tr=t.getBoundingClientRect();
+  let x=Math.round(r.left+r.width/2-tr.width/2);
+  x=Math.max(8,Math.min(x,window.innerWidth-tr.width-8));
+  let y=r.top-tr.height-8;
+  if(y<8)y=r.bottom+8;   // 上方放不下 → 翻转到下方
+  t.style.left=x+'px';
+  t.style.top=y+'px';
+  window.__tip=t;
+}
+function hideTip(){if(window.__tip){window.__tip.remove();window.__tip=null}}
+function injectHints(pageKey){
+  if(!S.settings.annot)return;
+  (HINTS[pageKey]||[]).forEach(h=>{
+    document.querySelectorAll(h.sel).forEach(el=>{
+      const dup=el.tagName==='INPUT'||el.tagName==='SELECT'||el.tagName==='TEXTAREA'
+        ?(el.nextElementSibling&&el.nextElementSibling.classList.contains('hint'))
+        :el.querySelector(':scope > .hint');
+      if(dup)return;
+      const s=document.createElement('span');
+      s.className='hint';
+      s.textContent='ⓘ';
+      s.addEventListener('mouseenter',e=>showTip(e,h.tip));
+      s.addEventListener('mouseleave',hideTip);
+      if(el.tagName==='INPUT'||el.tagName==='SELECT'||el.tagName==='TEXTAREA'){
+        el.insertAdjacentElement('afterend',s);
+      }else{
+        el.appendChild(s);
+      }
+    });
+  });
+}
+function exportAnnot(){
+  const lines=['# 校园防霸凌系统 1.0 · 功能逻辑标注清单',''];
+  Object.keys(ANNOTATIONS).forEach(k=>{
+    const name=k==='order'?'工单详情':(MENU_META[k]?MENU_META[k].n:k);
+    lines.push('## '+name);
+    ANNOTATIONS[k].forEach((a,i)=>lines.push((i+1)+'. **'+a.t+'**：'+a.b));
+    lines.push('');
+  });
+  const blob=new Blob([lines.join('\n')],{type:'text/markdown;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='校园防霸凌系统-逻辑标注清单.md';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('标注清单已导出（Markdown）','ok');
+}
+function setAnnot(on){
+  S.settings.annot=!!on;save();applyAnnot();route();
+  toast(on?'已开启评审标注（面板+ⓘ提示）':'已关闭标注（演示模式）','ok');
+}
+function applyAnnot(){
+  document.body.classList.toggle('annot-on',!!S.settings.annot);
+  const b=$('annot-btn');if(b)b.classList.toggle('on',!!S.settings.annot);
+}
+function fmtAnnot(txt){return txt.split(/(?=\d+、)/).map(s=>`<div class="li">${s}</div>`).join('')}
+function renderAnnot(pageKey){
+  applyAnnot();
+  if(!S.settings.annot)return;
+  const list=ANNOTATIONS[pageKey]||[];
+  const pageName=pageKey==='order'?'工单详情':(MENU_META[pageKey]?MENU_META[pageKey].n:pageKey);
+  $('annot-title').textContent='逻辑标注 · '+pageName;
+  $('annot-count').textContent=list.length+' 条';
+  $('annot-body').innerHTML=list.length
+    ?list.map((a,i)=>`<div class="annot-item"><div class="t"><span class="n">${ANNOT_NUMS[i]||(i+1)}</span>${a.tag?`<span class="atag atag-${a.tag}">${a.tag==='op'?'操作':a.tag==='jump'?'跳转':a.tag==='field'?'字段':'规则'}</span>`:''}${a.t}</div><div class="b">${fmtAnnot(a.b)}</div></div>`).join('')
+    :'<div class="annot-item"><div class="b">本页暂无标注</div></div>';
 }
 
 /* ================= 启动 ================= */
