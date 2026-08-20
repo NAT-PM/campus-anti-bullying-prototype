@@ -126,7 +126,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;backgr
 .avatar{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.25);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex:none}
 .menu-group{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden;border:1px solid rgba(232,239,234,.7)}
 .menu-group .mg-t{padding:12px 16px 6px;font-size:12px;color:var(--mut)}
-.msg-dot{width:8px;height:8px;border-radius:50%;background:var(--danger);position:absolute}
+.msg-dot{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:#e0523f;border:2px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.15)}
 .ops-bar{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;z-index:25}
 .ops-bar .btn{flex:1}
 .pull-hint{position:absolute;top:-34px;left:0;right:0;text-align:center;font-size:11px;color:var(--mut);opacity:0;transition:.15s}
@@ -507,9 +507,8 @@ function pgMsgs(){
   return `
   <div class="card"><div class="hd">消息中心<span class="sp"></span>${unread?'<span class="badge b-pending">'+unread+' 未读</span>':'<span class="tag">已全部读完</span>'}</div>
     ${list.map(n=>`<div class="list-item" style="position:relative" onclick="openMsg('${n.id}')">
-      <span style="width:38px;height:38px;border-radius:12px;background:${n.type==='alert'?'linear-gradient(135deg,#fbe7e2,#f5d3ca)':'linear-gradient(135deg,#e7f5ee,#cde8da)'};display:flex;align-items:center;justify-content:center;flex:none">${ic(n.type==='alert'?'alert':'shield',19,n.type==='alert'?'#c94f3c':'#2f9e6e')}</span>
-      <div style="min-width:0;flex:1"><div class="li-t">${esc(n.title)}</div><div class="li-m">${n.time}</div></div>
-      ${!n.read?'<span class="msg-dot"></span>':''}</div>`).join('')}
+      <span style="position:relative;width:38px;height:38px;border-radius:12px;background:${n.type==='alert'?'linear-gradient(135deg,#fbe7e2,#f5d3ca)':'linear-gradient(135deg,#e7f5ee,#cde8da)'};display:flex;align-items:center;justify-content:center;flex:none">${ic(n.type==='alert'?'alert':'shield',19,n.type==='alert'?'#c94f3c':'#2f9e6e')}${!n.read?'<span class="msg-dot"></span>':''}</span>
+      <div style="min-width:0;flex:1"><div class="li-t">${esc(n.title)}</div><div class="li-m">${n.time}</div></div></div>`).join('')}
   </div>
   <div class="demo-note">站内通知全量留痕（与微信推送互补：站内全量、微信仅二级以上）；点击告警类通知跳转详情并自动已读。</div>`;
 }
