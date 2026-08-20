@@ -528,18 +528,14 @@ function pgMe(){
     <span style="margin-left:auto;background:rgba(255,255,255,.22);padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;position:relative;z-index:1">${esc(me.name)}</span>
   </div></div>
   <div class="menu-group">
-    <div class="mg-t">通知设置</div>
-    <div class="switch-row" onclick="toggleNotify()"><span class="s-ic">${ic('bell',18,'#2f9e6e')}</span><span class="s-t">消息通知</span><span class="sw ${S.notify!==false?'on':''}" id="sw-notify"></span></div>
-  </div>
-  <div class="menu-group">
     <div class="mg-t">关于</div>
     <div class="switch-row" onclick="toast('隐私政策（演示）')"><span class="s-ic">${ic('shield',18,'#d9a13b')}</span><span class="s-t">隐私政策</span><span class="arrow">›</span></div>
     <div class="switch-row" onclick="toast('校园防霸凌系统 v1.0（演示）')"><span class="s-ic">${ic('info',18,'#8ba096')}</span><span class="s-t">关于系统</span><span class="arrow">›</span></div>
   </div>
   <button class="btn ghost" style="margin-top:2px" onclick="logout()">退出登录</button>
-  <div class="demo-note">1、账号由 Web 端超管创建，绑定角色与负责区域/班级。2、角色决定本端可见数据与可执行操作。3、关闭消息通知仅影响小程序端，微信推送不受影响。</div>`;
+  <div class="demo-note">1、账号由 Web 端超管创建，绑定角色与负责区域/班级。2、角色决定本端可见数据与可执行操作。</div>`;
 }
-function toggleNotify(){S.notify=S.notify===false?true:false;save();$('sw-notify').classList.toggle('on',S.notify!==false);toast(S.notify===false?'已关闭小程序消息通知':'已开启消息通知')}
+function toggleNotify(){}
 function logout(){S.role='guard';save();toast('已退出（演示）')}
 
 /* ================= 页面绑定 ================= */
