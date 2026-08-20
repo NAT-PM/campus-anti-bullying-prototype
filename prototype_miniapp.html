@@ -257,7 +257,7 @@ function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S))}catch(e){}}
 const ANNOTATIONS={
   home:[
     {tag:'rule',t:'待办按角色分流',b:'1、安保=未处置/处置中。2、班主任=待我确认（审批中第1环）。3、德育处=待我审核（审批中第2环）。4、超管=全部。'},
-    {tag:'jump',t:'页面跳转',b:'1、待办/最新告警点击 → 告警详情页。2、底部 TabBar 直达：首页/设备地图/工单/巡更打卡/消息/我的。3、告警详情返回按钮回到上一页。'},
+    {tag:'jump',t:'页面跳转',b:'1、待办/最新告警点击 → 告警详情页。2、底部 TabBar 直达：首页/设备地图/巡更打卡/消息/我的。3、我的工单从首页「待办事项→全部」进入。4、告警详情返回按钮回到上一页。'},
     {tag:'field',t:'统计口径',b:'1、今日告警=今日0点起计数。2、未处置=未处置+处置中两种状态工单数。3、在线率=在线设备/总设备（排除停用）。'}
   ],
   map:[
@@ -292,7 +292,7 @@ function fmtAnnot(txt){return txt.split(/(?=\d+、)/).map(s=>`<div class="li">${
 
 /* ================= 路由 ================= */
 let page='home', alertId='';
-const TABBAR=[['home','首页','home'],['map','设备地图','pin'],['orders','工单','orders'],['patrol','巡更打卡','flag'],['msgs','消息','bell'],['me','我的','person']];
+const TABBAR=[['home','首页','home'],['map','设备地图','pin'],['patrol','巡更打卡','flag'],['msgs','消息','bell'],['me','我的','person']];
 const PAGE_TITLES={home:'工作台',map:'设备地图',alert:'告警详情',orders:'我的工单',patrol:'巡更打卡',msgs:'消息中心',me:'我的'};
 function route(){
   const h=location.hash.replace(/^#\/?/,'')||'home';
@@ -300,7 +300,7 @@ function route(){
   page=p;
   alertId=arg||'';
   $('nav-title').textContent=PAGE_TITLES[page];
-  $('nav-back').hidden=page!=='alert';
+  $('nav-back').hidden=TABBAR.some(t=>t[0]===page);
   renderTabbar();
   const map={home:pgHome,map:pgMap,alert:pgAlert,orders:pgOrders,patrol:pgPatrol,msgs:pgMsgs,me:pgMe};
   const body=map[page]?map[page]():pgHome();
