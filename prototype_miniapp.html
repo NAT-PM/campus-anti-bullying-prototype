@@ -331,7 +331,7 @@ function pgHome(){
   const latest=S.orders.filter(o=>o.state!=='archived').slice(0,3);
   return `
   <div class="banner">
-    <div class="b-hello">上午好，${esc(me.user)} 👋</div>
+    <div class="b-hello">上午好，${esc(me.user)}</div>
     <div class="b-sub">${esc(me.name)} · 安软实验中学</div>
     <div class="b-stats">
       <div class="b-stat"><div class="v">${today}</div><div class="k">今日告警</div></div>
