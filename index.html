@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>校园防霸凌系统 · 1.0 可点击原型</title>
+<title>青禾守护 · 校园防霸凌预警系统（原型）</title>
 <style>
 :root{
   --bg:#f5f8f6; --card:#fff; --ink:#243b33; --mut:#6d8379; --line:#e4ece7;
@@ -24,7 +24,7 @@ input,select,textarea{font:inherit}
 .login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#e9f4ee 0%,#f2f7f3 60%,#f7faf8 100%)}
 .login-card{width:880px;max-width:94vw;background:var(--card);border-radius:16px;display:flex;overflow:hidden;box-shadow:0 14px 44px rgba(36,59,51,.14);border:1px solid var(--line)}
 .login-brand{width:44%;background:#eef7f1;padding:36px 28px;display:flex;flex-direction:column;gap:14px}
-.login-brand .logo{font-size:20px;font-weight:700;color:var(--primary)}
+.login-brand .logo{font-size:20px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:10px}
 .login-brand .tag{font-size:13px;color:var(--mut);line-height:1.7}
 .login-brand .rule{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;font-size:12.5px;color:var(--mut);line-height:1.8}
 .login-form{flex:1;padding:40px 36px}
@@ -52,7 +52,7 @@ input,select,textarea{font:inherit}
 /* ---------- 主框架 ---------- */
 .app-view{display:flex;height:100vh;overflow:hidden}
 .sidebar{width:208px;flex:none;background:#fff;border-right:1px solid var(--line);color:var(--mut);display:flex;flex-direction:column}
-.sidebar .logo{padding:16px 18px;font-size:15px;font-weight:700;color:var(--primary);border-bottom:1px solid var(--line);letter-spacing:.5px}
+.sidebar .logo{padding:16px 18px;font-size:15px;font-weight:700;color:var(--primary);border-bottom:1px solid var(--line);letter-spacing:.5px;display:flex;align-items:center;gap:8px}
 .sidebar nav{flex:1;padding:10px 8px;overflow:auto}
 .sidebar nav a{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;color:#5b7268;text-decoration:none;font-size:13.5px;margin-bottom:2px}
 .sidebar nav a:hover{background:#f0f7f3;color:var(--primary)}
@@ -212,12 +212,33 @@ body.annot-on #content{margin-right:300px}
 </head>
 <body>
 
+<!-- 品牌 LOGO 符号（青禾守护：盾牌+禾苗+雷达波纹） -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lg-shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3cb384"/><stop offset="1" stop-color="#27855c"/>
+    </linearGradient>
+    <linearGradient id="lg-leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d8f3e6"/>
+    </linearGradient>
+    <symbol id="logo-mark" viewBox="0 0 200 200">
+      <path d="M100 14 L170 41 V103 C170 146 138 170 100 186 C62 170 30 146 30 103 V41 Z" fill="url(#lg-shield)"/>
+      <path d="M62 140 A38 38 0 0 1 138 140" fill="none" stroke="#a8e4cd" stroke-width="4.5" stroke-linecap="round" opacity=".85"/>
+      <path d="M46 144 A54 54 0 0 1 154 144" fill="none" stroke="#c9f0e0" stroke-width="4.5" stroke-linecap="round" opacity=".7"/>
+      <path d="M100 150 C100 132 100 112 100 92" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+      <path d="M100 112 C86 100 76 88 72 74 C88 72 102 84 100 112 Z" fill="url(#lg-leaf)"/>
+      <path d="M100 100 C114 88 124 76 128 62 C112 60 98 72 100 100 Z" fill="url(#lg-leaf)"/>
+      <circle cx="100" cy="86" r="4.5" fill="#ffffff"/>
+    </symbol>
+  </defs>
+</svg>
+
 <!-- ================= 登录页 ================= -->
 <div id="login-view" class="login-view">
   <div class="login-card">
     <div class="login-brand">
-      <div class="logo">校园防霸凌系统</div>
-      <div class="tag">毫米波雷达 · 隐私盲区守护<br>1.0 版可点击原型（低保真）</div>
+      <div class="logo"><svg viewBox="0 0 200 200" width="44" height="44" style="flex:none"><use href="#logo-mark"/></svg>青禾守护</div>
+      <div class="tag">毫米波雷达 · 隐私盲区守护<br>1.0 版可点击原型（高保真 · 清新绿）</div>
       <div class="rule">
         <b>演示角色说明</b><br>
         · 安保：接单 / 处置 / 巡更<br>
@@ -253,9 +274,9 @@ body.annot-on #content{margin-right:300px}
 <!-- ================= 主应用 ================= -->
 <div id="app-view" class="app-view" hidden>
   <aside class="sidebar">
-    <div class="logo">校园防霸凌系统</div>
+    <div class="logo"><svg viewBox="0 0 200 200" width="26" height="26" style="flex:none"><use href="#logo-mark"/></svg>青禾守护</div>
     <nav id="menu"></nav>
-    <div class="foot">1.0 原型 · 演示数据<br>低保真版本 v0.1</div>
+    <div class="foot">青禾守护 1.0 原型 · 演示数据<br>高保真 · 清新绿</div>
   </aside>
   <div class="main">
     <header class="topbar">
@@ -1617,7 +1638,7 @@ function injectHints(pageKey){
   });
 }
 function exportAnnot(){
-  const lines=['# 校园防霸凌系统 1.0 · 功能逻辑标注清单',''];
+  const lines=['# 青禾守护 · 校园防霸凌预警系统 1.0 · 功能逻辑标注清单',''];
   Object.keys(ANNOTATIONS).forEach(k=>{
     const name=k==='order'?'工单详情':(MENU_META[k]?MENU_META[k].n:k);
     lines.push('## '+name);
@@ -1627,7 +1648,7 @@ function exportAnnot(){
   const blob=new Blob([lines.join('\n')],{type:'text/markdown;charset=utf-8'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='校园防霸凌系统-逻辑标注清单.md';
+  a.download='青禾守护-逻辑标注清单.md';
   a.click();
   URL.revokeObjectURL(a.href);
   toast('标注清单已导出（Markdown）','ok');
