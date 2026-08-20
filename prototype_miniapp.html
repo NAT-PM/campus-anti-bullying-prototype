@@ -257,7 +257,7 @@ function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S))}catch(e){}}
 const ANNOTATIONS={
   home:[
     {tag:'rule',t:'待办按角色分流',b:'1、安保=未处置/处置中。2、班主任=待我确认（审批中第1环）。3、德育处=待我审核（审批中第2环）。4、超管=全部。'},
-    {tag:'jump',t:'页面跳转',b:'1、快捷入口：设备地图/巡更打卡/我的工单/消息中心。2、最新告警点击 → 告警详情页。3、底部 TabBar 切换：首页/工单/消息/我的。'},
+    {tag:'jump',t:'页面跳转',b:'1、待办/最新告警点击 → 告警详情页。2、底部 TabBar 切换：首页/工单/消息/我的。3、地图与巡更打卡从工单与消息入口到达（演示）。'},
     {tag:'field',t:'统计口径',b:'1、今日告警=今日0点起计数。2、未处置=未处置+处置中两种状态工单数。3、在线率=在线设备/总设备（排除停用）。'}
   ],
   map:[
@@ -345,12 +345,6 @@ function pgHome(){
       <div style="min-width:0;flex:1"><div class="li-t">${esc(o.type)}</div><div class="li-m">${esc(o.loc)} · ${o.time}</div></div>
       ${stateBadge(o.state)}<span class="arrow">›</span></div>`).join('')||`<div class="empty"><div class="e-ic">${ic('check',42,'#b8c9c0')}</div><div class="e-t">没有待办</div><div class="e-s">当前角色暂无需要处理的事项</div></div>`}
   </div>
-  <div class="card"><div class="hd">快捷入口</div><div class="entry-grid">
-    <div class="entry" onclick="go('map')"><span class="e-ic">${ic('pin',24,'#2f9e6e')}</span>设备地图</div>
-    <div class="entry" onclick="go('patrol')"><span class="e-ic">${ic('flag',24,'#5b7fd4')}</span>巡更打卡</div>
-    <div class="entry" onclick="go('orders')"><span class="e-ic">${ic('orders',24,'#d9a13b')}</span>我的工单</div>
-    <div class="entry" onclick="go('msgs')"><span class="e-ic">${ic('bell',24,'#e0523f')}</span>消息中心</div>
-  </div></div>
   <div class="card"><div class="hd">最新告警<span class="sp"></span><span class="tag">点击查看详情</span></div>
     ${latest.map(o=>`<div class="list-item" onclick="go('alert/${o.id}')">
       <span style="width:34px;height:34px;border-radius:10px;background:${LV_GRAD[o.level]};color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex:none">${o.level}级</span>
