@@ -163,10 +163,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;backgr
   <div class="toolbar">
     <span class="lbl">演示角色：</span>
     <div class="chips" id="role-chips">
-      <button data-r="guard" class="on">安保值班组</button>
-      <button data-r="teacher">班主任</button>
-      <button data-r="dean">德育处</button>
-      <button data-r="admin">超管</button>
+      <button data-r="admin" class="on">超管</button>
     </div>
     <button id="annot-btn">📌 标注</button>
   </div>
@@ -248,9 +245,10 @@ const DEVICES=[
 const POS={ 'R-001':[85,172],'R-002':[240,58],'R-003':[108,66],'R-004':[352,66],'R-005':[322,174],'R-006':[408,202],'R-007':[148,202],'R-008':[230,174] };
 
 function defaultState(){
-  return {role:'guard',orders:ORDERS.map(o=>Object.assign({},o)),devices:DEVICES.map(d=>Object.assign({},d)),annot:true,notifRead:{},patrolDone:0,settings:{skipTeacher:false}};
+  return {role:'admin',orders:ORDERS.map(o=>Object.assign({},o)),devices:DEVICES.map(d=>Object.assign({},d)),annot:true,notifRead:{},patrolDone:0,settings:{skipTeacher:false}};
 }
 let S=(function(){try{const r=localStorage.getItem(LS_KEY);if(r){const d=JSON.parse(r);if(d.orders)return d}}catch(e){}return defaultState()})();
+if(S.role!=='admin'){S.role='admin';try{localStorage.setItem(LS_KEY,JSON.stringify(S))}catch(e){}}
 function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S))}catch(e){}}
 
 /* ================= 标注数据 ================= */
@@ -535,7 +533,7 @@ function pgMe(){
   <div class="demo-note">1、账号由 Web 端超管创建，绑定角色与负责区域/班级。2、角色决定本端可见数据与可执行操作。</div>`;
 }
 function toggleNotify(){}
-function logout(){S.role='guard';save();toast('已退出（演示）')}
+function logout(){S.role='admin';save();toast('已退出（演示）')}
 
 /* ================= 页面绑定 ================= */
 function bindPage(){
