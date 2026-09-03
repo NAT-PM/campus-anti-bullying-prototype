@@ -121,6 +121,11 @@ table.list tr:hover td{background:#f6faf7}
 .kv{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 18px}
 .kv .it .k{font-size:12px;color:var(--mut)}
 .kv .it .v{font-size:13.5px;font-weight:600;margin-top:1px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.metrics .mt{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.metrics .mt .mk{font-size:11.5px;color:var(--mut)}
+.metrics .mt .mv{font-size:18px;font-weight:800;color:var(--ink);margin-top:2px}
+.metrics .mt .mv small{font-size:12px;color:var(--mut);font-weight:600}
 .tl{position:relative;padding-left:22px}
 .tl::before{content:"";position:absolute;left:7px;top:4px;bottom:4px;width:2px;background:var(--line)}
 .tl .it{position:relative;padding-bottom:14px}
@@ -752,10 +757,12 @@ function renderOrder(id){
     <div class="it"><div class="k">位置</div><div class="v">${esc(o.loc)}</div></div>
     <div class="it"><div class="k">设备</div><div class="v mono">${esc(o.dev)}</div></div>
     <div class="it"><div class="k">来源</div><div class="v">${esc(o.src)}</div></div>
-    <div class="it"><div class="k">人数</div><div class="v">${o.params.people} 人</div></div>
-    <div class="it"><div class="k">持续</div><div class="v">${esc(o.params.dur)}</div></div>
-    <div class="it"><div class="k">置信度</div><div class="v">${esc(o.params.conf)}</div></div>
-    <div class="it"><div class="k">处置人</div><div class="v">${esc(o.handler||'—')}</div></div>
+  </div>
+  <div class="metrics">
+    <div class="mt" style="border-left:3px solid var(--primary)"><div class="mk">涉事人数</div><div class="mv">${o.params.people}<small> 人</small></div></div>
+    <div class="mt" style="border-left:3px solid var(--warn)"><div class="mk">持续时长</div><div class="mv">${esc(o.params.dur)}</div></div>
+    <div class="mt" style="border-left:3px solid #5b7fd4"><div class="mk">置信度</div><div class="mv">${esc(o.params.conf)}</div></div>
+    <div class="mt" style="border-left:3px solid #8ba096"><div class="mk">处置人</div><div class="mv" style="font-size:14.5px">${esc(o.handler||'—')}</div></div>
   </div></div></div>
   <div class="grid2">
     <div class="card"><div class="hd">取证 · 轨迹回放<span class="tag">示意</span></div><div class="bd">${replayHtml(o)}</div></div>
