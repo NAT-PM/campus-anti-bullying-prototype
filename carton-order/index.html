@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>瓦楞纸箱在线下单系统 · 原型</title>
+<style>
+:root{
+  --pri:#1E4E8C; --pri-d:#163A69; --pri-l:#EAF1FA;
+  --acc:#C8853A; --acc-l:#FBF2E7;
+  --bg:#F5F6F8; --card:#FFFFFF;
+  --txt:#1F2937; --sub:#6B7280; --line:#E5E7EB;
+  --ok:#16A34A; --warn:#D97706;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#22262B;color:var(--txt)}
+/* ===== 顶部工具条 ===== */
+.toolbar{position:fixed;top:0;left:0;right:0;height:52px;background:#181B1F;display:flex;align-items:center;gap:10px;padding:0 18px;z-index:999;border-bottom:1px solid #2C3138}
+.tb-title{color:#fff;font-size:14px;font-weight:700;margin-right:8px}
+.tb-btn{color:#9AA3AE;font-size:13px;padding:7px 16px;border-radius:8px;cursor:pointer;border:1px solid #33393F}
+.tb-btn.on{background:var(--pri);color:#fff;border-color:var(--pri);font-weight:700}
+.tb-note{color:#6B7480;font-size:12px;margin-left:auto}
+/* ===== 客户端手机壳 ===== */
+.stage{display:flex;justify-content:center;padding:80px 20px 40px;min-height:100vh}
+.phone{width:390px;height:792px;border-radius:46px;background:#fff;border:10px solid #101317;box-shadow:0 30px 80px rgba(0,0,0,.5);overflow:hidden;position:relative;flex-shrink:0}
+.screen{position:relative;width:100%;height:100%;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+.statusbar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:13px;font-weight:600;color:#111;flex-shrink:0;background:transparent;position:relative;z-index:5}
+.island{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:110px;height:28px;background:#101317;border-radius:16px}
+.navbar{height:48px;display:flex;align-items:center;padding:0 14px;flex-shrink:0;gap:8px;background:var(--bg);position:relative;z-index:4}
+.navbar .nb-title{font-size:17px;font-weight:700;flex:1;text-align:center}
+.navbar .nb-back{width:64px;font-size:15px;color:var(--pri);cursor:pointer;font-weight:600}
+.navbar .nb-extra{width:64px;text-align:right;font-size:12px;color:var(--sub)}
+.content{flex:1;overflow-y:auto;padding:0 14px 16px;position:relative}
+.content.pt{padding-top:12px}
+.page{animation:pageIn .22s}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.hide{display:none!important}
+.tabbar{position:absolute;bottom:0;left:0;right:0;height:64px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;z-index:20}
+.tabbar .tb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:#9CA3AF;cursor:pointer}
+.tabbar .tb.on{color:var(--pri);font-weight:700}
+</style>
+<style>
+/* 客户端组件 */
+.card{background:var(--card);border-radius:14px;padding:14px;box-shadow:0 2px 10px rgba(17,24,39,.05);margin-bottom:12px}
+.sec-title{font-size:15px;font-weight:700;margin:4px 0 10px;display:flex;align-items:center;gap:8px}
+.sec-title .dot{width:4px;height:15px;border-radius:2px;background:var(--pri)}
+.btn{display:flex;align-items:center;justify-content:center;height:48px;border-radius:12px;font-size:16px;font-weight:700;border:none;cursor:pointer;width:100%}
+.btn-pri{background:var(--pri);color:#fff}
+.btn-pri:active{background:var(--pri-d)}
+.btn-ghost{background:var(--pri-l);color:var(--pri)}
+.btn-acc{background:var(--acc);color:#fff}
+/* 登录页 */
+.login-wrap{padding:26px 20px 0;display:flex;flex-direction:column;align-items:center}
+.login-logo{width:84px;height:84px;border-radius:20px;background:linear-gradient(135deg,var(--pri),#2E6DB4);display:flex;align-items:center;justify-content:center;margin:26px 0 14px;box-shadow:0 10px 26px rgba(30,78,140,.35)}
+.login-name{font-size:22px;font-weight:800;color:var(--txt);letter-spacing:1px}
+.login-sub{font-size:13px;color:var(--sub);margin:6px 0 30px}
+.inp{width:100%;height:50px;border:1.5px solid var(--line);border-radius:12px;padding:0 16px;font-size:15px;outline:none;background:#fff}
+.inp:focus{border-color:var(--pri)}
+.inp-row{display:flex;gap:10px;width:100%}
+.inp-row .inp{flex:1}
+.code-btn{height:50px;padding:0 14px;border-radius:12px;background:var(--pri-l);color:var(--pri);font-size:13px;font-weight:700;border:none;white-space:nowrap;cursor:pointer}
+/* 首页 */
+.hero{background:linear-gradient(135deg,var(--pri),#2A62AC);border-radius:16px;padding:20px 18px;color:#fff;margin:8px 0 14px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero .h1{font-size:19px;font-weight:800}
+.hero .h2{font-size:12.5px;opacity:.85;margin-top:6px}
+.hero .hstat{display:flex;gap:22px;margin-top:16px;position:relative;z-index:1}
+.hero .hstat .n{font-size:21px;font-weight:800}
+.hero .hstat .l{font-size:11px;opacity:.8;margin-top:2px}
+.quick-order{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#fff,#F3F7FD);border:1.5px solid var(--pri-l);border-radius:16px;padding:18px 16px;margin-bottom:14px;cursor:pointer;box-shadow:0 4px 14px rgba(30,78,140,.08)}
+.quick-order:active{transform:scale(.985)}
+.qo-ic{width:52px;height:52px;border-radius:14px;background:var(--pri);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qo-t{font-size:17px;font-weight:800;color:var(--pri-d)}
+.qo-s{font-size:12px;color:var(--sub);margin-top:3px}
+.qo-arrow{margin-left:auto;color:var(--pri);font-size:18px}
+.oline{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F3F4F6;font-size:13px}
+.oline:last-child{border-bottom:none}
+.oline .ol-t{color:var(--txt);font-weight:600}
+.oline .ol-s{color:var(--sub);font-size:12px;margin-top:3px}
+.ostatus{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:700}
+.st-wait{background:#FEF3C7;color:#B45309}
+.st-prod{background:#DBEAFE;color:#1D4ED8}
+.st-sent{background:#DCFCE7;color:#15803D}
+.more-link{text-align:center;font-size:12.5px;color:var(--pri);padding:10px 0 2px;cursor:pointer;font-weight:600}
+.notice{display:flex;gap:8px;align-items:center;background:var(--acc-l);border-radius:10px;padding:10px 12px;font-size:12px;color:#92600E;margin-bottom:12px}
+/* 下单页 */
+.stepbar{display:flex;align-items:center;gap:6px;padding:10px 2px 4px;margin-bottom:8px}
+.stepbar .sp{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10.5px;color:#9CA3AF}
+.stepbar .sp .c{width:24px;height:24px;border-radius:50%;background:#E9ECF1;color:#6B7280;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.stepbar .sp.on .c{background:var(--pri);color:#fff}
+.stepbar .sp.on{color:var(--pri);font-weight:700}
+.boxtype-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.bt{border:1.5px solid var(--line);border-radius:12px;padding:10px 4px 9px;text-align:center;cursor:pointer;background:#fff;position:relative}
+.bt.on{border-color:var(--pri);background:var(--pri-l);box-shadow:0 0 0 2.5px rgba(30,78,140,.12)}
+.bt .btg{height:44px;display:flex;align-items:center;justify-content:center}
+.bt .btl{font-size:11.5px;font-weight:600;margin-top:3px;color:var(--txt)}
+.bt .bta{font-size:9.5px;color:var(--sub);margin-top:1px}
+.bt.on .btl{color:var(--pri)}
+.dim-row{display:flex;gap:8px;align-items:center}
+.dim-item{flex:1;text-align:center;background:var(--bg);border-radius:10px;padding:8px 4px}
+.dim-item .dl{font-size:10.5px;color:var(--sub)}
+.dim-item input{width:100%;border:none;background:transparent;text-align:center;font-size:17px;font-weight:800;color:var(--pri-d);outline:none;margin-top:2px}
+.dim-item .du{font-size:10px;color:#9CA3AF}
+.dim-x{font-size:16px;color:#9CA3AF;font-weight:700}
+.opt-row{display:flex;gap:8px;flex-wrap:wrap}
+.opt{border:1.5px solid var(--line);border-radius:10px;padding:8px 13px;font-size:12.5px;cursor:pointer;background:#fff;font-weight:600;color:var(--txt)}
+.opt.on{border-color:var(--pri);background:var(--pri-l);color:var(--pri)}
+.opt small{display:block;font-size:10px;color:var(--sub);font-weight:500;margin-top:1px}
+.opt.on small{color:var(--pri)}
+.qty-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.qq{border:1.5px solid var(--line);border-radius:10px;padding:9px 2px;text-align:center;cursor:pointer;background:#fff}
+.qq.on{border-color:var(--pri);background:var(--pri-l)}
+.qq .qn{font-size:14px;font-weight:800;color:var(--txt)}
+.qq .qp{font-size:10px;color:var(--acc);font-weight:700;margin-top:2px}
+.qq.on .qn,.qq.on .qp{color:var(--pri)}
+/* 价格区 */
+.pricebox{background:linear-gradient(135deg,#163A69,#1E4E8C);border-radius:14px;padding:15px 16px;color:#fff;margin:10px 0 12px}
+.pricebox .pt{font-size:11.5px;opacity:.8}
+.pricebox .pv{font-size:29px;font-weight:800;margin:2px 0 1px}
+.pricebox .pv small{font-size:14px;font-weight:600}
+.pricebox .pd{font-size:11.5px;opacity:.85}
+.pricebox .prow{display:flex;justify-content:space-between;align-items:flex-end}
+.ladder{display:flex;gap:6px;margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18)}
+.lad{flex:1;text-align:center;border-radius:8px;padding:6px 2px;background:rgba(255,255,255,.09);font-size:10.5px}
+.lad.cur{background:var(--acc);font-weight:800}
+.lad .lp{font-weight:800;font-size:11.5px;margin-top:2px}
+</style>
+<style>
+/* 订单列表/详情/我的 */
+.order-card{background:#fff;border-radius:14px;padding:13px 14px;margin-bottom:11px;box-shadow:0 2px 8px rgba(17,24,39,.05);cursor:pointer}
+.order-card:active{background:#FAFBFC}
+.oc-top{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--sub);margin-bottom:8px}
+.oc-mid{display:flex;gap:10px;align-items:center}
+.oc-thumb{width:46px;height:46px;border-radius:10px;background:var(--acc-l);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.oc-name{font-size:13.5px;font-weight:700}
+.oc-spec{font-size:11.5px;color:var(--sub);margin-top:3px}
+.oc-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:9px;border-top:1px solid #F3F4F6}
+.oc-price{font-size:14.5px;font-weight:800;color:var(--pri-d)}
+.oc-price small{font-size:11px;color:var(--sub);font-weight:500}
+.detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F3F4F6;font-size:13px}
+.detail-row .dk{color:var(--sub)}
+.detail-row .dv{font-weight:600;text-align:right}
+.timeline{padding:4px 0 4px 6px}
+.tl-item{display:flex;gap:10px;position:relative;padding-bottom:16px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;left:7px;top:18px;bottom:0;width:2px;background:#E9ECF1}
+.tl-item:last-child::before{display:none}
+.tl-dot{width:16px;height:16px;border-radius:50%;background:#E9ECF1;flex-shrink:0;margin-top:1px;position:relative;z-index:1}
+.tl-item.done .tl-dot{background:var(--ok)}
+.tl-item.cur .tl-dot{background:var(--pri);box-shadow:0 0 0 4px rgba(30,78,140,.15)}
+.tl-t{font-size:13px;font-weight:700}
+.tl-s{font-size:11.5px;color:var(--sub);margin-top:2px}
+.me-head{display:flex;align-items:center;gap:13px;padding:16px 4px}
+.me-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--pri),#2E6DB4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:800}
+.me-name{font-size:16px;font-weight:800}
+.me-sub{font-size:12px;color:var(--sub);margin-top:3px}
+.menu-item{display:flex;align-items:center;gap:11px;padding:14px 6px;border-bottom:1px solid #F3F4F6;font-size:14px;cursor:pointer}
+.menu-item:last-child{border-bottom:none}
+.menu-item .mi-arrow{margin-left:auto;color:#C7CBD1}
+/* 后台 */
+.admin-stage{display:none;padding:74px 0 40px;min-height:100vh}
+.admin-wrap{width:1240px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5);display:flex;min-height:720px}
+.side{width:200px;background:#14253E;flex-shrink:0;padding:16px 0}
+.side .slogo{display:flex;align-items:center;gap:9px;padding:6px 18px 18px;border-bottom:1px solid rgba(255,255,255,.09);margin-bottom:10px}
+.side .slogo .sn{color:#fff;font-size:14px;font-weight:800}
+.side .slogo .ss{color:#7C8DA6;font-size:10px;margin-top:1px}
+.snav{display:flex;align-items:center;gap:10px;padding:12px 18px;color:#A7B4C8;font-size:13.5px;cursor:pointer;border-left:3px solid transparent}
+.snav.on{background:rgba(255,255,255,.07);color:#fff;font-weight:700;border-left-color:#4C8DE0}
+.snav:hover{color:#fff}
+.amain{flex:1;padding:20px 24px;background:#F7F8FA;overflow:hidden}
+.ahead{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.ahead .at{font-size:19px;font-weight:800;color:#16233A}
+.ahead .as{font-size:12px;color:var(--sub);margin-top:3px}
+.abtn{height:38px;padding:0 18px;border-radius:9px;border:none;font-size:13.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.abtn-pri{background:var(--pri);color:#fff}
+.abtn-out{background:#fff;color:var(--pri);border:1.5px solid #C9DBF2}
+.metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.metric{background:#fff;border-radius:13px;padding:15px 16px;box-shadow:0 2px 9px rgba(17,24,39,.05)}
+.metric .mt{font-size:12px;color:var(--sub)}
+.metric .mv{font-size:24px;font-weight:800;color:#16233A;margin-top:5px}
+.metric .mv small{font-size:12px;font-weight:600;color:var(--sub)}
+.metric .md{font-size:11px;color:var(--ok);margin-top:4px;font-weight:600}
+.panel{background:#fff;border-radius:13px;box-shadow:0 2px 9px rgba(17,24,39,.05);overflow:hidden}
+.panel-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #EFF1F4}
+.panel-h .pt{font-size:14.5px;font-weight:800;color:#16233A}
+table.xt{width:100%;border-collapse:collapse;font-size:12.8px}
+table.xt th{background:#F7F9FC;color:#5B6B84;font-weight:700;text-align:left;padding:10px 14px;border-bottom:1px solid #EFF1F4;white-space:nowrap}
+table.xt td{padding:11px 14px;border-bottom:1px solid #F5F6F8;color:#2B3648}
+table.xt tr:hover td{background:#F9FBFE}
+.tag{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:700;white-space:nowrap}
+.tg-wait{background:#FEF3C7;color:#B45309}
+.tg-prod{background:#DBEAFE;color:#1D4ED8}
+.tg-sent{background:#DCFCE7;color:#15803D}
+.tg-new{background:#EDE9FE;color:#6D28D9}
+.tlink{color:var(--pri);font-weight:700;cursor:pointer;white-space:nowrap}
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rule-note{font-size:11.5px;color:var(--sub);line-height:1.8}
+</style>
+
+
+
+<style>
+.feat-row{display:flex;gap:9px;width:100%;margin-top:30px}
+.feat-card{flex:1;background:#fff;border-radius:12px;padding:13px 6px;text-align:center;box-shadow:0 2px 9px rgba(17,24,39,.05)}
+.feat-card .fc-ic{margin-bottom:6px}
+.feat-card .fc-t{font-size:11.5px;font-weight:700;color:var(--txt)}
+.feat-card .fc-s{font-size:10px;color:var(--sub);margin-top:2px}
+.spec-chip{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:11px;padding:9px 10px;cursor:pointer;background:#fff;margin-bottom:8px}
+.spec-chip:active{border-color:var(--pri);background:var(--pri-l)}
+.spec-chip .sc-ic{width:34px;height:34px;border-radius:9px;background:var(--acc-l);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.spec-chip .sc-t{font-size:12.5px;font-weight:700}
+.spec-chip .sc-s{font-size:10.5px;color:var(--sub);margin-top:2px}
+.spec-chip .sc-go{margin-left:auto;color:var(--pri);font-size:16px}
+.svc-row{display:flex;gap:8px;margin:2px 0 12px}
+.svc{flex:1;display:flex;align-items:center;gap:7px;background:#F0F5FB;border-radius:10px;padding:9px 10px;font-size:11px;color:#33517A;font-weight:600}
+.stats-strip{display:flex;gap:12px;background:linear-gradient(135deg,#163A69,#1E4E8C);border-radius:12px;padding:12px 14px;margin-bottom:12px;color:#fff}
+.stats-strip .ss-item{flex:1;text-align:center}
+.stats-strip .ss-n{font-size:17px;font-weight:800}
+.stats-strip .ss-l{font-size:10.5px;opacity:.8;margin-top:2px}
+.next-steps{width:100%;margin-top:26px}
+.nstep{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #F3F4F6;width:100%}
+.nstep:last-child{border-bottom:none}
+.nstep .ns-n{width:24px;height:24px;border-radius:50%;background:var(--pri-l);color:var(--pri);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nstep .ns-t{font-size:13px;font-weight:700}
+.nstep .ns-s{font-size:11px;color:var(--sub);margin-top:2px}
+</style>
+</head>
+<body>
+
+<!-- 顶部工具条 -->
+<div class="toolbar">
+  <div class="tb-title">瓦楞纸箱在线下单系统 · 交互原型</div>
+  <div class="tb-btn on" id="tb-client" onclick="switchMode('client')">客户端（小程序）</div>
+  <div class="tb-btn" id="tb-admin" onclick="switchMode('admin')">管理后台（网页）</div>
+  <div class="tb-note" id="tb-note">— 点击"报价下单"体验核心流程 —</div>
+</div>
+
+<!-- ============ 客户端 ============ -->
+<div class="stage" id="stage-client">
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="statusbar"><span>9:41</span><span>📶 🔋</span></div>
+
+      <!-- 登录页 -->
+      <div class="page" id="pg-login">
+        <div class="content pt">
+          <div class="login-wrap">
+            <div class="login-logo">
+              <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg>
+            </div>
+            <div class="login-name">新达丰纸箱厂 · 在线下单</div>
+            <div class="login-sub">瓦楞纸箱在线报价与下单平台</div>
+            <div style="width:100%;display:flex;flex-direction:column;gap:12px">
+              <input class="inp" placeholder="请输入手机号" value="138 0000 0000">
+              <div class="inp-row">
+                <input class="inp" placeholder="短信验证码">
+                <button class="code-btn">获取验证码</button>
+              </div>
+              <button class="btn btn-pri" style="margin-top:6px" onclick="go('home')">登 录</button>
+              <div style="text-align:center;font-size:11.5px;color:#9CA3AF;margin-top:4px">账号由包装厂开通 · 登录后可自助下单</div>
+              <div class="feat-row">
+                <div class="feat-card"><div class="fc-ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1E4E8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z"/></svg></div><div class="fc-t">实时报价</div><div class="fc-s">秒出价格</div></div>
+                <div class="feat-card"><div class="fc-ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1E4E8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg></div><div class="fc-t">品质可靠</div><div class="fc-s">标准工艺</div></div>
+                <div class="feat-card"><div class="fc-ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1E4E8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div><div class="fc-t">准时交期</div><div class="fc-s">5-7天交货</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 首页 -->
+      <div class="page hide" id="pg-home">
+        <div class="content pt">
+          <div class="hero">
+            <div class="h1">您好，张经理 👋</div>
+            <div class="h2">新达丰纸箱厂 · 线上服务已就绪</div>
+            <div class="hstat">
+              <div><div class="n">12</div><div class="l">本月订单</div></div>
+              <div><div class="n">1</div><div class="l">生产中</div></div>
+              <div><div class="n">¥8,650</div><div class="l">本月金额</div></div>
+            </div>
+          </div>
+          <div class="quick-order" onclick="go('order')">
+            <div class="qo-ic">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg>
+            </div>
+            <div>
+              <div class="qo-t">纸箱报价 / 下单</div>
+              <div class="qo-s">选规格 → 实时报价 → 一键下单</div>
+            </div>
+            <div class="qo-arrow">›</div>
+          </div>
+          <div class="card">
+            <div class="sec-title"><span class="dot"></span>常用规格 · 一键下单</div>
+            <div class="spec-chip" onclick="applyQuickSpec(350,260,150,'b3b')">
+              <div class="sc-ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C8853A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/></svg></div>
+              <div><div class="sc-t">三层小箱 350×260×150</div><div class="sc-s">三层普通 · 从 ¥0.68/个起</div></div>
+              <div class="sc-go">›</div>
+            </div>
+            <div class="spec-chip" onclick="applyQuickSpec(500,400,300,'kk')">
+              <div class="sc-ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C8853A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/></svg></div>
+              <div><div class="sc-t">五层标准箱 500×400×300</div><div class="sc-s">五层加硬 · 从 ¥6.27/个起</div></div>
+              <div class="sc-go">›</div>
+            </div>
+            <div class="spec-chip" onclick="applyQuickSpec(320,220,80,'k3k')">
+              <div class="sc-ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C8853A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-4 9 4-9 4-9-4z"/><path d="M3 9v6l9 4 9-4V9"/></svg></div>
+              <div><div class="sc-t">电商飞机盒 320×220×80</div><div class="sc-s">三层加硬 · 从 ¥0.52/个起</div></div>
+              <div class="sc-go">›</div>
+            </div>
+          </div>
+          <div class="notice">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C8853A" stroke-width="1.8" stroke-linecap="round"><path d="M12 8v5"/><circle cx="12" cy="16" r=".5"/><path d="M12 3l9 16H3l9-16z"/></svg>
+            <span>9月26日-10月2日 国庆前下单高峰，建议提前3天下单</span>
+          </div>
+          <div class="card">
+            <div class="sec-title"><span class="dot"></span>最近订单<span style="margin-left:auto;font-size:11.5px;color:var(--pri);font-weight:600;cursor:pointer" onclick="go('orders')">全部 ›</span></div>
+            <div class="oline" onclick="go('detail')"><div><div class="ol-t">五层加硬 500×400×300</div><div class="ol-s">9月22日 · 1000个</div></div><span class="ostatus st-prod">生产中</span></div>
+            <div class="oline" onclick="go('detail2')"><div><div class="ol-t">三层普通 350×260×150</div><div class="ol-s">9月18日 · 2000个</div></div><span class="ostatus st-sent">已发货</span></div>
+          </div>
+          <div class="svc-row">
+            <div class="svc"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#33517A" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z"/></svg>实时报价</div>
+            <div class="svc"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#33517A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>品质保障</div>
+            <div class="svc"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#33517A" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>准时交货</div>
+          </div>
+          <div class="more-link">— 人工报价：异型箱/特殊要求点这里 —</div>
+        </div>
+      </div>
+      <!-- 报价下单页（核心） -->
+<div class="page hide" id="pg-order">
+  <div class="navbar"><div class="nb-back" onclick="go('home')">‹ 返回</div><div class="nb-title">纸箱报价下单</div><div class="nb-extra"></div></div>
+  <div class="content">
+    <div class="stepbar">
+      <div class="sp on"><div class="c">1</div>选规格</div>
+      <div class="sp on"><div class="c">2</div>看报价</div>
+      <div class="sp"><div class="c">3</div>确认下单</div>
+    </div>
+    <div class="card" style="padding:12px 14px">
+      <div class="sec-title" style="margin-bottom:8px"><span class="dot"></span>常用规格快选 <span style="font-size:10.5px;color:var(--sub);font-weight:500">（点击自动填好，也可自己改）</span></div>
+      <div class="opt-row">
+        <div class="opt" onclick="applyQuickSpec(350,260,150,'b3b')">350×260×150<small>三层普通</small></div>
+        <div class="opt" onclick="applyQuickSpec(500,400,300,'kk')">500×400×300<small>五层加硬</small></div>
+        <div class="opt" onclick="applyQuickSpec(320,220,80,'k3k')">320×220×80<small>三层加硬</small></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title"><span class="dot"></span>选择箱型</div>
+      <div class="boxtype-grid" id="boxtype-grid"></div>
+    </div>
+    <div class="card">
+      <div class="sec-title"><span class="dot"></span>输入尺寸（外箱内径，单位 mm）</div>
+      <div class="dim-row">
+        <div class="dim-item"><div class="dl">长 L</div><input id="dim-l" value="500" inputmode="numeric"><div class="du">mm</div></div>
+        <div class="dim-x">×</div>
+        <div class="dim-item"><div class="dl">宽 W</div><input id="dim-w" value="400" inputmode="numeric"><div class="du">mm</div></div>
+        <div class="dim-x">×</div>
+        <div class="dim-item"><div class="dl">高 H</div><input id="dim-h" value="300" inputmode="numeric"><div class="du">mm</div></div>
+      </div>
+      <div style="font-size:11px;color:#9CA3AF;margin-top:9px">支持单边 100 - 1200mm，超范围或异型请走人工报价</div>
+    </div>
+    <div class="card">
+      <div class="sec-title"><span class="dot"></span>选择材质</div>
+      <div class="opt-row" id="mat-row"></div>
+    </div>
+    <div class="card">
+      <div class="sec-title"><span class="dot"></span>选择数量 <span style="font-size:11px;color:var(--sub);font-weight:500">（越多越便宜）</span></div>
+      <div class="qty-row" id="qty-row"></div>
+    </div>
+    <div class="card">
+      <div class="sec-title"><span class="dot"></span>印刷</div>
+      <div class="opt-row" id="print-row"></div>
+      <div style="font-size:11px;color:#B45309;margin-top:9px" id="print-tip">印刷单需在订单确认页上传图稿；单色印刷另收制版费 ¥150/版</div>
+    </div>
+    <div class="pricebox" id="pricebox">
+      <div class="prow">
+        <div>
+          <div class="pt">实时报价（含税）</div>
+          <div class="pv" id="pv-total">¥2,380<small> / 共1000个</small></div>
+          <div class="pd" id="pd-unit">单价 ¥2.38 / 个 · 预计交期 5-7 个工作日</div>
+        </div>
+      </div>
+      <div class="ladder" id="ladder"></div>
+    </div>
+    <button class="btn btn-pri" style="margin-bottom:6px" onclick="go('confirm')">去下单 ›</button>
+    <div style="text-align:center;font-size:11.5px;color:#9CA3AF;padding:2px 0 6px">价格随原纸行情浮动 · 最终以订单确认为准</div>
+  </div>
+</div>
+
+<!-- 订单确认页 -->
+<div class="page hide" id="pg-confirm">
+  <div class="navbar"><div class="nb-back" onclick="go('order')">‹ 返回</div><div class="nb-title">确认订单</div><div class="nb-extra"></div></div>
+  <div class="content">
+    <div class="card">
+      <div class="sec-title"><span class="dot"></span>订单信息</div>
+      <div class="detail-row"><span class="dk">箱型</span><span class="dv" id="cf-type">开槽箱（RSC）</span></div>
+      <div class="detail-row"><span class="dk">尺寸</span><span class="dv" id="cf-size">500 × 400 × 300 mm</span></div>
+      <div class="detail-row"><span class="dk">材质</span><span class="dv" id="cf-mat">五层加硬</span></div>
+      <div class="detail-row"><span class="dk">数量</span><span class="dv" id="cf-qty">1000 个</span></div>
+      <div class="detail-row" style="border-bottom:none"><span class="dk">印刷</span><span class="dv" id="cf-print">不印刷</span></div>
+    </div>
+    <div class="card">
+      <div class="sec-title"><span class="dot"></span>收货信息</div>
+      <div class="detail-row"><span class="dk">收货人</span><span class="dv">张经理 138 0000 0000</span></div>
+      <div class="detail-row" style="border-bottom:none"><span class="dk">收货地址</span><span class="dv" style="max-width:200px">广东省深圳市宝安区…（默认地址）</span></div>
+    </div>
+    <div class="card">
+      <div class="sec-title"><span class="dot"></span>交期与备注</div>
+      <div class="opt-row" style="margin-bottom:10px">
+        <div class="opt on">标准交期 5-7 天</div>
+        <div class="opt">加急 3 天<small>+15% 加急费</small></div>
+      </div>
+      <input class="inp" placeholder="备注（选填）：如送货要求、开票信息等" style="font-size:13.5px">
+    </div>
+    <div class="card" style="display:flex;align-items:center;gap:10px">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E4E8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 20h16"/></svg>
+      <div style="flex:1">
+        <div style="font-size:13.5px;font-weight:700">上传印刷图稿</div>
+        <div style="font-size:11px;color:var(--sub);margin-top:2px">有印刷时必传（AI/CDR/PDF，≤20MB）</div>
+      </div>
+      <button class="abtn abtn-out" style="height:34px">选择文件</button>
+    </div>
+    <div class="pricebox">
+      <div class="prow">
+        <div>
+          <div class="pt">应付金额（含税）</div>
+          <div class="pv">¥2,380<small> / 1000个</small></div>
+          <div class="pd">单价 ¥2.38 / 个 · 在线支付暂未开通，下单后与业务确认</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-pri" onclick="go('success')">提交订单</button>
+  </div>
+</div>
+
+<!-- 提交成功页 -->
+<div class="page hide" id="pg-success">
+  <div class="content pt" style="display:flex;flex-direction:column;align-items:center;padding-top:60px">
+    <div style="width:84px;height:84px;border-radius:50%;background:#DCFCE7;display:flex;align-items:center;justify-content:center;margin-bottom:18px">
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div style="font-size:20px;font-weight:800">订单提交成功</div>
+    <div style="font-size:13px;color:var(--sub);margin:8px 0 4px">订单号：DD20260924001</div>
+    <div style="font-size:12.5px;color:var(--acc);font-weight:700;margin-bottom:26px">业务员将在1小时内与您确认</div>
+    <div style="width:100%;display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="go('orders')">查看订单</button>
+      <button class="btn btn-pri" onclick="go('order')">再下一单</button>
+    </div>
+    <div class="card next-steps">
+      <div class="sec-title" style="margin-top:0"><span class="dot"></span>接下来</div>
+      <div class="nstep"><div class="ns-n">1</div><div><div class="ns-t">业务员确认</div><div class="ns-s">1 小时内电话/微信与您核对规格与交期</div></div></div>
+      <div class="nstep"><div class="ns-n">2</div><div><div class="ns-t">排产生产</div><div class="ns-s">确认后进入生产，标准交期 5-7 个工作日</div></div></div>
+      <div class="nstep"><div class="ns-n">3</div><div><div class="ns-t">发货通知</div><div class="ns-s">发货后物流单号将推送给您</div></div></div>
+    </div>
+    <div style="font-size:11.5px;color:#9CA3AF;margin-top:16px">订单状态变更将在微信中通知您</div>
+  </div>
+</div>
+
+
+<!-- 我的订单 -->
+<div class="page hide" id="pg-orders">
+  <div class="navbar"><div class="nb-back" style="visibility:hidden">‹</div><div class="nb-title">我的订单</div><div class="nb-extra"></div></div>
+  <div class="content">
+    <div class="stats-strip">
+      <div class="ss-item"><div class="ss-n">12</div><div class="ss-l">本月订单</div></div>
+      <div class="ss-item"><div class="ss-n">1</div><div class="ss-l">生产中</div></div>
+      <div class="ss-item"><div class="ss-n">9</div><div class="ss-l">已发货</div></div>
+      <div class="ss-item"><div class="ss-n">¥8,650</div><div class="ss-l">本月金额</div></div>
+    </div>
+    <div class="opt-row" style="margin-bottom:12px">
+      <div class="opt on">全部</div><div class="opt">待处理</div><div class="opt">生产中</div><div class="opt">已发货</div>
+    </div>
+    <div class="order-card" onclick="go('detail')">
+      <div class="oc-top"><span>DD20260923002</span><span class="ostatus st-prod">生产中</span></div>
+      <div class="oc-mid">
+        <div class="oc-thumb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8853A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/></svg></div>
+        <div><div class="oc-name">五层加硬开槽箱</div><div class="oc-spec">500×400×300mm · 1000个 · 不印刷</div></div>
+      </div>
+      <div class="oc-bottom"><span style="font-size:11.5px;color:var(--sub)">9月23日 14:20 下单</span><span class="oc-price">¥2,380 <small>¥2.38/个</small></span></div>
+    </div>
+    <div class="order-card" onclick="go('detail2')">
+      <div class="oc-top"><span>DD20260918001</span><span class="ostatus st-sent">已发货</span></div>
+      <div class="oc-mid">
+        <div class="oc-thumb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8853A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/></svg></div>
+        <div><div class="oc-name">三层普通开槽箱</div><div class="oc-spec">350×260×150mm · 2000个 · 单色印刷</div></div>
+      </div>
+      <div class="oc-bottom"><span style="font-size:11.5px;color:var(--sub)">9月18日 10:05 下单</span><span class="oc-price">¥1,360 <small>¥0.68/个</small></span></div>
+    </div>
+    <div class="order-card" onclick="go('detail3')">
+      <div class="oc-top"><span>DD20260915001</span><span class="ostatus st-wait">待处理</span></div>
+      <div class="oc-mid">
+        <div class="oc-thumb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8853A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/></svg></div>
+        <div><div class="oc-name">飞机盒（异型-人工报价）</div><div class="oc-spec">320×220×80mm · 500个 · 彩色印刷</div></div>
+      </div>
+      <div class="oc-bottom"><span style="font-size:11.5px;color:var(--sub)">9月15日 16:40 提交需求</span><span class="oc-price" style="color:var(--warn)">待销售回价</span></div>
+    </div>
+    <div style="height:64px"></div>
+  </div>
+  <div class="tabbar" id="tabbar-orders"></div>
+</div>
+
+<!-- 订单详情 -->
+<div class="page hide" id="pg-detail">
+  <div class="navbar"><div class="nb-back" onclick="go('orders')">‹ 返回</div><div class="nb-title">订单详情</div><div class="nb-extra"></div></div>
+  <div class="content">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span style="font-size:12px;color:var(--sub)">订单号 DD20260923002</span><span class="ostatus st-prod">生产中</span>
+      </div>
+      <div class="timeline">
+        <div class="tl-item done"><div class="tl-dot"></div><div><div class="tl-t">已提交</div><div class="tl-s">9月23日 14:20</div></div></div>
+        <div class="tl-item done"><div class="tl-dot"></div><div><div class="tl-t">业务已确认 · 已进入生产</div><div class="tl-s">9月23日 15:05</div></div></div>
+        <div class="tl-item cur"><div class="tl-dot"></div><div><div class="tl-t">生产制造中</div><div class="tl-s">预计 9月28日 完工</div></div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div><div class="tl-t">发货</div><div class="tl-s">待生产完成</div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title"><span class="dot"></span>规格信息</div>
+      <div class="detail-row"><span class="dk">箱型</span><span class="dv">开槽箱（RSC）</span></div>
+      <div class="detail-row"><span class="dk">尺寸</span><span class="dv">500×400×300mm</span></div>
+      <div class="detail-row"><span class="dk">材质</span><span class="dv">五层加硬（AB楞）</span></div>
+      <div class="detail-row"><span class="dk">印刷</span><span class="dv">不印刷</span></div>
+      <div class="detail-row"><span class="dk">数量</span><span class="dv">1000 个</span></div>
+      <div class="detail-row" style="border-bottom:none"><span class="dk">金额</span><span class="dv" style="color:var(--pri-d);font-weight:800">¥2,380（¥2.38/个）</span></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:14px">
+      <button class="btn btn-ghost">再来一单</button>
+      <button class="btn btn-pri">联系业务员</button>
+    </div>
+  </div>
+</div>
+
+<!-- 我的 -->
+<div class="page hide" id="pg-me">
+  <div class="navbar"><div class="nb-back" style="visibility:hidden">‹</div><div class="nb-title">我的</div><div class="nb-extra"></div></div>
+  <div class="content">
+    <div class="me-head">
+      <div class="me-avatar">张</div>
+      <div><div class="me-name">张经理</div><div class="me-sub">深圳市鑫达电子有限公司 · 138 0000 0000</div></div>
+    </div>
+    <div class="card" style="padding:6px 12px">
+      <div class="menu-item"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1E4E8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1116 0z"/><circle cx="12" cy="10" r="3"/></svg>收货地址管理<span class="mi-arrow">›</span></div>
+      <div class="menu-item"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1E4E8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>开票信息<span class="mi-arrow">›</span></div>
+      <div class="menu-item"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1E4E8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>联系客服<span class="mi-arrow">›</span></div>
+      <div class="menu-item"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1E4E8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><circle cx="12" cy="8.5" r=".5"/></svg>使用帮助<span class="mi-arrow">›</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('login')">退出登录</button>
+    <div style="height:64px"></div>
+  </div>
+  <div class="tabbar" id="tabbar-me"></div>
+</div>
+
+    </div>
+  </div>
+</div>
+<!-- ============ 管理后台 ============ -->
+<div class="admin-stage" id="stage-admin">
+  <div class="admin-wrap">
+    <div class="side">
+      <div class="slogo">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4C8DE0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg>
+        <div><div class="sn">新达丰纸箱厂</div><div class="ss">下单系统管理后台</div></div>
+      </div>
+      <div class="snav on" id="adv-dash" onclick="adminGo('dash')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></svg>工作台</div>
+      <div class="snav" id="adv-orders" onclick="adminGo('orders')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></svg>订单管理</div>
+      <div class="snav" id="adv-price" onclick="adminGo('price')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>报价规则</div>
+      <div class="snav" id="adv-cust" onclick="adminGo('cust')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>客户管理</div>
+    </div>
+    <div class="amain">
+      <!-- 工作台 -->
+      <div id="ad-dash">
+        <div class="ahead">
+          <div><div class="at">工作台</div><div class="as">今天 2026年9月24日 · 星期四</div></div>
+          <button class="abtn abtn-pri">+ 代客下单</button>
+        </div>
+        <div class="metric-row">
+          <div class="metric"><div class="mt">今日新订单</div><div class="mv">8 <small>单</small></div><div class="md">↑ 较昨日 +3</div></div>
+          <div class="metric"><div class="mt">待处理订单</div><div class="mv" style="color:#B45309">5 <small>单</small></div><div class="md" style="color:#B45309">需尽快确认</div></div>
+          <div class="metric"><div class="mt">本月订单金额</div><div class="mv">¥126,800</div><div class="md">↑ 环比 +18%</div></div>
+          <div class="metric"><div class="mt">人工报价待回</div><div class="mv">2 <small>条</small></div><div class="md" style="color:#B45309">客户等待中</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><span class="pt">最新订单</span><span class="tlink" onclick="adminGo('orders')">查看全部 ›</span></div>
+          <table class="xt">
+            <tr><th>订单号</th><th>客户</th><th>规格</th><th>数量</th><th>金额</th><th>状态</th></tr>
+            <tr><td>DD20260924001</td><td>鑫达电子</td><td>开槽箱 500×400×300</td><td>1000</td><td>¥2,380</td><td><span class="tag tg-new">新订单</span></td></tr>
+            <tr><td>DD20260924002</td><td>宏发五金</td><td>开槽箱 400×300×250</td><td>2000</td><td>¥3,120</td><td><span class="tag tg-new">新订单</span></td></tr>
+            <tr><td>DD20260923002</td><td>鑫达电子</td><td>开槽箱 500×400×300</td><td>1000</td><td>¥2,380</td><td><span class="tag tg-prod">生产中</span></td></tr>
+            <tr><td>DD20260923001</td><td>顺达贸易</td><td>三层 350×260×150</td><td>3000</td><td>¥1,980</td><td><span class="tag tg-prod">生产中</span></td></tr>
+            <tr><td>DD20260922003</td><td>宏发五金</td><td>开槽箱 600×400×400</td><td>500</td><td>¥1,650</td><td><span class="tag tg-sent">已发货</span></td></tr>
+          </table>
+        </div>
+      </div>
+      <!-- 订单管理 -->
+      <div id="ad-orders" class="hide">
+        <div class="ahead">
+          <div><div class="at">订单管理</div><div class="as">共 126 个订单 · 5 单待处理</div></div>
+          <div style="display:flex;gap:10px">
+            <button class="abtn abtn-out">导出 Excel</button>
+            <button class="abtn abtn-pri">导出生产单 PDF</button>
+          </div>
+        </div>
+        <div class="panel">
+          <table class="xt">
+            <tr><th>订单号</th><th>客户</th><th>箱型</th><th>规格</th><th>数量</th><th>金额</th><th>下单时间</th><th>状态</th><th>操作</th></tr>
+            <tr><td>DD20260924001</td><td>鑫达电子</td><td>开槽箱</td><td>500×400×300 / 五层加硬</td><td>1000</td><td>¥2,380</td><td>09-24 09:12</td><td><span class="tag tg-new">新订单</span></td><td><span class="tlink">接单</span></td></tr>
+            <tr><td>DD20260924002</td><td>宏发五金</td><td>开槽箱</td><td>400×300×250 / 三层普通</td><td>2000</td><td>¥3,120</td><td>09-24 08:55</td><td><span class="tag tg-new">新订单</span></td><td><span class="tlink">接单</span></td></tr>
+            <tr><td>DD20260923002</td><td>鑫达电子</td><td>开槽箱</td><td>500×400×300 / 五层加硬</td><td>1000</td><td>¥2,380</td><td>09-23 14:20</td><td><span class="tag tg-prod">生产中</span></td><td><span class="tlink">导出</span></td></tr>
+            <tr><td>DD20260923001</td><td>顺达贸易</td><td>开槽箱</td><td>350×260×150 / 三层普通</td><td>3000</td><td>¥1,980</td><td>09-23 11:08</td><td><span class="tag tg-prod">生产中</span></td><td><span class="tlink">导出</span></td></tr>
+            <tr><td>DD20260922003</td><td>宏发五金</td><td>开槽箱</td><td>600×400×400 / 五层加硬</td><td>500</td><td>¥1,650</td><td>09-22 15:33</td><td><span class="tag tg-sent">已发货</span></td><td><span class="tlink">导出</span></td></tr>
+            <tr><td>DD20260922002</td><td>鸿运电器</td><td>天地盖</td><td>450×350×200 / 五层加硬</td><td>800</td><td>¥2,050</td><td>09-22 10:26</td><td><span class="tag tg-sent">已发货</span></td><td><span class="tlink">导出</span></td></tr>
+          </table>
+        </div>
+      </div>
+            <!-- 报价规则 -->
+      <div id="ad-price" class="hide">
+        <div class="ahead">
+          <div><div class="at">报价规则管理</div><div class="as">维护纸价、公式参数与阶梯规则 · 修改后客户端报价实时生效</div></div>
+          <button class="abtn abtn-pri">保存修改</button>
+        </div>
+        <div class="rules-grid">
+          <div class="panel">
+            <div class="panel-h"><span class="pt">纸配比价目表（元/㎡）</span><span class="tlink">+ 新增</span></div>
+            <table class="xt">
+              <tr><th>材质名称（客户可见）</th><th>配比</th><th>单价</th><th>操作</th></tr>
+              <tr><td>三层普通</td><td>B3B（单坑）</td><td>2.85</td><td><span class="tlink">编辑</span></td></tr>
+              <tr><td>三层加硬</td><td>K3K（单坑）</td><td>3.40</td><td><span class="tlink">编辑</span></td></tr>
+              <tr><td>五层普通</td><td>B=B（双坑）</td><td>4.20</td><td><span class="tlink">编辑</span></td></tr>
+              <tr><td>五层加硬</td><td>K=K（双坑）</td><td>5.10</td><td><span class="tlink">编辑</span></td></tr>
+              <tr><td>五层特硬</td><td>K=K 高强</td><td>5.85</td><td><span class="tlink">编辑</span></td></tr>
+            </table>
+            <div class="rule-note" style="padding:10px 14px">随原纸行情定期更新；客户只看到"材质名称"档位，不暴露配比代号</div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><span class="pt">数量阶梯规则</span><span class="tlink">+ 新增档位</span></div>
+            <table class="xt">
+              <tr><th>数量区间</th><th>折扣系数</th><th>说明</th></tr>
+              <tr><td>500 - 999</td><td>1.00</td><td>标准价</td></tr>
+              <tr><td>1000 - 2999</td><td>0.95</td><td>95折</td></tr>
+              <tr><td>3000 - 4999</td><td>0.90</td><td>9折</td></tr>
+              <tr><td>5000 以上</td><td>0.85</td><td>85折 · 也可走人工报价</td></tr>
+            </table>
+            <div class="rule-note" style="padding:10px 14px">折扣系数 × 基础单价 = 客户看到的价格</div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><span class="pt">加工费参数</span></div>
+            <table class="xt">
+              <tr><th>项目</th><th>金额</th><th>说明</th></tr>
+              <tr><td>制版费（单色）</td><td>¥150 / 版</td><td>印刷单收取</td></tr>
+              <tr><td>制版费（多色）</td><td>¥150 / 色 / 版</td><td>按色数叠加</td></tr>
+              <tr><td>加急费</td><td>+15%</td><td>3天交期</td></tr>
+              <tr><td>开槽/模切（异型）</td><td>人工核算</td><td>转人工报价</td></tr>
+            </table>
+            <div class="rule-note" style="padding:10px 14px">损耗率：3%（已含在纸价中）· 单价核算精度 0.01 元</div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><span class="pt">报价公式（当前生效）</span></div>
+            <div class="rule-note" style="padding:14px 16px;font-size:12.5px;line-height:2.1">
+              展开面积 = [（长 + 宽）× 2 + 50] ×（宽 + 高）÷ 1,000,000 ㎡<br>
+              基础价 = 展开面积 × 纸板单价（按材质档位）<br>
+              最终单价 = 基础价 × 数量折扣系数 + 分摊加工费<br>
+              <span style="color:#B45309">※ 异型箱/超范围尺寸 → 转人工报价，不走公式</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 客户管理 -->
+      <div id="ad-cust" class="hide">
+        <div class="ahead">
+          <div><div class="at">客户管理</div><div class="as">共 23 个企业客户 · 本月新增 4 个</div></div>
+          <button class="abtn abtn-pri">+ 开通新客户</button>
+        </div>
+        <div class="panel">
+          <table class="xt">
+            <tr><th>企业名称</th><th>联系人</th><th>手机号</th><th>本月订单</th><th>本月金额</th><th>状态</th><th>操作</th></tr>
+            <tr><td>深圳市鑫达电子有限公司</td><td>张经理</td><td>138 0000 0000</td><td>5</td><td>¥11,900</td><td><span class="tag tg-sent">正常</span></td><td><span class="tlink">编辑</span></td></tr>
+            <tr><td>深圳宏发五金制品厂</td><td>李厂长</td><td>139 0000 0000</td><td>3</td><td>¥8,650</td><td><span class="tag tg-sent">正常</span></td><td><span class="tlink">编辑</span></td></tr>
+            <tr><td>顺达贸易有限公司</td><td>王主管</td><td>137 0000 0000</td><td>4</td><td>¥6,240</td><td><span class="tag tg-sent">正常</span></td><td><span class="tlink">编辑</span></td></tr>
+            <tr><td>鸿运电器有限公司</td><td>刘经理</td><td>136 0000 0000</td><td>2</td><td>¥4,100</td><td><span class="tag tg-wait">待审核</span></td><td><span class="tlink">审核</span></td></tr>
+          </table>
+          <div class="rule-note" style="padding:10px 14px">客户账号由厂方开通后，客户才能登录下单（防散客乱询价）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== 图标 =====
+const ICONS = {
+  home: '<path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>',
+  order: '<path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/>',
+  me: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>'
+};
+function ic(name, size, color) {
+  const s = size || 21, c = color || 'currentColor';
+  return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[name] || '') + '</svg>';
+}
+// ===== TabBar（遍历配置数组）=====
+const TABS = [
+  { key: 'home', label: '首页', icon: 'home' },
+  { key: 'orders', label: '订单', icon: 'order' },
+  { key: 'me', label: '我的', icon: 'me' }
+];
+function renderTabbar(containerId, active) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = TABS.map(function (t) {
+    const on = t.key === active ? ' on' : '';
+    return '<div class="tb' + on + '" onclick="go(\'' + (t.key === 'orders' ? 'orders' : t.key) + '\')">' + ic(t.icon, 22) + '<span>' + t.label + '</span></div>';
+  }).join('');
+}
+renderTabbar('tabbar-orders', 'orders');
+renderTabbar('tabbar-me', 'me');
+// ===== 路由 =====
+const PAGES = ['login', 'home', 'order', 'confirm', 'success', 'orders', 'detail', 'me'];
+function go(page) {
+  PAGES.forEach(function (p) {
+    const el = document.getElementById('pg-' + p);
+    if (el) el.classList.toggle('hide', p !== page);
+  });
+  location.hash = '#/' + page;
+}
+// ===== 模式切换 =====
+function switchMode(mode) {
+  const isClient = mode === 'client';
+  document.getElementById('stage-client').style.display = isClient ? 'flex' : 'none';
+  document.getElementById('stage-admin').style.display = isClient ? 'none' : 'block';
+  document.getElementById('tb-client').classList.toggle('on', isClient);
+  document.getElementById('tb-admin').classList.toggle('on', !isClient);
+  document.getElementById('tb-note').textContent = isClient
+    ? '— 点"报价下单"体验核心流程：选规格 → 实时报价 → 下单 —'
+    : '— 后台重点：订单导出（生产单）与报价规则（厂方自维护） —';
+}
+function adminGo(sec) {
+  ['dash', 'orders', 'price', 'cust'].forEach(function (s) {
+    const el = document.getElementById('ad-' + s);
+    if (el) el.classList.toggle('hide', s !== sec);
+    const nav = document.getElementById('adv-' + s);
+    if (nav) nav.classList.toggle('on', s === sec);
+  });
+}
+// ===== 下单页交互 =====
+const BOXTYPES = [
+  { k: 'rsc', name: '开槽箱', desc: 'RSC 标准箱', coef: 1.0 },
+  { k: 'tdg', name: '天地盖', desc: '上下盖结构', coef: 1.22 },
+  { k: 'fjb', name: '飞机盒', desc: '电商快递', coef: 1.10 },
+  { k: 'other', name: '异型/其他', desc: '人工报价', coef: 0 }
+];
+const MATS = [
+  { k: 'b3b', name: '三层普通', price: 2.85 },
+  { k: 'k3k', name: '三层加硬', price: 3.40 },
+  { k: 'bb', name: '五层普通', price: 4.20 },
+  { k: 'kk', name: '五层加硬', price: 5.10 },
+  { k: 'kkh', name: '五层特硬', price: 5.85 }
+];
+const QTYS = [500, 1000, 3000, 5000];
+const PRINTS = [
+  { k: 'none', name: '不印刷', fee: 0 },
+  { k: 'mono', name: '单色印刷', fee: 150 },
+  { k: 'multi', name: '双色印刷', fee: 300 }
+];
+function qtyFactor(q) { return q >= 5000 ? 0.85 : q >= 3000 ? 0.90 : q >= 1000 ? 0.95 : 1.0; }
+let state = { box: 'rsc', mat: 'kk', qty: 1000, print: 'none' };
+function calcUnit(q) {
+  const L = parseFloat(document.getElementById('dim-l').value) || 500;
+  const W = parseFloat(document.getElementById('dim-w').value) || 400;
+  const H = parseFloat(document.getElementById('dim-h').value) || 300;
+  const bt = BOXTYPES.find(function (b) { return b.k === state.box; });
+  const mt = MATS.find(function (m) { return m.k === state.mat; });
+  if (!bt || !mt || bt.coef === 0) return null;
+  const area = ((L + W) * 2 + 50) * (W + H) / 1000000;
+  return area * mt.price * qtyFactor(q) * bt.coef;
+}
+function renderOrder() {
+  // 箱型
+  document.getElementById('boxtype-grid').innerHTML = BOXTYPES.map(function (b) {
+    const on = b.k === state.box ? ' on' : '';
+    return '<div class="bt' + on + '" onclick="pickBox(\'' + b.k + '\')">' +
+      '<div class="btg">' + boxIcon(b.k) + '</div>' +
+      '<div class="btl">' + b.name + '</div><div class="bta">' + b.desc + '</div></div>';
+  }).join('');
+  // 材质
+  document.getElementById('mat-row').innerHTML = MATS.map(function (m) {
+    const on = m.k === state.mat ? ' on' : '';
+    return '<div class="opt' + on + '" onclick="pickMat(\'' + m.k + '\')">' + m.name + '<small>' + m.price.toFixed(2) + ' 元/㎡ 起</small></div>';
+  }).join('');
+  // 数量
+  document.getElementById('qty-row').innerHTML = QTYS.map(function (q) {
+    const on = q === state.qty ? ' on' : '';
+    const u = calcUnit(q);
+    return '<div class="qq' + on + '" onclick="pickQty(' + q + ')"><div class="qn">' + q + '个</div><div class="qp">' + (u ? '¥' + u.toFixed(2) + '/个' : '需人工') + '</div></div>';
+  }).join('');
+  // 印刷
+  document.getElementById('print-row').innerHTML = PRINTS.map(function (p) {
+    const on = p.k === state.print ? ' on' : '';
+    return '<div class="opt' + on + '" onclick="pickPrint(\'' + p.k + '\')">' + p.name + '</div>';
+  }).join('');
+  // 价格
+  const u = calcUnit(state.qty);
+  const totalEl = document.getElementById('pv-total');
+  const unitEl = document.getElementById('pd-unit');
+  if (u === null) {
+    totalEl.innerHTML = '人工报价';
+    unitEl.textContent = '异型/特殊规格 → 提交需求，销售 1 小时内回价';
+  } else {
+    const pr = PRINTS.find(function (p) { return p.k === state.print; });
+    const total = u * state.qty + pr.fee;
+    totalEl.innerHTML = '¥' + total.toLocaleString('zh-CN', { maximumFractionDigits: 0 }) + '<small> / 共' + state.qty + '个</small>';
+    unitEl.textContent = '单价 ¥' + u.toFixed(2) + ' / 个' + (pr.fee ? ' · 含制版费 ¥' + pr.fee : '') + ' · 预计交期 5-7 个工作日';
+  }
+  // 梯子价
+  const lad = document.getElementById('ladder');
+  if (u === null) { lad.innerHTML = ''; return; }
+  lad.innerHTML = QTYS.map(function (q) {
+    const uu = calcUnit(q);
+    const cur = q === state.qty ? ' cur' : '';
+    return '<div class="lad' + cur + '">' + q + '个<div class="lp">¥' + (uu ? uu.toFixed(2) : '-') + '</div></div>';
+  }).join('');
+}
+function boxIcon(k) {
+  const c = k === 'other' ? '#9CA3AF' : '#1E4E8C';
+  if (k === 'fjb') return '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-4 9 4-9 4-9-4z"/><path d="M3 9v6l9 4 9-4V9"/><path d="M12 13v6"/></svg>';
+  if (k === 'tdg') return '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="7" rx="1"/><rect x="5" y="13" width="14" height="7" rx="1"/></svg>';
+  if (k === 'other') return '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 015 .8c0 1.7-2.5 2-2.5 3.4"/><circle cx="12" cy="16.8" r=".5"/></svg>';
+  return '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg>';
+}
+function pickBox(k) { state.box = k; if (k === 'other') { go('confirm'); } renderOrder(); }
+function pickMat(k) { state.mat = k; renderOrder(); }
+function pickQty(q) { state.qty = q; renderOrder(); }
+function pickPrint(p) { state.print = p; renderOrder(); }
+// 尺寸输入实时重算
+['dim-l', 'dim-w', 'dim-h'].forEach(function (id) {
+  document.getElementById(id).addEventListener('input', renderOrder);
+});
+// ===== 常用规格快选 =====
+function applyQuickSpec(L, W, H, mat) {
+  document.getElementById('dim-l').value = L;
+  document.getElementById('dim-w').value = W;
+  document.getElementById('dim-h').value = H;
+  state.mat = mat;
+  renderOrder();
+  go('order');
+}
+// ===== 初始化 =====
+renderOrder();
+(function () {
+  const m = (location.hash || '').match(/#\/(\w+)/);
+  go(m ? m[1] : 'home');
+})();
+</script>
+
+
+</body>
+</html>
