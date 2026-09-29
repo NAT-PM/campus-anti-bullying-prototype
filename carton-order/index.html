@@ -324,7 +324,9 @@ table.xt tr:hover td{background:#F9FBFE}
             <div class="svc"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#33517A" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>准时交货</div>
           </div>
           <div class="more-link">— 人工报价：异型箱/特殊要求点这里 —</div>
+          <div style="height:64px"></div>
         </div>
+        <div class="tabbar" id="tabbar-home"></div>
       </div>
       <!-- 报价下单页（核心） -->
 <div class="page hide" id="pg-order">
@@ -709,6 +711,7 @@ function renderTabbar(containerId, active) {
     return '<div class="tb' + on + '" onclick="go(\'' + (t.key === 'orders' ? 'orders' : t.key) + '\')">' + ic(t.icon, 22) + '<span>' + t.label + '</span></div>';
   }).join('');
 }
+renderTabbar('tabbar-home', 'home');
 renderTabbar('tabbar-orders', 'orders');
 renderTabbar('tabbar-me', 'me');
 // ===== 路由 =====
