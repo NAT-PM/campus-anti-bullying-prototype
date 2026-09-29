@@ -30,9 +30,9 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#22262B;c
 .navbar .nb-title{font-size:17px;font-weight:700;flex:1;text-align:center}
 .navbar .nb-back{width:64px;font-size:15px;color:var(--pri);cursor:pointer;font-weight:600}
 .navbar .nb-extra{width:64px;text-align:right;font-size:12px;color:var(--sub)}
-.content{flex:1;overflow-y:auto;padding:0 14px 16px;position:relative}
+.content{flex:1;min-height:0;overflow-y:auto;padding:0 14px 16px;position:relative}
 .content.pt{padding-top:12px}
-.page{animation:pageIn .22s}
+.page{display:flex;flex-direction:column;flex:1;min-height:0;animation:pageIn .22s}
 @keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .hide{display:none!important}
 .tabbar{position:absolute;bottom:0;left:0;right:0;height:64px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;z-index:20}
@@ -234,6 +234,27 @@ table.xt tr:hover td{background:#F9FBFE}
 .faq-a{font-size:12px;color:var(--sub);margin-top:5px;line-height:1.75}
 textarea.inp{height:88px;padding:12px 14px;resize:none;line-height:1.6;font-family:inherit}
 </style>
+<style>
+/* 移动端全屏模式（手机上打开）：手机壳铺满屏幕，可正常滚动 */
+@media (max-width: 640px) {
+  html, body { overflow: hidden; height: 100%; }
+  .toolbar { height: 46px; padding: 0 10px; gap: 8px; justify-content: center; }
+  .tb-title { display: none; }
+  .tb-btn { font-size: 12.5px; padding: 7px 16px; white-space: nowrap; }
+  .tb-note { display: none; }
+  .stage { padding: 46px 0 0; min-height: auto; }
+  .phone { width: 100vw; height: calc(100vh - 46px); height: calc(100dvh - 46px); border: none; border-radius: 0; box-shadow: none; }
+  .island { display: none; }
+  .statusbar { display: none; }
+  .content { -webkit-overflow-scrolling: touch; }
+  .tabbar { padding-bottom: env(safe-area-inset-bottom); height: auto; min-height: 64px; }
+  .admin-stage { padding: 60px 0 20px; overflow-x: auto; }
+  .admin-wrap { width: 1240px; }
+}
+@media (min-width: 641px) {
+  .content { -webkit-overflow-scrolling: touch; }
+}
+</style>
 </head>
 <body>
 
@@ -288,7 +309,7 @@ textarea.inp{height:88px;padding:12px 14px;resize:none;line-height:1.6;font-fami
             <div class="hstat">
               <div><div class="n">12</div><div class="l">本月订单</div></div>
               <div><div class="n">1</div><div class="l">生产中</div></div>
-              <div><div class="n">¥8,650</div><div class="l">本月金额</div></div>
+              <div><div class="n">¥9,090</div><div class="l">本月金额</div></div>
             </div>
           </div>
           <div class="quick-order" onclick="go('order')">
@@ -325,8 +346,8 @@ textarea.inp{height:88px;padding:12px 14px;resize:none;line-height:1.6;font-fami
           </div>
           <div class="card">
             <div class="sec-title"><span class="dot"></span>最近订单<span style="margin-left:auto;font-size:11.5px;color:var(--pri);font-weight:600;cursor:pointer" onclick="go('orders')">全部 ›</span></div>
-            <div class="oline" onclick="go('detail')"><div><div class="ol-t">五层加硬 500×400×300</div><div class="ol-s">9月22日 · 1000个</div></div><span class="ostatus st-prod">生产中</span></div>
-            <div class="oline" onclick="go('detail2')"><div><div class="ol-t">三层普通 350×260×150</div><div class="ol-s">9月18日 · 2000个</div></div><span class="ostatus st-sent">已发货</span></div>
+            <div class="oline" onclick="showDetail('DD20260923002')"><div><div class="ol-t">五层加硬 500×400×300</div><div class="ol-s">9月22日 · 1000个</div></div><span class="ostatus st-prod">生产中</span></div>
+            <div class="oline" onclick="showDetail('DD20260918001')"><div><div class="ol-t">三层普通 350×260×150</div><div class="ol-s">9月18日 · 2000个</div></div><span class="ostatus st-sent">已发货</span></div>
           </div>
           <div class="svc-row">
             <div class="svc"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#33517A" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z"/></svg>实时报价</div>
@@ -476,28 +497,28 @@ textarea.inp{height:88px;padding:12px 14px;resize:none;line-height:1.6;font-fami
       <div class="ss-item"><div class="ss-n">12</div><div class="ss-l">本月订单</div></div>
       <div class="ss-item"><div class="ss-n">1</div><div class="ss-l">生产中</div></div>
       <div class="ss-item"><div class="ss-n">9</div><div class="ss-l">已发货</div></div>
-      <div class="ss-item"><div class="ss-n">¥8,650</div><div class="ss-l">本月金额</div></div>
+      <div class="ss-item"><div class="ss-n">¥9,090</div><div class="ss-l">本月金额</div></div>
     </div>
     <div class="opt-row" style="margin-bottom:12px">
       <div class="opt on" onclick="pickChip(this)">全部</div><div class="opt" onclick="pickChip(this)">待处理</div><div class="opt" onclick="pickChip(this)">生产中</div><div class="opt" onclick="pickChip(this)">已发货</div>
     </div>
-    <div class="order-card" onclick="go('detail')">
+    <div class="order-card" onclick="showDetail('DD20260923002')">
       <div class="oc-top"><span>DD20260923002</span><span class="ostatus st-prod">生产中</span></div>
       <div class="oc-mid">
         <div class="oc-thumb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8853A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/></svg></div>
         <div><div class="oc-name">五层加硬开槽箱</div><div class="oc-spec">500×400×300mm · 1000个 · 不印刷</div></div>
       </div>
-      <div class="oc-bottom"><span style="font-size:11.5px;color:var(--sub)">9月23日 14:20 下单</span><span class="oc-price">¥2,380 <small>¥2.38/个</small></span></div>
+      <div class="oc-bottom"><span style="font-size:11.5px;color:var(--sub)">9月23日 14:20 下单</span><span class="oc-price">¥6,270 <small>¥6.27/个</small></span></div>
     </div>
-    <div class="order-card" onclick="go('detail2')">
+    <div class="order-card" onclick="showDetail('DD20260918001')">
       <div class="oc-top"><span>DD20260918001</span><span class="ostatus st-sent">已发货</span></div>
       <div class="oc-mid">
         <div class="oc-thumb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8853A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/></svg></div>
         <div><div class="oc-name">三层普通开槽箱</div><div class="oc-spec">350×260×150mm · 2000个 · 单色印刷</div></div>
       </div>
-      <div class="oc-bottom"><span style="font-size:11.5px;color:var(--sub)">9月18日 10:05 下单</span><span class="oc-price">¥1,360 <small>¥0.68/个</small></span></div>
+      <div class="oc-bottom"><span style="font-size:11.5px;color:var(--sub)">9月18日 10:05 下单</span><span class="oc-price">¥2,820 <small>¥1.41/个</small></span></div>
     </div>
-    <div class="order-card" onclick="go('detail3')">
+    <div class="order-card" onclick="showDetail('DD20260915001')">
       <div class="oc-top"><span>DD20260915001</span><span class="ostatus st-wait">待处理</span></div>
       <div class="oc-mid">
         <div class="oc-thumb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8853A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/></svg></div>
@@ -510,35 +531,10 @@ textarea.inp{height:88px;padding:12px 14px;resize:none;line-height:1.6;font-fami
   <div class="tabbar" id="tabbar-orders"></div>
 </div>
 
-<!-- 订单详情 -->
+<!-- 订单详情（动态渲染） -->
 <div class="page hide" id="pg-detail">
   <div class="navbar"><div class="nb-back" onclick="go('orders')">‹ 返回</div><div class="nb-title">订单详情</div><div class="nb-extra"></div></div>
-  <div class="content">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <span style="font-size:12px;color:var(--sub)">订单号 DD20260923002</span><span class="ostatus st-prod">生产中</span>
-      </div>
-      <div class="timeline">
-        <div class="tl-item done"><div class="tl-dot"></div><div><div class="tl-t">已提交</div><div class="tl-s">9月23日 14:20</div></div></div>
-        <div class="tl-item done"><div class="tl-dot"></div><div><div class="tl-t">业务已确认 · 已进入生产</div><div class="tl-s">9月23日 15:05</div></div></div>
-        <div class="tl-item cur"><div class="tl-dot"></div><div><div class="tl-t">生产制造中</div><div class="tl-s">预计 9月28日 完工</div></div></div>
-        <div class="tl-item"><div class="tl-dot"></div><div><div class="tl-t">发货</div><div class="tl-s">待生产完成</div></div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="sec-title"><span class="dot"></span>规格信息</div>
-      <div class="detail-row"><span class="dk">箱型</span><span class="dv">开槽箱（RSC）</span></div>
-      <div class="detail-row"><span class="dk">尺寸</span><span class="dv">500×400×300mm</span></div>
-      <div class="detail-row"><span class="dk">材质</span><span class="dv">五层加硬（AB楞）</span></div>
-      <div class="detail-row"><span class="dk">印刷</span><span class="dv">不印刷</span></div>
-      <div class="detail-row"><span class="dk">数量</span><span class="dv">1000 个</span></div>
-      <div class="detail-row" style="border-bottom:none"><span class="dk">金额</span><span class="dv" style="color:var(--pri-d);font-weight:800">¥2,380（¥2.38/个）</span></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-bottom:14px">
-      <button class="btn btn-ghost">再来一单</button>
-      <button class="btn btn-pri">联系业务员</button>
-    </div>
-  </div>
+  <div class="content pt" id="dt-body"></div>
 </div>
 
 <!-- 我的 -->
@@ -977,6 +973,72 @@ function pickChip(el) {
   const siblings = el.parentNode.querySelectorAll('.opt');
   siblings.forEach(function (x) { x.classList.remove('on'); });
   el.classList.add('on');
+}
+// ===== 订单数据与动态详情 =====
+const ORDERS = {
+  'DD20260923002': {
+    status: '生产中', cls: 'st-prod',
+    tl: [
+      ['已提交', '9月23日 14:20', 'done'],
+      ['业务已确认 · 已进入生产', '9月23日 15:05', 'done'],
+      ['生产制造中 · 预计 9月28日 完工', '进行中', 'cur'],
+      ['发货', '待生产完成', '']
+    ],
+    box: '开槽箱（RSC）', size: '500×400×300mm', mat: '五层加硬（AB楞）',
+    print: '不印刷', qty: '1000 个', price: '¥6,270（¥6.27/个）'
+  },
+  'DD20260918001': {
+    status: '已发货', cls: 'st-sent',
+    tl: [
+      ['已提交', '9月18日 10:05', 'done'],
+      ['业务已确认 · 已进入生产', '9月18日 11:20', 'done'],
+      ['生产完成', '9月22日', 'done'],
+      ['已发货 · 物流单号 SF138xxxx8888', '9月23日', 'cur']
+    ],
+    box: '开槽箱（RSC）', size: '350×260×150mm', mat: '三层普通（B3B单坑）',
+    print: '单色印刷', qty: '2000 个', price: '¥2,820（¥1.41/个）'
+  },
+  'DD20260915001': {
+    status: '待回价', cls: 'st-wait',
+    tl: [
+      ['需求已提交', '9月15日 16:40', 'done'],
+      ['销售核查中 · 预计 1 小时内回价', '进行中', 'cur'],
+      ['确认报价后转订单', '待处理', '']
+    ],
+    box: '飞机盒（异型-人工报价）', size: '320×220×80mm', mat: '三层加硬',
+    print: '彩色印刷', qty: '500 个', price: '待销售回价'
+  }
+};
+function showDetail(id) {
+  renderDetail(id);
+  go('detail');
+}
+function renderDetail(id) {
+  const o = ORDERS[id] || ORDERS['DD20260923002'];
+  const tlHtml = o.tl.map(function (t) {
+    return '<div class="tl-item ' + t[2] + '"><div class="tl-dot"></div><div><div class="tl-t">' + t[0] + '</div><div class="tl-s">' + t[1] + '</div></div></div>';
+  }).join('');
+  document.getElementById('dt-body').innerHTML =
+    '<div class="card">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+        '<span style="font-size:12px;color:var(--sub)">订单号 ' + id + '</span>' +
+        '<span class="ostatus ' + o.cls + '">' + o.status + '</span>' +
+      '</div>' +
+      '<div class="timeline">' + tlHtml + '</div>' +
+    '</div>' +
+    '<div class="card">' +
+      '<div class="sec-title"><span class="dot"></span>规格信息</div>' +
+      '<div class="detail-row"><span class="dk">箱型</span><span class="dv">' + o.box + '</span></div>' +
+      '<div class="detail-row"><span class="dk">尺寸</span><span class="dv">' + o.size + '</span></div>' +
+      '<div class="detail-row"><span class="dk">材质</span><span class="dv">' + o.mat + '</span></div>' +
+      '<div class="detail-row"><span class="dk">印刷</span><span class="dv">' + o.print + '</span></div>' +
+      '<div class="detail-row"><span class="dk">数量</span><span class="dv">' + o.qty + '</span></div>' +
+      '<div class="detail-row" style="border-bottom:none"><span class="dk">金额</span><span class="dv" style="color:var(--pri-d);font-weight:800">' + o.price + '</span></div>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px;margin-bottom:14px">' +
+      '<button class="btn btn-ghost" onclick="go(\'order\')">再来一单</button>' +
+      '<button class="btn btn-pri" onclick="toast(\'正在接通客服（演示）\')">联系业务员</button>' +
+    '</div>';
 }
 // ===== 常用规格快选 =====
 function applyQuickSpec(L, W, H, mat) {
