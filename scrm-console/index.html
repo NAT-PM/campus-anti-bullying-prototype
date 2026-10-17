@@ -97,6 +97,7 @@ input,textarea,select,button{font-family:inherit}
 .conv-name{font-weight:600;font-size:13px;color:#eaf1fb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:112px}
 .conv-msg{color:var(--txt2);font-size:12px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .conv-meta{color:var(--txt3);font-size:11px;margin-top:4px;display:flex;gap:8px;align-items:center}
+.conv-meta .n-badge{margin-left:auto}
 .conv-empty{padding:30px 16px;text-align:center;color:var(--txt3);font-size:12px}
 .conv-main{display:flex;flex-direction:column;min-width:0;min-height:0;background:#080d13}
 .conv-head{padding:11px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;background:var(--bg2);flex:none}
@@ -387,6 +388,87 @@ tbody tr:last-child td{border-bottom:0}
 .tl-s{font-size:10.5px;color:var(--txt3);margin-top:2px}
 @media (max-width:1280px){.cfg-grid{grid-template-columns:1fr}.flow{grid-template-columns:repeat(2,1fr)}.flow-i:nth-child(2)::after{display:none}}
 
+/* ---------- 移动端适配（手机 / 窄屏） ---------- */
+.mnav-btn,.mback{display:none}
+.mnav-mask{display:none}
+@media (max-width:1180px){.app{min-width:0}}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr;height:100vh;height:100dvh}
+  body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+  .mnav-btn{display:grid;place-items:center;width:34px;height:34px;flex:none;border:1px solid var(--line2);border-radius:8px;background:#131b27;color:#b3c1d4;cursor:pointer;padding:0}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:250px;z-index:64;transform:translateX(-102%);transition:transform .24s cubic-bezier(.4,0,.2,1);box-shadow:16px 0 44px rgba(0,0,0,.55)}
+  .sidebar.on{transform:none}
+  .mnav-mask{display:block;position:fixed;inset:0;background:rgba(2,5,9,.62);z-index:63;opacity:0;pointer-events:none;transition:.2s}
+  .mnav-mask.on{opacity:1;pointer-events:auto}
+  .brand{height:52px}
+  .nav-item{height:44px;font-size:13.5px}
+  .topbar{height:52px;padding:0 12px;gap:9px}
+  .topbar h1{font-size:14px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .topbar .sub,.topbar .stats,.topbar .demo-tag{display:none}
+  .top-acts{margin-left:auto;gap:7px}
+  .pad{padding:12px 12px 26px}
+  .kpi-row,.kpi-row.c3,.kpi-row.c5{grid-template-columns:repeat(2,1fr);gap:9px}
+  .kpi .v{font-size:19px}
+  .card{padding:12px}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .pg-head{flex-wrap:wrap;gap:10px;margin-bottom:12px}
+  .pg-head .ph-ico{display:none}
+  .h2p{display:none}
+  .pg-head h2{font-size:16px}
+  .pg-head .ph-act{margin-left:0;width:100%;gap:8px}
+  .pg-head .ph-act .btn{flex:1;justify-content:center}
+  .cfg-grid{gap:12px}
+  .cfg-card{padding:13px}
+  .flow{grid-template-columns:1fr}
+  .flow-i::after{display:none}
+  .rng-row .rl{width:96px;font-size:11.3px}
+  .seg-i{padding:7px 4px;font-size:11.5px;white-space:normal;line-height:1.3}
+  .kw-box{flex-wrap:wrap}
+  .kw-box .btn{width:100%;justify-content:center}
+  .tbl-wrap{max-height:none}
+  .tbl-wrap table{min-width:680px}
+  .toolbar .search-box{min-width:0;flex:1 1 100%}
+  .drawer{width:100%}
+  .modal{width:calc(100% - 22px);max-height:88vh}
+  .field-row{grid-template-columns:1fr}
+  .chat-wrap{grid-template-columns:1fr}
+  .conv-main{display:none}
+  .app.mchat .conv-list{display:none}
+  .app.mchat .conv-main{display:flex}
+  .mback{display:grid;place-items:center;width:32px;height:32px;flex:none;border:1px solid var(--line2);border-radius:8px;background:#131b27;color:#b3c1d4;cursor:pointer;padding:0}
+  .conv-item{padding:12px 14px}
+  .conv-name{max-width:none;flex:1;font-size:13.5px}
+  .conv-head{padding:9px 12px;gap:9px;flex-wrap:wrap}
+  .conv-head .name{font-size:14px}
+  .conv-head .meta{font-size:10.5px;line-height:1.45}
+  .conv-head .acts{margin-left:auto;gap:7px}
+  .conv-head .acts .btn{height:30px;padding:0 10px;font-size:11.5px}
+  .conv-body{padding:14px 12px 6px}
+  .bubble{max-width:100%;font-size:12.6px}
+  .ai-card,.handoff{margin-left:0;max-width:100%;padding:10px 11px}
+  .ai-actions .btn-mini{padding:5px 9px}
+  .composer{padding:8px 10px calc(10px + env(safe-area-inset-bottom));gap:8px;flex-wrap:wrap}
+  .composer .input-wrap{order:1;flex:1 1 140px;min-width:0}
+  .send-btn{order:2;margin-left:auto;height:32px;padding:0 16px}
+  .composer .switch{order:3;flex:1 1 100%;font-size:11px;color:var(--txt3)}
+  .sys-line::before,.sys-line::after{width:28px}
+  .wb-sub{white-space:normal}
+  .kb-row .kbn,.kb-row .kbs{white-space:normal;line-height:1.45}
+  .kb-main{min-width:0}
+  .camp-row{grid-template-columns:1fr 1fr auto;gap:8px 10px;padding:12px}
+  .camp-row>div:nth-child(1){grid-column:1/-1}
+  .camp-row>div:nth-child(6){grid-column:3;grid-row:2/4;align-self:center}
+  .camp-title{font-size:12.5px}
+  .score-row .num{width:46px}
+  .an-tip{flex-wrap:wrap}
+  .toast{max-width:calc(100vw - 40px)}
+}
+@media (max-width:560px){
+  .wb-nm{font-size:11.8px}
+  .tl-t{font-size:11.2px}
+  .kpi .d{font-size:10.4px}
+}
+
 </style>
 </head>
 <body>
@@ -403,6 +485,7 @@ tbody tr:last-child td{border-bottom:0}
 </div>
 
 <div class="mask" id="mask" data-act="close-overlay"></div>
+<div class="mnav-mask" id="mnavMask" data-act="mnav-close"></div>
 
 <div class="drawer" id="drawer">
   <div class="drawer-h">
@@ -432,6 +515,7 @@ const ICONS = {
   chat: '<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.9 9.9 0 0 1-3.4-.6L3 21l1.7-4.6A8.2 8.2 0 0 1 3 11.5a8.4 8.4 0 0 1 9-8.4 8.4 8.4 0 0 1 9 8.4z"/>',
   bot: '<rect x="3.5" y="7.5" width="17" height="12" rx="3"/><path d="M12 3.5v4"/><circle cx="8.5" cy="13" r="1.1"/><circle cx="15.5" cy="13" r="1.1"/><path d="M9.5 16.5h5"/>',
   back: '<path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/>',
+  menu: '<path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/>',
   users: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5.6a3.2 3.2 0 0 1 0 6.2"/><path d="M17.6 20a5.6 5.6 0 0 0-2-4.2"/>',
   mega: '<path d="M4 10v4a1 1 0 0 0 1 1h2l3 4V5L7 9H5a1 1 0 0 0-1 1z"/><path d="M14 8.5a4.6 4.6 0 0 1 0 7"/><path d="M17 5.5a8 8 0 0 1 0 13"/>',
   chart: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>',
@@ -576,7 +660,7 @@ const DOCS = [
 ];
 
 /* ========== 全局状态 ========== */
-const S = { page: 'inbox', cid: 'c1', aiFirst: true, inboxCh: '全部渠道', kbCat: '全部', custQ: '', kbQ: '' };
+const S = { page: 'inbox', cid: 'c1', aiFirst: true, inboxCh: '全部渠道', kbCat: '全部', custQ: '', kbQ: '', mchat: false };
 
 /* 配置中心演示状态（仅当前会话） */
 const CFG = {
@@ -611,7 +695,7 @@ const CFG = {
 const CH_CLS = { WhatsApp: 'ch-wa', Telegram: 'ch-tg', Instagram: 'ch-ig', '邮件': 'ch-em', LiveChat: 'ch-em' };
 const chCls = c => CH_CLS[c] || 'ch-em';
 function stCls(s) { return s === 'ai' ? 'st-ai' : s === 'human' ? 'st-human' : s === 'low' ? 'st-low' : 'st-closed'; }
-function stTxt(s) { return s === 'ai' ? 'AI接待中' : s === 'human' ? '已转人工' : s === 'low' ? '置信度低 · 待接入' : '已结束'; }
+function stTxt(s) { return s === 'ai' ? 'AI接待中' : s === 'human' ? '已转人工' : s === 'low' ? '待接入' : '已结束'; }
 function initials(n) {
   const p = String(n).trim().split(/\s+/);
   if (p.length === 1) return Array.from(String(n)).slice(0, 2).join('');
@@ -677,7 +761,7 @@ function renderTopbar() {
   } else if (S.page === 'inbox') {
     actions = `<div class="top-acts"><button class="btn btn-ghost" data-act="read-all">${ic('check', 14)}全部标记已读</button></div>`;
   }
-  $('#topbar').innerHTML = `<h1>${m.t}</h1><span class="demo-tag">演示数据</span><span class="sub">${m.s}</span>${actions}`;
+  $('#topbar').innerHTML = `<button class="mnav-btn" data-act="mnav" aria-label="打开菜单">${ic('menu', 17)}</button><h1>${m.t}</h1><span class="demo-tag">演示数据</span><span class="sub">${m.s}</span>${actions}`;
 }
 
 /* ========== 路由 ========== */
@@ -688,12 +772,25 @@ const RENDER = {
 function go(p) {
   if (location.hash === '#/' + p) route(); else location.hash = '#/' + p;
 }
+const isMobile = () => window.innerWidth <= 900;
+function applyMChat() {
+  const app = document.querySelector('.app');
+  if (app) app.classList.toggle('mchat', isMobile() && !!S.mchat);
+}
+function closeMnav() {
+  const sb = document.querySelector('.sidebar'), mk = $('#mnavMask');
+  if (sb) sb.classList.remove('on');
+  if (mk) mk.classList.remove('on');
+}
+window.addEventListener('resize', () => applyMChat());
 function route() {
   const p = (location.hash.replace(/^#\/?/, '') || 'inbox').split('?')[0];
   S.page = RENDER[p] ? p : 'inbox';
+  if (S.page !== 'inbox') S.mchat = false;
   renderNav();
   renderTopbar();
   $('#page').innerHTML = RENDER[S.page]();
+  applyMChat();
   if (S.page === 'inbox') scrollConvBottom();
 }
 
@@ -731,6 +828,7 @@ function convHTML() {
     ? `<button class="btn btn-ghost" data-act="back-ai">${ic('bot', 14)}转回 AI</button>`
     : `<button class="btn btn-orange" data-act="transfer">${ic('transfer', 14)}转人工</button>`;
   return `<div class="conv-head">
+      <button class="mback" data-act="mchat-back" aria-label="返回会话列表">${ic('back', 16)}</button>
       <div>
         <div class="who"><span class="name">${esc(c.name)}</span><span class="ch ${chCls(c.channel)}">${c.channel}</span><span class="st ${stCls(c.status)}">${stTxt(c.status)}</span></div>
         <div class="meta">客户360°画像：${c.country} · ${seg} · ${ticket} · ${c.lang}偏好</div>
@@ -792,14 +890,17 @@ function renderChatPage() {
   if (S.page !== 'inbox') return;
   $('#page').innerHTML = renderChat();
   renderNav(); renderTopbar();
+  applyMChat();
   scrollConvBottom();
 }
 
 function pickCustomer(id) {
   S.cid = id;
   const c = cur(); c.unread = 0;
+  S.mchat = true;
   if (S.page !== 'inbox') { go('inbox'); return; }
   $('#page').innerHTML = renderChat();
+  applyMChat();
   scrollConvBottom();
 }
 
@@ -925,7 +1026,7 @@ function renderAIWorkbench() {
     <div class="pg-head">
       <div class="ph-ico">${ic('bot', 18, '#a99bf9')}</div>
       <div>
-        <h2>AI智能客服 · 工作台</h2>
+        <h2><span class="h2p">AI智能客服 · </span>工作台</h2>
         <div class="ph-sub">智能体 Ada 在线接手中 · 今日已接待 326 场 · 四大模块配置 ${okAll}/4 就绪，统一在「配置中心」维护</div>
       </div>
       <div class="ph-act">
@@ -1006,7 +1107,7 @@ function renderConfig() {
     <div class="pg-head">
       <div class="ph-ico">${ic('gear', 17, '#a99bf9')}</div>
       <div>
-        <h2>AI智能客服 · 配置中心</h2>
+        <h2><span class="h2p">AI智能客服 · </span>配置中心</h2>
         <div class="ph-sub">智能体 / 知识库 / 转人工 / 置信度评分 —— 四大模块闭环配置，无需代码，运营可自助完成</div>
       </div>
       <div class="ph-act">
@@ -1654,9 +1755,12 @@ document.addEventListener('click', e => {
   if (!a) return;
   const act = a.dataset.act, id = a.dataset.id;
   switch (act) {
-    case 'nav': go(a.dataset.page); break;
+    case 'nav': S.mchat = false; closeMnav(); go(a.dataset.page); break;
+    case 'mnav': document.querySelector('.sidebar').classList.add('on'); $('#mnavMask').classList.add('on'); break;
+    case 'mnav-close': closeMnav(); break;
+    case 'mchat-back': S.mchat = false; applyMChat(); renderChatPage(); break;
     case 'pick': pickCustomer(id); break;
-    case 'cust': closeOverlay(); S.cid = id; go('inbox'); break;
+    case 'cust': closeOverlay(); S.cid = id; S.mchat = true; go('inbox'); break;
     case 'adopt': adopt(); break;
     case 'edit-draft': editDraft(); break;
     case 'transfer': transfer(); break;
@@ -1702,8 +1806,8 @@ document.addEventListener('click', e => {
       break;
     }
     case 'cfg-back': go('chat'); break;
-    case 'wb-open': S.cid = id; go('inbox'); break;
-    case 'wb-inbox': go('inbox'); break;
+    case 'wb-open': S.cid = id; S.mchat = true; go('inbox'); break;
+    case 'wb-inbox': S.mchat = false; go('inbox'); break;
     case 'wb-kb': go('kb'); break;
     case 'wb-trial': toast('演示：打开试运行窗口，可直接提问验证话术与知识命中'); break;
     case 'cfg-chip': CFG[a.dataset.g] = a.dataset.v; renderCfgPage(); break;
