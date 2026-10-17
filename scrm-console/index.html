@@ -554,7 +554,7 @@ const DOCS = [
 ];
 
 /* ========== 全局状态 ========== */
-const S = { page: 'chat', cid: 'c1', aiFirst: true, inboxCh: '全部渠道', kbCat: '全部', custQ: '', kbQ: '' };
+const S = { page: 'inbox', cid: 'c1', aiFirst: true, inboxCh: '全部渠道', kbCat: '全部', custQ: '', kbQ: '' };
 
 /* 配置中心演示状态（仅当前会话） */
 const CFG = {
@@ -600,8 +600,8 @@ const cur = () => CUSTOMERS.find(c => c.id === S.cid) || CUSTOMERS[0];
 
 /* ========== 外壳：导航 + 顶栏 ========== */
 const NAV = [
-  ['inbox', '聚合聊天', 'chat'],
-  ['chat', 'AI智能客服', 'bot', 3],
+  ['inbox', '聚合聊天', 'chat', 3],
+  ['chat', 'AI智能客服', 'bot'],
   ['customers', '客户管理', 'users', '12,847'],
   ['marketing', '社媒营销', 'mega'],
   ['dashboard', '数据看板', 'chart'],
@@ -609,9 +609,9 @@ const NAV = [
   ['kb', '知识库', 'book']
 ];
 const META = {
-  chat: { t: 'AI智能客服工作台', s: '全渠道聚合 · GPT+RAG 应答' },
+  chat: { t: 'AI智能客服 · 配置中心', s: '四大模块闭环配置 · 无需代码，运营可自助完成' },
   config: { t: 'AI智能客服 · 配置中心', s: '四大模块闭环配置 · 无需代码，运营可自助完成' },
-  inbox: { t: '聚合聊天', s: '多渠道统一收件箱' },
+  inbox: { t: '聚合聊天', s: '多渠道统一收件箱 · AI + 人工协同' },
   customers: { t: '客户管理', s: '12,847 位客户 · 360° 画像' },
   marketing: { t: '社媒营销', s: '群发 · RFM 分层触达' },
   dashboard: { t: '数据看板', s: '近 7 天数据' },
@@ -632,15 +632,13 @@ function renderNav() {
 function renderTopbar() {
   const m = META[S.page] || META.chat;
   let actions = '';
-  if (S.page === 'chat' || S.page === 'config') {
+  if (S.page === 'chat' || S.page === 'config' || S.page === 'inbox') {
     actions = `<div class="stats">
       <span>AI独立解决率<b class="stat-g">58%</b></span>
       <span>首次响应<b class="stat-b">8s</b></span>
       <span>今日会话<b class="stat-y">326</b></span>
       <span>人工介入<b class="stat-r">23%</b></span>
-    </div>` + (S.page === 'chat'
-      ? `<button class="btn btn-ghost" data-act="cfg-open">${ic('gear', 14)}配置中心</button>`
-      : '');
+    </div>`;
   } else if (S.page === 'customers') {
     actions = `<div class="top-acts"><button class="btn btn-green" data-act="modal-cust">${ic('plus', 14)}新建客户</button></div>`;
   } else if (S.page === 'marketing') {
@@ -662,19 +660,19 @@ function renderTopbar() {
 
 /* ========== 路由 ========== */
 const RENDER = {
-  chat: renderChat, config: renderConfig, inbox: renderInbox, customers: renderCustomers, marketing: renderMarketing,
+  chat: renderConfig, config: renderConfig, inbox: renderChat, customers: renderCustomers, marketing: renderMarketing,
   dashboard: renderDashboard, channels: renderChannels, kb: renderKB
 };
 function go(p) {
   if (location.hash === '#/' + p) route(); else location.hash = '#/' + p;
 }
 function route() {
-  const p = (location.hash.replace(/^#\/?/, '') || 'chat').split('?')[0];
-  S.page = RENDER[p] ? p : 'chat';
+  const p = (location.hash.replace(/^#\/?/, '') || 'inbox').split('?')[0];
+  S.page = RENDER[p] ? p : 'inbox';
   renderNav();
   renderTopbar();
   $('#page').innerHTML = RENDER[S.page]();
-  if (S.page === 'chat') scrollConvBottom();
+  if (S.page === 'inbox') scrollConvBottom();
 }
 
 /* ========== 1. AI 智能客服工作台 ========== */
@@ -769,7 +767,7 @@ function scrollConvBottom() {
   if (b) b.scrollTop = b.scrollHeight;
 }
 function renderChatPage() {
-  if (S.page !== 'chat') return;
+  if (S.page !== 'inbox') return;
   $('#page').innerHTML = renderChat();
   renderNav(); renderTopbar();
   scrollConvBottom();
@@ -778,7 +776,7 @@ function renderChatPage() {
 function pickCustomer(id) {
   S.cid = id;
   const c = cur(); c.unread = 0;
-  if (S.page !== 'chat') { go('chat'); return; }
+  if (S.page !== 'inbox') { go('inbox'); return; }
   $('#page').innerHTML = renderChat();
   scrollConvBottom();
 }
@@ -891,7 +889,7 @@ function renderConfig() {
         <div class="ph-sub">智能体 / 知识库 / 转人工 / 置信度评分 —— 四大模块闭环配置，无需代码，运营可自助完成</div>
       </div>
       <div class="ph-act">
-        <button class="btn btn-ghost" data-act="cfg-back">${ic('chat', 14)}返回工作台</button>
+        <button class="btn btn-ghost" data-act="cfg-back">${ic('chat', 14)}返回聚合聊天</button>
         <button class="btn btn-green" data-act="cfg-save">${ic('check', 14)}保存配置</button>
       </div>
     </div>
@@ -1537,7 +1535,7 @@ document.addEventListener('click', e => {
   switch (act) {
     case 'nav': go(a.dataset.page); break;
     case 'pick': pickCustomer(id); break;
-    case 'cust': closeOverlay(); S.cid = id; go('chat'); break;
+    case 'cust': closeOverlay(); S.cid = id; go('inbox'); break;
     case 'adopt': adopt(); break;
     case 'edit-draft': editDraft(); break;
     case 'transfer': transfer(); break;
@@ -1573,8 +1571,8 @@ document.addEventListener('click', e => {
     case 'tag-cust': toast('演示：打开标签选择器'); break;
     case 'copy-camp': toast('活动已复制为草稿'); break;
     case 'copy-kb': toast('文档内容已复制'); break;
-    case 'cfg-open': go('config'); break;
-    case 'cfg-back': go('chat'); break;
+    case 'cfg-open': go('chat'); break;
+    case 'cfg-back': go('inbox'); break;
     case 'cfg-chip': CFG[a.dataset.g] = a.dataset.v; renderCfgPage(); break;
     case 'cfg-seg': CFG[a.dataset.g] = a.dataset.v; renderCfgPage(); break;
     case 'cfg-model': CFG.model = a.dataset.v; renderCfgPage(); break;
