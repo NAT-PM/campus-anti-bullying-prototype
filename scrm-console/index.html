@@ -105,6 +105,23 @@ input,textarea,select,button{font-family:inherit}
 .conv-head .name{font-size:15px;font-weight:600}
 .conv-head .meta{color:var(--txt3);font-size:11.5px;margin-top:5px}
 .conv-head .acts{margin-left:auto;display:flex;gap:9px}
+/* 自动翻译 */
+.conv-head{position:relative}
+.tr-btn.on{border-color:rgba(139,123,247,.5);background:rgba(139,123,247,.13);color:#c4b5fd}
+.tr-pop{position:absolute;right:14px;top:calc(100% - 4px);width:330px;background:#0d141e;border:1px solid var(--line2);border-radius:11px;padding:13px 14px;box-shadow:0 18px 44px rgba(0,0,0,.55);z-index:45;display:none}
+.tr-pop.on{display:block}
+.tr-pop .tr-h{display:flex;align-items:center;gap:8px;font-size:12.8px;font-weight:600;color:#e6edf8}
+.tr-pop .tr-h .switch{margin-left:auto}
+.tr-sub{font-size:10.8px;color:var(--txt3);line-height:1.55;margin-top:6px}
+.tr-lbl{font-size:11px;color:var(--txt2);margin:11px 0 7px}
+.tr-langs{display:flex;flex-wrap:wrap;gap:6px}
+.tr-lang{font-size:11.5px;padding:5px 10px;border-radius:7px;border:1px solid var(--line2);background:#121a25;color:var(--txt2);cursor:pointer;transition:.13s}
+.tr-lang:hover{color:var(--txt)}
+.tr-lang.on{border-color:rgba(139,123,247,.55);background:rgba(139,123,247,.16);color:#ddd6fe;font-weight:600}
+.tr-foot{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:10px;border-top:1px dashed rgba(26,35,49,.9)}
+.tr-foot .mini-hint{margin:0;flex:1}
+.tr-line{display:inline-flex;gap:6px;align-items:flex-start;margin-top:6px;padding:5px 9px;border-left:2px solid rgba(139,123,247,.55);background:rgba(139,123,247,.08);border-radius:0 6px 6px 0;font-size:11.8px;color:#c9d3ea;line-height:1.55;max-width:640px}
+.tr-tag{flex:none;font-size:9.5px;color:#a99bf9;border:1px solid rgba(139,123,247,.35);border-radius:4px;padding:0 4px;line-height:15px;margin-top:1px}
 .conv-body{flex:1;overflow-y:auto;padding:20px 24px 8px;min-height:0}
 .msg{display:flex;gap:10px;margin-bottom:13px}
 .msg .av{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:10.5px;font-weight:700;letter-spacing:.3px}
@@ -443,6 +460,7 @@ tbody tr:last-child td{border-bottom:0}
   .conv-head .meta{font-size:10.5px;line-height:1.45}
   .conv-head .acts{margin-left:auto;gap:7px}
   .conv-head .acts .btn{height:30px;padding:0 10px;font-size:11.5px}
+  .tr-pop{width:calc(100vw - 24px);left:8px;right:auto;top:calc(100% + 2px)}
   .conv-body{padding:14px 12px 6px}
   .bubble{max-width:100%;font-size:12.6px}
   .ai-card,.handoff{margin-left:0;max-width:100%;padding:10px 11px}
@@ -634,6 +652,67 @@ const CUSTOMERS = [
   }
 ];
 
+/* 自动翻译演示词条：原文 → 各语种译文，src 为原文语种 */
+const TR = {
+  'Hi, where is my order #88123? It has been 5 days 😊': { src: 'en',
+    zh: '你好，我的订单 #88123 到哪了？已经 5 天了 😊',
+    ru: 'Здравствуйте! Где мой заказ #88123? Уже 5 дней 😊',
+    ja: 'こんにちは、注文 #88123 はどこですか？もう5日経ちました 😊',
+    ar: 'مرحبًا، أين طلبي رقم 88123؟ لقد مضى 5 أيام 😊',
+    es: 'Hola, ¿dónde está mi pedido #88123? Ya han pasado 5 días 😊',
+    pt: 'Olá, onde está o meu pedido #88123? Já se passaram 5 dias 😊',
+    it: "Ciao, dov'è il mio ordine #88123? Sono passati 5 giorni 😊" },
+  'Хочу оформить возврат (I want to return it)': { src: 'ru',
+    zh: '我想办理退货', en: 'I want to return it', ja: '返品したいのですが',
+    ar: 'أريد إرجاع المنتج', es: 'Quiero devolverlo', pt: 'Quero devolver o produto', it: 'Voglio effettuare il reso' },
+  'Hello, do you have wholesale price for 500 pcs?': { src: 'en',
+    zh: '你好，500 件有批发价吗？',
+    ru: 'Здравствуйте, есть оптовая цена на 500 шт.?',
+    ja: 'こんにちは、500個の卸売価格はありますか？',
+    ar: 'مرحبًا، هل لديكم سعر جملة لـ 500 قطعة؟',
+    es: 'Hola, ¿tienen precio mayorista para 500 unidades?',
+    pt: 'Olá, vocês têm preço de atacado para 500 peças?',
+    it: "Ciao, avete un prezzo all'ingrosso per 500 pezzi?" },
+  'こんにちは、クーポンコードはありますか？': { src: 'ja',
+    zh: '你好，有优惠码吗？', en: 'Hello, do you have a coupon code?',
+    ru: 'Здравствуйте, есть промокод?', ar: 'مرحبًا، هل لديكم رمز خصم؟',
+    es: 'Hola, ¿tienen un código de descuento?', pt: 'Olá, vocês têm um cupom de desconto?', it: 'Ciao, avete un codice sconto?' },
+  "Ciao, dov'è il mio pacco? Ordine #87990": { src: 'it',
+    zh: '你好，我的包裹在哪？订单 #87990', en: 'Hi, where is my parcel? Order #87990',
+    ru: 'Здравствуйте, где моя посылка? Заказ #87990', ja: 'こんにちは、荷物はどこですか？注文 #87990',
+    ar: 'مرحبًا، أين طردي؟ الطلب #87990', es: 'Hola, ¿dónde está mi paquete? Pedido #87990', pt: 'Olá, onde está o meu pacote? Pedido #87990' },
+  'Hi! Do you ship to the UK? How long does it take?': { src: 'en',
+    zh: '你好！你们发货到英国吗？要多久？',
+    ru: 'Здравствуйте! Вы доставляете в Великобританию? Сколько времени это занимает?',
+    ja: 'こんにちは！イギリスへ発送できますか？どのくらいかかりますか？',
+    ar: 'مرحبًا! هل تشحنون إلى المملكة المتحدة؟ كم يستغرق ذلك؟',
+    es: '¡Hola! ¿Hacen envíos al Reino Unido? ¿Cuánto tarda?',
+    pt: 'Olá! Vocês enviam para o Reino Unido? Quanto tempo demora?',
+    it: 'Ciao! Spedite nel Regno Unito? Quanto tempo ci vuole?' },
+  '你好，我们公司采购需要开增值税专用发票，可以吗？': { src: 'zh',
+    en: 'Hello, our company needs a special VAT invoice for this purchase — is that possible?',
+    ru: 'Здравствуйте, нашей компании нужен счёт-фактура НДС для закупки — это возможно?',
+    ja: 'こんにちは、会社の購入で増値税専用発票を発行していただけますか？',
+    ar: 'مرحبًا، تحتاج شركتنا إلى فاتورة ضريبة القيمة المضافة الخاصة للشراء، هل هذا ممكن؟',
+    es: 'Hola, nuestra empresa necesita una factura de IVA especial para esta compra, ¿es posible?',
+    pt: 'Olá, nossa empresa precisa de uma fatura de IVA especial para esta compra, é possível?',
+    it: "Ciao, la nostra azienda ha bisogno di una fattura IVA speciale per l'acquisto, è possibile?" },
+  'Qual o prazo de entrega para o Brasil?': { src: 'pt',
+    zh: '发往巴西的配送时效是多久？', en: 'What is the delivery time to Brazil?',
+    ru: 'Каков срок доставки в Бразилию?', ja: 'ブラジルへの配送期間はどのくらいですか？',
+    ar: 'ما هي مدة التوصيل إلى البرازيل؟', es: '¿Cuál es el plazo de entrega a Brasil?', it: 'Qual è il tempo di consegna per il Brasile?' },
+  'Great, thank you! 😊': { src: 'en', zh: '太好了，谢谢！😊' },
+  'Спасибо! Жду форму.': { src: 'ru', zh: '谢谢！我等表格。', en: 'Thank you! I am waiting for the form.' },
+  'Ok, waiting for your price list.': { src: 'en', zh: '好的，等你们的报价单。' },
+  'ありがとうございます！使ってみます。': { src: 'ja', zh: '谢谢！我试试看。', en: 'Thank you! I will give it a try.' },
+  'Perfetto, grazie!': { src: 'it', zh: '太好了，谢谢！', en: 'Perfect, thank you!' },
+  'Great, I will place an order today!': { src: 'en', zh: '太好了，我今天就下单！' },
+  '好的，我整理一下资料发你。': { src: 'zh', en: 'Sure, let me gather the documents and send them to you.' },
+  'Obrigado!': { src: 'pt', zh: '谢谢！', en: 'Thank you!' }
+};
+const TR_LANGS = ['中文', '英语', '俄语', '日语', '阿拉伯语', '西班牙语', '葡萄牙语', '意大利语'];
+const TR_CODE = { '中文': 'zh', '英语': 'en', '俄语': 'ru', '日语': 'ja', '阿拉伯语': 'ar', '西班牙语': 'es', '葡萄牙语': 'pt', '意大利语': 'it' };
+
 const CAMPAIGNS = [
   { name: '双11 女装预售预热', channel: 'WhatsApp', status: '进行中', audience: 'RFM 重要价值客户 · 女装偏好', sent: 12480, open: 68, click: 21, conv: 3.2, time: '10月15日 10:00' },
   { name: '黑五优惠券 8 折', channel: 'Telegram', status: '待发送', audience: '沉睡 60 天客户', sent: 0, open: 0, click: 0, conv: 0, time: '10月25日 20:00' },
@@ -660,7 +739,7 @@ const DOCS = [
 ];
 
 /* ========== 全局状态 ========== */
-const S = { page: 'inbox', cid: 'c1', aiFirst: true, inboxCh: '全部渠道', kbCat: '全部', custQ: '', kbQ: '', mchat: false };
+const S = { page: 'inbox', cid: 'c1', aiFirst: true, inboxCh: '全部渠道', kbCat: '全部', custQ: '', kbQ: '', mchat: false, tr: { on: true, lang: '中文', open: false } };
 
 /* 配置中心演示状态（仅当前会话） */
 const CFG = {
@@ -816,6 +895,26 @@ function renderChat() {
   </div>`;
 }
 
+function trFor(text) {
+  if (!S.tr.on) return '';
+  const item = TR[text];
+  if (!item) return '';
+  const code = TR_CODE[S.tr.lang];
+  if (!code || code === item.src) return '';
+  const t = item[code];
+  if (!t) return '';
+  return `<div class="tr-line"><span class="tr-tag">译 · ${S.tr.lang}</span>${esc(t)}</div>`;
+}
+function trPanelHTML() {
+  return `<div class="tr-pop ${S.tr.open ? 'on' : ''}" id="trPop">
+    <div class="tr-h"><span>自动翻译</span><span class="switch" data-act="tr-sw"><span class="sw ${S.tr.on ? 'on' : ''}"></span></span></div>
+    <div class="tr-sub">开启后，客户消息自动译成「${S.tr.lang}」；你发出的回复自动译成客户语言（${cur().lang}）。</div>
+    <div class="tr-lbl">目标语言（我想看到的语言）</div>
+    <div class="tr-langs">${TR_LANGS.map(l => `<span class="tr-lang ${S.tr.lang === l ? 'on' : ''}" data-act="tr-lang" data-v="${l}">${l}</span>`).join('')}</div>
+    <div class="tr-foot"><span class="mini-hint">演示原型：译文为内置样例，不调用翻译接口</span><button class="btn btn-sm btn-green" data-act="tr-close">完成</button></div>
+  </div>`;
+}
+
 function convHTML() {
   const c = cur();
   const msgs = c.msgs.map(msgHTML).join('');
@@ -834,9 +933,11 @@ function convHTML() {
         <div class="meta">客户360°画像：${c.country} · ${seg} · ${ticket} · ${c.lang}偏好</div>
       </div>
       <div class="acts">
+        <button class="btn btn-ghost tr-btn ${S.tr.on ? 'on' : ''}" data-act="tr-toggle">${ic('globe', 14)}译 · ${S.tr.lang}</button>
         <button class="btn btn-ghost" data-act="drawer-cust" data-id="${c.id}">${ic('card', 14)}客户画像</button>
         ${humanBtn}
       </div>
+      ${trPanelHTML()}
     </div>
     <div class="conv-body" id="convBody">${msgs}${typing}${draft}${handoff}</div>
     <div class="composer">
@@ -849,7 +950,7 @@ function convHTML() {
 function msgHTML(m) {
   const c = cur();
   if (m.r === 'sys') return `<div class="sys-line">${esc(m.t)}</div>`;
-  if (m.r === 'cust') return `<div class="msg"><div class="av av-cust">${initials(c.name)}</div><div class="col"><div class="bubble">${esc(m.t)}</div><div class="time">${m.time}</div></div></div>`;
+  if (m.r === 'cust') return `<div class="msg"><div class="av av-cust">${initials(c.name)}</div><div class="col"><div class="bubble">${esc(m.t)}</div>${trFor(m.t)}<div class="time">${m.time}</div></div></div>`;
   if (m.r === 'ai') {
     return `<div class="msg"><div class="av av-ai">AI</div><div class="col">
       <div class="msg-tag">${ic('spark', 11)}AI 自动应答 · 置信度 ${m.conf} 分</div>
@@ -896,6 +997,7 @@ function renderChatPage() {
 
 function pickCustomer(id) {
   S.cid = id;
+  S.tr.open = false;
   const c = cur(); c.unread = 0;
   S.mchat = true;
   if (S.page !== 'inbox') { go('inbox'); return; }
@@ -1752,10 +1854,17 @@ function submitNewChannel() {
 /* ========== 事件委托 ========== */
 document.addEventListener('click', e => {
   const a = e.target.closest('[data-act]');
-  if (!a) return;
+  if (!a) {
+    if (S.tr.open && S.page === 'inbox' && !e.target.closest('.tr-pop')) { S.tr.open = false; renderChatPage(); }
+    return;
+  }
   const act = a.dataset.act, id = a.dataset.id;
   switch (act) {
-    case 'nav': S.mchat = false; closeMnav(); go(a.dataset.page); break;
+    case 'nav': S.mchat = false; S.tr.open = false; closeMnav(); go(a.dataset.page); break;
+    case 'tr-toggle': S.tr.open = !S.tr.open; renderChatPage(); break;
+    case 'tr-sw': S.tr.on = !S.tr.on; renderChatPage(); break;
+    case 'tr-lang': S.tr.lang = a.dataset.v; renderChatPage(); break;
+    case 'tr-close': S.tr.open = false; renderChatPage(); break;
     case 'mnav': document.querySelector('.sidebar').classList.add('on'); $('#mnavMask').classList.add('on'); break;
     case 'mnav-close': closeMnav(); break;
     case 'mchat-back': S.mchat = false; applyMChat(); renderChatPage(); break;
