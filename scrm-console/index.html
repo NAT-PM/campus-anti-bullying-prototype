@@ -364,6 +364,27 @@ tbody tr:last-child td{border-bottom:0}
 .ai-trigger{margin-top:8px;font-size:11.2px;color:#fbbf24;display:flex;gap:6px;align-items:flex-start;line-height:1.55}
 .ai-trigger svg{flex:none;margin-top:1px}
 .ai-gap{color:#f8a5a9}
+/* AI 工作台 */
+.wb-cv{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#0d141d;cursor:pointer;transition:.15s}
+.wb-cv:hover{border-color:#2b3d52;background:#101a25}
+.wb-cv+.wb-cv{margin-top:7px}
+.wb-av{width:26px;height:26px;border-radius:8px;background:#1a2433;display:grid;place-items:center;font-size:10px;font-weight:700;color:#a9b8cc;flex:none;letter-spacing:.3px}
+.wb-nm{font-size:12.2px;font-weight:600;color:#d7e1ef;display:flex;align-items:center;gap:6px;min-width:0}
+.wb-sub{font-size:10.6px;color:var(--txt3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wb-r{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none}
+.wb-r .st{white-space:nowrap}
+.wb-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px dashed rgba(26,35,49,.9)}
+.wb-row:first-of-type{border-top:0;padding-top:2px}
+.wb-link{font-size:11.3px;color:#5eead4;background:none;border:0;padding:0;font-family:inherit;cursor:pointer;flex:none}
+.wb-link:hover{text-decoration:underline}
+.tl{position:relative;padding-left:13px}
+.tl::before{content:'';position:absolute;left:3px;top:6px;bottom:7px;width:1px;background:var(--line)}
+.tl-i{position:relative;padding-bottom:10px}
+.tl-i:last-child{padding-bottom:0}
+.tl-i::before{content:'';position:absolute;left:-13px;top:5px;width:7px;height:7px;border-radius:50%;background:#3d4f68}
+.tl-i.on::before{background:#22d39a;box-shadow:0 0 0 3px rgba(34,211,154,.12)}
+.tl-t{font-size:11.5px;color:#d7e1ef;line-height:1.4}
+.tl-s{font-size:10.5px;color:var(--txt3);margin-top:2px}
 @media (max-width:1280px){.cfg-grid{grid-template-columns:1fr}.flow{grid-template-columns:repeat(2,1fr)}.flow-i:nth-child(2)::after{display:none}}
 
 </style>
@@ -410,6 +431,7 @@ const nowTime = () => new Date().toTimeString().slice(0, 5);
 const ICONS = {
   chat: '<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.9 9.9 0 0 1-3.4-.6L3 21l1.7-4.6A8.2 8.2 0 0 1 3 11.5a8.4 8.4 0 0 1 9-8.4 8.4 8.4 0 0 1 9 8.4z"/>',
   bot: '<rect x="3.5" y="7.5" width="17" height="12" rx="3"/><path d="M12 3.5v4"/><circle cx="8.5" cy="13" r="1.1"/><circle cx="15.5" cy="13" r="1.1"/><path d="M9.5 16.5h5"/>',
+  back: '<path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/>',
   users: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5.6a3.2 3.2 0 0 1 0 6.2"/><path d="M17.6 20a5.6 5.6 0 0 0-2-4.2"/>',
   mega: '<path d="M4 10v4a1 1 0 0 0 1 1h2l3 4V5L7 9H5a1 1 0 0 0-1 1z"/><path d="M14 8.5a4.6 4.6 0 0 1 0 7"/><path d="M17 5.5a8 8 0 0 1 0 13"/>',
   chart: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>',
@@ -609,7 +631,7 @@ const NAV = [
   ['kb', '知识库', 'book']
 ];
 const META = {
-  chat: { t: 'AI智能客服 · 配置中心', s: '四大模块闭环配置 · 无需代码，运营可自助完成' },
+  chat: { t: 'AI智能客服 · 工作台', s: '智能体 Ada 在线接手中 · 配置、知识、转人工一屏掌握' },
   config: { t: 'AI智能客服 · 配置中心', s: '四大模块闭环配置 · 无需代码，运营可自助完成' },
   inbox: { t: '聚合聊天', s: '多渠道统一收件箱 · AI + 人工协同' },
   customers: { t: '客户管理', s: '12,847 位客户 · 360° 画像' },
@@ -660,7 +682,7 @@ function renderTopbar() {
 
 /* ========== 路由 ========== */
 const RENDER = {
-  chat: renderConfig, config: renderConfig, inbox: renderChat, customers: renderCustomers, marketing: renderMarketing,
+  chat: renderAIWorkbench, config: renderConfig, inbox: renderChat, customers: renderCustomers, marketing: renderMarketing,
   dashboard: renderDashboard, channels: renderChannels, kb: renderKB
 };
 function go(p) {
@@ -877,32 +899,131 @@ const CFG_CHIP = (g, v, onv) => `<span class="chip ${onv === v ? 'on' : ''}" dat
 const CFG_SEG = (g, v, cur) => `<span class="seg-i ${cur === v ? 'on' : ''}" data-act="cfg-seg" data-g="${g}" data-v="${esc(v)}">${esc(v)}</span>`;
 const CFG_SW = (k, on) => `<span class="switch" data-act="cfg-sw" data-k="${esc(k)}"><span class="sw ${on ? 'on' : ''}"></span></span>`;
 
+/* ========== 1. AI 智能客服 · 工作台 ========== */
+function wbCfgRows() {
+  const kbOn = Object.keys(CFG.bizKb).filter(k => CFG.bizKb[k]).length;
+  const wsum = CFG.wModel + CFG.wKb + CFG.wHist;
+  const bandsOk = CFG.bands.highLo > CFG.bands.midHi && CFG.bands.midLo > CFG.bands.lowHi;
+  const mName = { gpt4o: 'GPT-4o', mini: 'GPT-4o-mini', claude: 'Claude 3.5 Sonnet' }[CFG.model] || 'GPT-4o';
+  return [
+    ['agent', '智能体配置', `${CFG.name} · ${mName} · ${CFG.tone}`, !!(CFG.name && CFG.sysPrompt)],
+    ['kb', '知识库配置', `通用库${CFG.commonKb ? '已启用' : '未启用'} · ${kbOn} 个业务库 · 召回权重 ${CFG.weight}%`, CFG.commonKb || kbOn > 0],
+    ['transfer', '转人工规则', `${CFG.keywords.length} 个关键词 · ${CFG.offhours ? '非工作时间全量转接' : '仅工作时间'} · 3 条敏感动作强制人工`, !!CFG.autoTransfer],
+    ['conf', '置信度评分', `权重 ${CFG.wModel}/${CFG.wKb}/${CFG.wHist} · 高 ≥${CFG.bands.highLo} · 低 <${CFG.bands.midLo}`, wsum === 100 && bandsOk]
+  ];
+}
+
+function renderAIWorkbench() {
+  const queue = CUSTOMERS.filter(c => c.status !== 'closed');
+  const waiting = 3;
+  const stShort = c => (c.status === 'ai' ? 'AI 接待中' : c.status === 'human' ? '已转人工' : '待接入');
+  const conf = c => (c.draft && c.draft.conf) || 0;
+  const rows = wbCfgRows();
+  const okAll = rows.filter(r => r[3]).length;
+  const confColor = v => v >= 85 ? '#5eead4' : v >= 60 ? '#f5a524' : '#f87171';
+  return `<div class="pad">
+    <div class="pg-head">
+      <div class="ph-ico">${ic('bot', 18, '#a99bf9')}</div>
+      <div>
+        <h2>AI智能客服 · 工作台</h2>
+        <div class="ph-sub">智能体 Ada 在线接手中 · 今日已接待 326 场 · 四大模块配置 ${okAll}/4 就绪，统一在「配置中心」维护</div>
+      </div>
+      <div class="ph-act">
+        <button class="btn btn-ghost" data-act="wb-trial">${ic('chat', 14)}试运行</button>
+        <button class="btn btn-green" data-act="cfg-open">${ic('gear', 14)}进入配置中心</button>
+      </div>
+    </div>
+
+    <div class="kpi-row">
+      ${[['AI 独立解决率', '58%', '+4.2pt · 人工仅兜底', 'stat-g'],
+         ['待接入队列', String(waiting), '1 单已等候 4 分 05 秒', 'stat-r'],
+         ['平均置信度', '81', '低于 60 分的会话 12 单', 'stat-y'],
+         ['知识命中率', '88%', '本周未命中 18 条', 'stat-b']]
+        .map(([k, v, d, cls]) => `<div class="card kpi"><div class="k">${k}</div><div class="v ${cls}">${v}</div><div class="d">${d}</div></div>`).join('')}
+    </div>
+
+    <div class="grid2" style="margin-bottom:12px">
+      <div class="card">
+        <div class="sec-title">AI 接待队列 <span class="hint">${queue.length} 场进行中</span>
+          <button class="wb-link" style="margin-left:auto" data-act="wb-inbox">去聚合聊天 →</button></div>
+        ${queue.slice(0, 5).map(c => `<div class="wb-cv" data-act="wb-open" data-id="${c.id}">
+          <span class="wb-av">${initials(c.name)}</span>
+          <div style="flex:1;min-width:0">
+            <div class="wb-nm">${esc(c.name)} <span class="ch ${chCls(c.channel)}">${c.channel}</span></div>
+            <div class="wb-sub">${esc(c.last)}</div>
+          </div>
+          <div class="wb-r">
+            <span class="st ${stCls(c.status)}">${stShort(c)}</span>
+            <span style="font-size:11px;color:${confColor(conf(c))}">${conf(c)} 分</span>
+          </div>
+        </div>`).join('')}
+        <div class="an-tip" style="justify-content:space-between">剩余 ${queue.length - 5} 场会话在聚合聊天持续接待
+          <button class="wb-link" data-act="wb-inbox">全部查看 →</button></div>
+      </div>
+      <div class="card">
+        <div class="sec-title">配置完整性 <span class="hint">${okAll}/4 项已生效</span></div>
+        ${rows.map(([mod, nm, sub, ok]) => `<div class="wb-row">
+          <div style="flex:1;min-width:0">
+            <div class="wb-nm">${nm} <span class="st ${ok ? 'st-ai' : 'st-low'}">${ok ? '已生效' : '待完善'}</span></div>
+            <div class="wb-sub">${esc(sub)}</div>
+          </div>
+          <button class="wb-link" data-act="cfg-open" data-mod="${mod}">调整</button>
+        </div>`).join('')}
+        <div class="an-tip">${ic('check', 12)} 保存后下一次 AI 应答即时生效，无需发布版本。</div>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card">
+        <div class="sec-title">知识缺口 <span class="hint">本周未命中 TOP3</span></div>
+        ${[['退货政策-俄罗斯区细则', 12], ['批发阶梯价与授权话术', 9], ['阿语支付方式说明', 7]]
+        .map(([n, v]) => `<div class="wb-row"><div style="flex:1;min-width:0"><div class="wb-nm">${n}</div><div class="wb-sub">客户问过 ${v} 次 · 均转人工</div></div><button class="wb-link" data-act="wb-kb">补充</button></div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="sec-title">转人工原因 <span class="hint">本周占比</span></div>
+        ${[['批发 / 大客户报价', 34, 'p'], ['退款与售后争议', 26, 'r'], ['物流异常查件', 18, 'b'], ['定制与改单需求', 13, 'y']]
+        .map(([n, v, c]) => `<div class="hbar"><div class="lab"><span>${n}</span><span>${v}%</span></div><div class="track"><div class="fill ${c}" style="width:${v}%"></div></div></div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="sec-title">最近配置变更</div>
+        <div class="tl">
+          ${[['知识库 · 新增「营销活动库（10月大促）」', '10-17 09:20 · 王倩', true],
+             ['转人工 · 新增关键词 complaint', '10-16 17:05 · 陈伟', false],
+             ['置信度 · 中置信区间调为 60–84', '10-15 14:30 · 王倩', false],
+             ['智能体 · 切换 GPT-4o-mini → GPT-4o', '10-14 11:10 · 陈伟', false]]
+            .map(([t, s, on]) => `<div class="tl-i ${on ? 'on' : ''}"><div class="tl-t">${t}</div><div class="tl-s">${s}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
 function renderConfig() {
   const c = CFG;
   const wsum = c.wModel + c.wKb + c.wHist;
   const bandsOk = c.bands.highLo > c.bands.midHi && c.bands.midLo > c.bands.lowHi;
   return `<div class="pad">
     <div class="pg-head">
-      <div class="ph-ico">🧠</div>
+      <div class="ph-ico">${ic('gear', 17, '#a99bf9')}</div>
       <div>
         <h2>AI智能客服 · 配置中心</h2>
         <div class="ph-sub">智能体 / 知识库 / 转人工 / 置信度评分 —— 四大模块闭环配置，无需代码，运营可自助完成</div>
       </div>
       <div class="ph-act">
-        <button class="btn btn-ghost" data-act="cfg-back">${ic('chat', 14)}返回聚合聊天</button>
+        <button class="btn btn-ghost" data-act="cfg-back">${ic('back', 14)}返回工作台</button>
         <button class="btn btn-green" data-act="cfg-save">${ic('check', 14)}保存配置</button>
       </div>
     </div>
     <div class="cfg-grid">
       <div>
-        <div class="cfg-card">
-          <div class="cfg-h"><span class="ci">🧠</span><span class="ct">智能体配置</span><span class="mod-tag mt-p">Agent Persona</span></div>
+        <div class="cfg-card" id="cfg-agent">
+          <div class="cfg-h"><span class="ct">智能体配置</span><span class="mod-tag mt-p">Agent Persona</span></div>
           <div class="cfg-sub">定义 AI 客服的身份、语气与模型，冷启动 3 分钟可用</div>
           <div class="fld"><label>智能体名称</label><input class="inp" id="cfgName" value="${esc(c.name)}"></div>
           <div class="fld">
             <label>角色设定（System Prompt）</label>
             <textarea class="inp" id="cfgPrompt" rows="4">${esc(c.sysPrompt)}</textarea>
-            <div class="hintline">💡 冷启动时内置 3 套行业模板（电商 / 3C / 美妆），可一键套用后微调</div>
+            <div class="hintline">冷启动时内置 3 套行业模板（电商 / 3C / 美妆），可一键套用后微调</div>
           </div>
           <div class="fld"><label>回复语气</label><div class="sel-chips">${['专业严谨', '亲切友好', '活泼幽默'].map(v => CFG_CHIP('tone', v, c.tone)).join('')}</div></div>
           <div class="fld"><label>语音应答语速（语音客服场景）</label><div class="seg">${['较快 1.2x', '标准 1.0x', '舒缓 0.8x'].map(v => CFG_SEG('speed', v, c.speed)).join('')}</div></div>
@@ -913,59 +1034,59 @@ function renderConfig() {
                ['mini', 'GPT-4o-mini', 'mo-tag b', '低成本', '高频简单问题分流 · 成本降低 80%'],
                ['claude', 'Claude 3.5 Sonnet', 'mo-tag p', '备选', '长文本理解优 · 适合复杂售后场景']]
               .map(([k, nm, cls, tg, desc]) => `<div class="model-opt ${c.model === k ? 'on' : ''}" data-act="cfg-model" data-v="${k}"><span class="mo-dot"></span><div style="flex:1"><div class="mo-nm">${nm}<span class="${cls}">${tg}</span></div><div class="mo-desc">${desc}</div></div></div>`).join('')}
-            <div class="hintline">💡 支持「模型路由」：按意图类型分流 —— 售前→mini降本，售后投诉→4o保质量</div>
+            <div class="hintline">支持「模型路由」：按意图类型分流 —— 售前→mini 降本，售后投诉→4o 保质量</div>
           </div>
           <div class="fld" style="margin-bottom:0"><label>兜底话术（无法回答时）</label><input class="inp" id="cfgFallback" value="${esc(c.fallback)}"></div>
         </div>
-        <div class="cfg-card">
-          <div class="cfg-h"><span class="ci">🤝</span><span class="ct">转人工配置</span><span class="mod-tag mt-y">人机协作</span></div>
+        <div class="cfg-card" id="cfg-transfer">
+          <div class="cfg-h"><span class="ct">转人工配置</span><span class="mod-tag mt-y">人机协作</span></div>
           <div class="cfg-sub">关键词 / 时段 / 置信度 / 敏感动作四重触发，避免 AI 硬答</div>
           <div class="cfg-row">
             <div style="flex:1"><div class="cfg-row-t">启用自动转人工</div><div class="mini-hint" style="margin-top:3px">开启后，命中任一触发条件即执行转接</div></div>
             ${CFG_SW('autoTransfer', c.autoTransfer)}
           </div>
           <div class="soft-box">
-            <div class="soft-h">🔑 关键词触发 <span class="st st-ai">已启用</span></div>
+            <div class="soft-h">关键词触发 <span class="st st-ai">已启用</span></div>
             <div class="kw-list">${c.keywords.map(k => `<span class="chipx">${esc(k)}<b data-act="cfg-kw-del" data-v="${esc(k)}">×</b></span>`).join('')}</div>
             <div class="kw-box"><input class="inp" id="kwInput" placeholder="输入关键词，回车或点添加（支持多语种）"><button class="btn btn-ghost" data-act="cfg-kw-add">添加</button></div>
             <div class="hintline">客户消息命中关键词 → 立即转人工（含语义近义词自动识别）</div>
           </div>
           <div class="fld">
             <div class="cfg-row" style="margin-bottom:8px">
-              <div style="flex:1"><div class="cfg-row-t">🕐 非工作时间全量转人工</div></div>
+              <div style="flex:1"><div class="cfg-row-t">非工作时间全量转人工</div></div>
               ${CFG_SW('offhours', c.offhours)}
             </div>
             <div class="inline-line">工作时间 <input class="num" id="cfgWs" value="${esc(c.workStart)}"> 至 <input class="num" id="cfgWe" value="${esc(c.workEnd)}"> <span class="muted" style="font-size:11px">（时段外人工坐席离线）</span></div>
             <div class="inline-line" style="margin-top:9px">${CFG_SW('peakQueue', c.peakQueue)}<span>用餐高峰（12:00–14:00）排队超过</span><input class="num" id="cfgPeak" value="${esc(c.peakMins)}"><span>分钟触发</span></div>
           </div>
           <div class="fld">
-            <div class="inline-line">📉 置信度持续走低：连续 <input class="num" id="cfgStreak" value="${esc(c.dropStreak)}"> 轮置信度低于 <input class="num" id="cfgDrop" value="${esc(c.dropConf)}"> 分 → 转人工</div>
+            <div class="inline-line">置信度持续走低：连续 <input class="num" id="cfgStreak" value="${esc(c.dropStreak)}"> 轮置信度低于 <input class="num" id="cfgDrop" value="${esc(c.dropConf)}"> 分 → 转人工</div>
             <div class="hintline">防止AI在同一问题上反复答错，伤害客户体验</div>
           </div>
           <div class="fld" style="margin-bottom:0">
-            <div class="soft-h" style="color:#f87171;margin-bottom:2px">🚫 敏感动作强制人工审核 <span class="st st-human">建议开启</span></div>
+            <div class="soft-h" style="color:#f87171;margin-bottom:2px">敏感动作强制人工审核 <span class="st st-human">建议开启</span></div>
             ${['退款 / 赔付承诺', '修改收货地址 / 账户信息', '涉及法律合规的答复'].map(k => `<div class="sens-row"><span>${esc(k)}</span>${CFG_SW('sensitive.' + k, c.sensitive[k])}</div>`).join('')}
           </div>
         </div>
       </div>
       <div>
-        <div class="cfg-card">
-          <div class="cfg-h"><span class="ci">📚</span><span class="ct">知识库配置</span><span class="mod-tag mt-g">RAG</span></div>
+        <div class="cfg-card" id="cfg-kb">
+          <div class="cfg-h"><span class="ct">知识库配置</span><span class="mod-tag mt-g">RAG</span></div>
           <div class="cfg-sub">业务库优先、通用库兜底，全链路可追溯到知识来源</div>
           <div class="soft-box" style="margin-top:10px">
             <div class="cfg-row">
               <div style="flex:1">
-                <div class="cfg-row-t">🛡️ 通用客服知识库 <span class="st st-closed">系统默认</span></div>
+                <div class="cfg-row-t">通用客服知识库 <span class="st st-closed">系统默认</span></div>
                 <div class="mini-hint" style="margin-top:3px">内置高频客服问答 2,000+ 条，覆盖物流 / 退换 / 话术规范。业务知识库配置为空时，自动启用此库。</div>
               </div>
               ${CFG_SW('commonKb', c.commonKb)}
             </div>
           </div>
           <div class="kb-lab">业务知识库（用户自建，可多库叠加）</div>
-          ${[['🚚', '物流与订单政策库', '文档 86 篇 · 英语/西语/阿语 · 命中率 92%', '已启用'],
-             ['💄', '美妆品类专业库', '文档 54 篇 · 成分/肤质问答 · 命中率 88%', '已启用'],
-             ['🎯', '营销活动库（10月大促）', '文档 12 篇 · 与营销中心实时同步 · 命中率 95%', '仅大促启用']]
-            .map(([ico, nm, sub, chip]) => `<div class="kb-row"><span class="kbi">${ico}</span><div style="flex:1;min-width:0"><div class="kbn">${esc(nm)}</div><div class="kbs">${esc(sub)}</div></div><div class="kbr"><span class="st ${chip === '已启用' ? 'st-ai' : 'st-human'}">${chip}</span>${CFG_SW('bizKb.' + nm, c.bizKb[nm])}</div></div>`).join('')}
+          ${[['物流与订单政策库', '文档 86 篇 · 英语/西语/阿语 · 命中率 92%', '已启用'],
+             ['美妆品类专业库', '文档 54 篇 · 成分/肤质问答 · 命中率 88%', '已启用'],
+             ['营销活动库（10月大促）', '文档 12 篇 · 与营销中心实时同步 · 命中率 95%', '仅大促启用']]
+            .map(([nm, sub, chip]) => `<div class="kb-row"><div style="flex:1;min-width:0"><div class="kbn">${esc(nm)}</div><div class="kbs">${esc(sub)}</div></div><div class="kbr"><span class="st ${chip === '已启用' ? 'st-ai' : 'st-human'}">${chip}</span>${CFG_SW('bizKb.' + nm, c.bizKb[nm])}</div></div>`).join('')}
           <button class="btn-dash" data-act="cfg-kb-new">${ic('plus', 13)}新建业务知识库</button>
           <div class="fld" style="margin-top:15px">
             <label>检索调用逻辑</label>
@@ -976,11 +1097,11 @@ function renderConfig() {
           </div>
           <div class="fld" style="margin-bottom:0">
             <div class="rng-row"><span class="rl">业务库召回权重</span><input type="range" min="0" max="100" value="${c.weight}" data-range="weight"><span class="rv" id="rvWeight">${c.weight}%</span></div>
-            <div class="hintline">💡 同一问题业务库与通用库均有答案时，按 7:3 加权融合排序，避免通用话术覆盖业务专属政策</div>
+            <div class="hintline">同一问题业务库与通用库均有答案时，按 7:3 加权融合排序，避免通用话术覆盖业务专属政策</div>
           </div>
         </div>
-        <div class="cfg-card">
-          <div class="cfg-h"><span class="ci">🎯</span><span class="ct">置信度评分</span><span class="mod-tag mt-r">风控引擎</span></div>
+        <div class="cfg-card" id="cfg-conf">
+          <div class="cfg-h"><span class="ct">置信度评分</span><span class="mod-tag mt-r">风控引擎</span></div>
           <div class="cfg-sub">多信号加权打分，分数区间决定「自动应答 / 人工审核 / 转人工」</div>
           <div class="fld"><label>置信度来源</label><div class="seg">${['综合置信度（推荐）', '默认系统置信度', '纯人工配置'].map(v => CFG_SEG('confSource', v, c.confSource)).join('')}</div></div>
           <div class="fld">
@@ -989,7 +1110,7 @@ function renderConfig() {
             <div class="rng-row"><span class="rl">知识库匹配度</span><input type="range" min="0" max="100" value="${c.wKb}" data-range="wKb"><span class="rv" id="rvKb">${c.wKb}%</span></div>
             <div class="rng-row"><span class="rl">历史采纳率加成</span><input type="range" min="0" max="100" value="${c.wHist}" data-range="wHist"><span class="rv" id="rvHist">${c.wHist}%</span></div>
             <div class="mini-hint ${wsum === 100 ? 'ok' : 'err'}" id="wHint">${wsum === 100 ? '权重合计 100%，配置有效' : `权重合计 ${wsum}%（建议调整为 100%）`}</div>
-            <div class="hintline">💡 例：模型自评 85 分 × 50% + 知识命中率 0.9 × 100 × 30% + 历史采纳率加成 → 综合 89.5 分</div>
+            <div class="hintline">例：模型自评 85 分 × 50% + 知识命中率 0.9 × 100 × 30% + 历史采纳率加成 → 综合 89.5 分</div>
           </div>
           <div class="fld" style="margin-bottom:0">
             <label>分数区间 → 置信度等级映射（可自定义边界）</label>
@@ -997,7 +1118,7 @@ function renderConfig() {
                ['#f5a524', '中置信', 'midLo', 'midHi', '人工审核', 'st-human'],
                ['#f2555a', '低置信', 'lowLo', 'lowHi', '转人工', 'st-dang']]
               .map(([col, lab, k1, k2, act, cls]) => `<div class="score-row"><span class="sr-dot" style="background:${col}"></span><span class="sr-lab">${lab}</span><input class="num" data-band="${k1}" value="${c.bands[k1]}"><span class="sr-arrow">—</span><input class="num" data-band="${k2}" value="${c.bands[k2]}"><span class="sr-act st ${cls}">${act}</span></div>`).join('')}
-            <div class="mini-hint ${bandsOk ? 'ok' : 'err'}" id="bandHint">${bandsOk ? '✅ 区间边界实时校验，防止出现分数空档或重叠；调整后仅对新会话生效' : '⚠️ 区间存在重叠或空档，请调整边界'}</div>
+            <div class="mini-hint ${bandsOk ? 'ok' : 'err'}" id="bandHint">${bandsOk ? '区间边界已实时校验，无空档与重叠；调整后仅对新会话生效' : '区间存在重叠或空档，请调整边界'}</div>
           </div>
         </div>
       </div>
@@ -1571,8 +1692,20 @@ document.addEventListener('click', e => {
     case 'tag-cust': toast('演示：打开标签选择器'); break;
     case 'copy-camp': toast('活动已复制为草稿'); break;
     case 'copy-kb': toast('文档内容已复制'); break;
-    case 'cfg-open': go('chat'); break;
-    case 'cfg-back': go('inbox'); break;
+    case 'cfg-open': {
+      const mod = a.dataset.mod;
+      go('config');
+      if (mod) setTimeout(() => {
+        const el = document.getElementById('cfg-' + mod);
+        if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 260);
+      break;
+    }
+    case 'cfg-back': go('chat'); break;
+    case 'wb-open': S.cid = id; go('inbox'); break;
+    case 'wb-inbox': go('inbox'); break;
+    case 'wb-kb': go('kb'); break;
+    case 'wb-trial': toast('演示：打开试运行窗口，可直接提问验证话术与知识命中'); break;
     case 'cfg-chip': CFG[a.dataset.g] = a.dataset.v; renderCfgPage(); break;
     case 'cfg-seg': CFG[a.dataset.g] = a.dataset.v; renderCfgPage(); break;
     case 'cfg-model': CFG.model = a.dataset.v; renderCfgPage(); break;
