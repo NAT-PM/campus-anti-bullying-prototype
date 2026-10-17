@@ -269,6 +269,103 @@ tbody tr:last-child td{border-bottom:0}
 .tl-item .tm{font-size:10.5px;color:var(--txt3);margin-top:3px}
 @media (max-width:1280px){.kpi-row{grid-template-columns:repeat(2,1fr)}.kpi-row.c5{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:1fr}}
 
+/* ---------- 配置中心 ---------- */
+.st-dang{background:rgba(242,85,90,.15);color:#f87171}
+.pg-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.pg-head .ph-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(139,123,247,.14);border:1px solid rgba(139,123,247,.35);font-size:17px;flex:none}
+.pg-head h2{font-size:17px;font-weight:700;letter-spacing:.2px}
+.pg-head .ph-sub{color:var(--txt3);font-size:11.5px;margin-top:4px}
+.pg-head .ph-act{margin-left:auto;display:flex;gap:9px;align-items:center;flex:none}
+.cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.cfg-grid>div{min-width:0}
+.cfg-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 16px}
+.cfg-card+.cfg-card{margin-top:14px}
+.cfg-h{display:flex;align-items:center;gap:9px;margin-bottom:2px;flex-wrap:wrap}
+.cfg-h .ci{width:27px;height:27px;border-radius:8px;display:grid;place-items:center;background:#141e2b;border:1px solid #22303f;font-size:14px;flex:none}
+.cfg-h .ct{font-size:14px;font-weight:700}
+.mod-tag{font-size:10px;padding:1.5px 7px;border-radius:5px;font-weight:600;letter-spacing:.2px}
+.mt-p{background:rgba(139,123,247,.14);color:#c4b5fd;border:1px solid rgba(139,123,247,.35)}
+.mt-g{background:rgba(34,211,154,.12);color:#5eead4;border:1px solid rgba(34,211,154,.32)}
+.mt-y{background:rgba(245,165,36,.12);color:#fbbf24;border:1px solid rgba(245,165,36,.34)}
+.mt-r{background:rgba(242,85,90,.12);color:#f87171;border:1px solid rgba(242,85,90,.34)}
+.cfg-sub{color:var(--txt3);font-size:11.5px;margin:5px 0 13px}
+.fld{margin-bottom:14px}
+.fld>label{display:block;font-size:11.5px;color:var(--txt2);margin-bottom:7px}
+.fld .inp{width:100%}
+.cfg-row{display:flex;align-items:center;gap:12px}
+.cfg-row-t{font-size:12.8px;font-weight:600;color:#e6edf8;display:flex;align-items:center;gap:7px}
+.seg{display:flex;background:#101822;border:1px solid var(--line2);border-radius:8px;padding:3px;gap:3px}
+.seg-i{flex:1;text-align:center;padding:6px 6px;border-radius:6px;font-size:12px;color:var(--txt2);cursor:pointer;white-space:nowrap;transition:.13s}
+.seg-i.on{background:rgba(139,123,247,.17);color:#ddd6fe;font-weight:600;box-shadow:inset 0 0 0 1px rgba(139,123,247,.35)}
+.seg-i:hover{color:var(--txt)}
+.chip{cursor:pointer;user-select:none}
+.chipx{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:7px;border:1px solid rgba(242,85,90,.32);background:rgba(242,85,90,.1);color:#f8a5a9;font-size:11.5px}
+.chipx b{cursor:pointer;font-weight:400;color:#f2555a;font-size:13px;line-height:1}
+.chipx b:hover{color:#fff}
+.model-opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line2);border-radius:9px;padding:10px 12px;margin-bottom:8px;cursor:pointer;background:#0d141d;transition:.14s}
+.model-opt:hover{border-color:#33425c;background:#101926}
+.model-opt.on{border-color:rgba(34,211,154,.5);background:rgba(34,211,154,.06)}
+.mo-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid #3a4a63;flex:none;margin-top:2px;position:relative}
+.model-opt.on .mo-dot{border-color:var(--green)}
+.model-opt.on .mo-dot::after{content:'';position:absolute;inset:2.5px;border-radius:50%;background:var(--green)}
+.mo-nm{font-size:12.8px;font-weight:600;color:#e6edf8;display:flex;align-items:center;gap:7px}
+.mo-tag{font-size:10px;padding:1px 6px;border-radius:4px;background:rgba(34,211,154,.13);color:#5eead4}
+.mo-tag.b{background:rgba(89,166,255,.13);color:#93c5fd}
+.mo-tag.p{background:rgba(139,123,247,.13);color:#c4b5fd}
+.mo-desc{font-size:11.3px;color:var(--txt3);margin-top:3px}
+.soft-box{border:1px dashed #2b3a52;border-radius:9px;padding:11px 12px;background:rgba(20,30,43,.5);margin-bottom:14px}
+.soft-h{display:flex;align-items:center;gap:7px;font-size:12.3px;color:#fbbf24;font-weight:600}
+.kw-list{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0 0}
+.kw-box{display:flex;gap:8px;margin-top:9px}
+.kw-box .inp{flex:1}
+.kb-lab{font-size:11.5px;color:var(--txt2);margin-bottom:9px}
+.kb-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#0d141d;margin-bottom:8px}
+.kb-row .kbi{width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:#141e2b;border:1px solid #22303f;font-size:13px;flex:none}
+.kb-row .kbn{font-size:12.5px;color:#dfe8f4;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb-row .kbs{font-size:11px;color:var(--txt3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb-row .kbr{margin-left:auto;display:flex;align-items:center;gap:9px;flex:none}
+.btn-dash{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;border:1px dashed #2b3a52;border-radius:8px;background:transparent;color:#8fa3bb;font-size:12px;cursor:pointer;transition:.14s}
+.btn-dash:hover{border-color:rgba(34,211,154,.45);color:#5eead4;background:rgba(34,211,154,.04)}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;align-items:stretch}
+.flow-i{border:1px solid var(--line);border-radius:8px;padding:8px 9px;background:#0d141d;position:relative;min-width:0}
+.flow-i .fn{display:flex;align-items:center;gap:5px}
+.flow-i .fn i{width:15px;height:15px;border-radius:50%;background:#1a2433;display:grid;place-items:center;font-style:normal;font-size:9.5px;color:#93a4bb;flex:none}
+.flow-i .ft{font-size:11.3px;color:#d7e1ef;font-weight:600;margin-top:5px;line-height:1.35}
+.flow-i .fs{font-size:10.2px;color:var(--txt3);margin-top:3px;line-height:1.4}
+.flow-i::after{content:'→';position:absolute;right:-8px;top:50%;transform:translateY(-50%);color:#3d4f68;font-size:11px;z-index:1}
+.flow-i:last-child::after{display:none}
+.rng-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.rng-row .rl{font-size:11.8px;color:var(--txt2);width:112px;flex:none}
+.rng-row input[type=range]{flex:1;height:4px;-webkit-appearance:none;appearance:none;background:#1c2635;border-radius:3px;outline:0;cursor:pointer}
+.rng-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#8b7bf7;border:2px solid #2a2350;cursor:pointer;box-shadow:0 0 0 4px rgba(139,123,247,.15)}
+.rng-row .rv{width:44px;text-align:right;font-size:11.8px;color:#c4b5fd;font-weight:600;flex:none}
+.num{width:58px;height:27px;text-align:center;background:#121a25;border:1px solid var(--line2);border-radius:6px;color:var(--txt);font-size:12px;outline:0}
+.num:focus{border-color:rgba(139,123,247,.5)}
+.inline-line{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--txt2);flex-wrap:wrap}
+.score-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px dashed rgba(26,35,49,.9)}
+.score-row:last-of-type{border-bottom:0}
+.sr-dot{width:8px;height:8px;border-radius:50%;flex:none}
+.sr-lab{font-size:12px;color:#dbe6f4;width:52px;flex:none}
+.score-row .num{width:52px}
+.sr-arrow{color:#3d4f68;font-size:12px}
+.sr-act{margin-left:auto;font-size:10.5px;padding:2px 8px;border-radius:5px}
+.sens-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px dashed rgba(26,35,49,.9);font-size:12px;color:#dbe6f4}
+.sens-row:last-child{border-bottom:0}
+.mini-hint{font-size:10.8px;color:var(--txt3);margin-top:8px;line-height:1.55}
+.mini-hint.ok{color:#5eead4}
+.mini-hint.err{color:#f87171}
+/* chat: 转接面板 + 低置信提示 */
+.handoff{border:1px solid rgba(245,165,36,.42);border-radius:11px;background:rgba(245,165,36,.055);padding:12px 13px;margin:0 0 14px 36px;max-width:800px}
+.handoff .hh{display:flex;align-items:center;gap:7px;font-size:11.8px;color:#fbbf24;font-weight:600;margin-bottom:9px}
+.handoff .hck{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.handoff .hck>div{font-size:11.5px;color:#d9c8a8;display:flex;gap:7px;align-items:flex-start;line-height:1.5}
+.handoff .hck svg{flex:none;margin-top:1px}
+.handoff .hbub{background:rgba(34,211,154,.09);border:1px solid rgba(34,211,154,.3);border-radius:8px;padding:9px 12px;font-size:12.5px;color:#dcfce7;line-height:1.6}
+.ai-trigger{margin-top:8px;font-size:11.2px;color:#fbbf24;display:flex;gap:6px;align-items:flex-start;line-height:1.55}
+.ai-trigger svg{flex:none;margin-top:1px}
+.ai-gap{color:#f8a5a9}
+@media (max-width:1280px){.cfg-grid{grid-template-columns:1fr}.flow{grid-template-columns:repeat(2,1fr)}.flow-i:nth-child(2)::after{display:none}}
+
 </style>
 </head>
 <body>
@@ -360,13 +457,10 @@ const CUSTOMERS = [
     rfm: '重要保持客户', repurchase: 2, spend: 1620, lastOrder: '#77410 · 9月28日', owner: '客服 Kristin',
     tags: ['曾申请退货', '价格敏感', '俄语区'],
     last: 'Хочу оформить возврат', time: '10:38', unread: 0,
-    msgs: [
-      { r: 'cust', t: 'Здравствуйте! Хочу оформить возврат по заказу #77410', time: '10:36' },
-      { r: 'ai', t: 'Здравствуйте, Ольга! Возврат возможен в течение 30 дней с момента получения заказа. Подскажите, пожалуйста, причину возврата?', time: '10:36', conf: 71, src: '《退换货规则》第1.1条' },
-      { r: 'sys', t: '置信度 71 分 < 85，已自动转人工 · 客服 Kristin 接入', time: '10:37' },
-      { r: 'agent', t: 'Ольга, я оформлю возврат — сейчас пришлю форму для заполнения.', time: '10:38' }
-    ],
-    draft: null, queue: 'Спасибо! Жду форму.',
+    msgs: [{ r: 'cust', t: 'Хочу оформить возврат (I want to return it)', time: '10:38' }],
+    draft: { conf: 41, auto: false, gap: true, text: '（置信度 41 分，低于阈值，已触发转人工流程）', src: '知识库未命中：退货政策-俄罗斯区细则缺失（通用库兜底不足）', trigger: '命中关键词「退款」+ 置信度 < 60，双重触发转人工；已自动生成知识补全工单' },
+    handoff: { tag: '退换货-俄罗斯区', agent: '您好，我是人工客服小李，已查看您与 AI 的对话记录。俄罗斯区退货需要…（无缝接续，无需客户重复描述）' },
+    queue: 'Спасибо! Жду форму.',
     aiReply: 'Ольга, форма возврата уже отправлена на вашу почту — заполните её, и мы оформим возврат в течение 1–2 дней.'
   },
   {
@@ -462,6 +556,35 @@ const DOCS = [
 /* ========== 全局状态 ========== */
 const S = { page: 'chat', cid: 'c1', aiFirst: true, inboxCh: '全部渠道', kbCat: '全部', custQ: '', kbQ: '' };
 
+/* 配置中心演示状态（仅当前会话） */
+const CFG = {
+  name: '跨境客服小助手 · Ada',
+  sysPrompt: '你是某跨境电商品牌的AI客服助手，负责处理售前咨询、订单查询与售后问题。回答需基于知识库内容，不编造政策；遇到超出能力范围的问题主动转人工。',
+  tone: '亲切友好',
+  speed: '标准 1.0x',
+  style: '标准（100字内）',
+  model: 'gpt4o',
+  fallback: '抱歉，这个问题我需要帮您转接人工专员处理，请稍等~',
+  commonKb: true,
+  bizKb: { '物流与订单政策库': true, '美妆品类专业库': true, '营销活动库（10月大促）': false },
+  weight: 70,
+  autoTransfer: true,
+  keywords: ['退款', '投诉', '人工', 'complaint'],
+  offhours: true,
+  workStart: '09:00',
+  workEnd: '22:00',
+  peakQueue: false,
+  peakMins: 5,
+  dropStreak: 3,
+  dropConf: 60,
+  sensitive: { '退款 / 赔付承诺': true, '修改收货地址 / 账户信息': true, '涉及法律合规的答复': true },
+  confSource: '综合置信度（推荐）',
+  wModel: 50,
+  wKb: 30,
+  wHist: 20,
+  bands: { highLo: 85, highHi: 100, midLo: 60, midHi: 84, lowLo: 0, lowHi: 59 }
+};
+
 /* ========== 展示辅助 ========== */
 const CH_CLS = { WhatsApp: 'ch-wa', Telegram: 'ch-tg', Instagram: 'ch-ig', '邮件': 'ch-em', LiveChat: 'ch-em' };
 const chCls = c => CH_CLS[c] || 'ch-em';
@@ -487,6 +610,7 @@ const NAV = [
 ];
 const META = {
   chat: { t: 'AI智能客服工作台', s: '全渠道聚合 · GPT+RAG 应答' },
+  config: { t: 'AI智能客服 · 配置中心', s: '四大模块闭环配置 · 无需代码，运营可自助完成' },
   inbox: { t: '聚合聊天', s: '多渠道统一收件箱' },
   customers: { t: '客户管理', s: '12,847 位客户 · 360° 画像' },
   marketing: { t: '社媒营销', s: '群发 · RFM 分层触达' },
@@ -500,20 +624,23 @@ function renderNav() {
     let tail = '';
     if (badge === 3) tail = `<span class="n-badge">3</span>`;
     else if (badge) tail = `<span class="n-count">${badge}</span>`;
-    return `<a class="nav-item ${S.page === p ? 'on' : ''}" data-act="nav" data-page="${p}">${ic(icon, 16)}<span>${label}</span>${tail}</a>`;
+    const on = S.page === p || (p === 'chat' && S.page === 'config');
+    return `<a class="nav-item ${on ? 'on' : ''}" data-act="nav" data-page="${p}">${ic(icon, 16)}<span>${label}</span>${tail}</a>`;
   }).join('');
 }
 
 function renderTopbar() {
   const m = META[S.page] || META.chat;
   let actions = '';
-  if (S.page === 'chat') {
+  if (S.page === 'chat' || S.page === 'config') {
     actions = `<div class="stats">
       <span>AI独立解决率<b class="stat-g">58%</b></span>
       <span>首次响应<b class="stat-b">8s</b></span>
       <span>今日会话<b class="stat-y">326</b></span>
       <span>人工介入<b class="stat-r">23%</b></span>
-    </div>`;
+    </div>` + (S.page === 'chat'
+      ? `<button class="btn btn-ghost" data-act="cfg-open">${ic('gear', 14)}配置中心</button>`
+      : '');
   } else if (S.page === 'customers') {
     actions = `<div class="top-acts"><button class="btn btn-green" data-act="modal-cust">${ic('plus', 14)}新建客户</button></div>`;
   } else if (S.page === 'marketing') {
@@ -535,7 +662,7 @@ function renderTopbar() {
 
 /* ========== 路由 ========== */
 const RENDER = {
-  chat: renderChat, inbox: renderInbox, customers: renderCustomers, marketing: renderMarketing,
+  chat: renderChat, config: renderConfig, inbox: renderInbox, customers: renderCustomers, marketing: renderMarketing,
   dashboard: renderDashboard, channels: renderChannels, kb: renderKB
 };
 function go(p) {
@@ -577,23 +704,26 @@ function convHTML() {
   const msgs = c.msgs.map(msgHTML).join('');
   const typing = c.typing ? `<div class="msg"><div class="av av-cust">··</div><div class="typing">对方正在输入…</div></div>` : '';
   const draft = c.draft ? aiCard(c) : '';
+  const handoff = c.handoff ? handoffHTML(c) : '';
+  const seg = c.repurchase ? `复购${c.repurchase}次` : '新客首单';
+  const ticket = c.spend >= 3000 ? '高客单价' : c.spend > 0 ? '中客单价' : '待成交';
   const humanBtn = c.status === 'human'
     ? `<button class="btn btn-ghost" data-act="back-ai">${ic('bot', 14)}转回 AI</button>`
     : `<button class="btn btn-orange" data-act="transfer">${ic('transfer', 14)}转人工</button>`;
   return `<div class="conv-head">
       <div>
         <div class="who"><span class="name">${esc(c.name)}</span><span class="ch ${chCls(c.channel)}">${c.channel}</span><span class="st ${stCls(c.status)}">${stTxt(c.status)}</span></div>
-        <div class="meta">客户360画像：${c.country} · 复购${c.repurchase}次 · RFM=${c.rfm} · ${c.tags[0]}</div>
+        <div class="meta">客户360°画像：${c.country} · ${seg} · ${ticket} · ${c.lang}偏好</div>
       </div>
       <div class="acts">
         <button class="btn btn-ghost" data-act="drawer-cust" data-id="${c.id}">${ic('card', 14)}客户画像</button>
         ${humanBtn}
       </div>
     </div>
-    <div class="conv-body" id="convBody">${msgs}${typing}${draft}</div>
+    <div class="conv-body" id="convBody">${msgs}${typing}${draft}${handoff}</div>
     <div class="composer">
       <div class="switch" data-act="toggle-ai"><span class="sw ${S.aiFirst ? 'on' : ''}"></span>AI 优先接待</div>
-      <div class="input-wrap">${ic('edit', 14, '#5f7089')}<input id="msgInput" placeholder="输入消息…（AI 辅助草拟回复中）" autocomplete="off"></div>
+      <div class="input-wrap">${ic('edit', 14, '#5f7089')}<input id="msgInput" placeholder="输入消息...（AI辅助草稿回复中）" autocomplete="off"></div>
       <button class="send-btn" data-act="send">${ic('send', 14)}发送</button>
     </div>`;
 }
@@ -614,14 +744,18 @@ function msgHTML(m) {
 function confColor(v) { return v >= 85 ? '#22d39a' : v >= 60 ? '#f5a524' : '#f2555a'; }
 function aiCard(c) {
   const d = c.draft, k = d.conf >= 85 ? '' : d.conf >= 60 ? 'mid' : 'low';
+  const chip = d.conf >= 85
+    ? `<span class="st st-ai">自动应答</span>`
+    : d.conf >= 60 ? `<span class="st st-human">待人工确认</span>` : `<span class="st st-dang">转人工</span>`;
   return `<div class="ai-card">
     <div class="ai-head">
       <div class="av av-ai" style="width:22px;height:22px;font-size:9px">AI</div>
-      <span class="ai-name">AI 智能应答 · GPT+RAG</span>
-      <div class="right"><span>置信度</span><span class="conf ${k}"><i style="width:${d.conf}%"></i></span><span class="conf-score" style="color:${confColor(d.conf)}">${d.conf}分</span><span class="st ${d.auto ? 'st-ai' : 'st-human'}">${d.auto ? '自动应答' : '待人工确认'}</span></div>
+      <span class="ai-name">AI智能应答 · GPT+RAG</span>
+      <div class="right"><span>置信度</span><span class="conf ${k}"><i style="width:${d.conf}%"></i></span><span class="conf-score" style="color:${confColor(d.conf)}">${d.conf}分</span>${chip}</div>
     </div>
     <div class="ai-body">${esc(d.text)}</div>
-    <div class="ai-src">${ic('link', 12)}<span>知识来源：${esc(d.src)}</span></div>
+    <div class="ai-src">${ic('link', 12)}<span class="${d.gap ? 'ai-gap' : ''}">知识来源：${esc(d.src)}</span></div>
+    ${d.trigger ? `<div class="ai-trigger">${ic('alert', 12, '#fbbf24')}<span>${esc(d.trigger)}</span></div>` : ''}
     <div class="ai-actions">
       <button class="btn-mini ok" data-act="adopt">${ic('check', 12)}采纳</button>
       <button class="btn-mini" data-act="edit-draft">${ic('edit', 12)}编辑</button>
@@ -679,17 +813,23 @@ function editDraft() {
 
 function transfer() {
   const c = cur();
+  if (c.status === 'human' && c.handoff) { toast('当前已在人工接待中，转接面板已生成'); return; }
+  const isReturn = /退货|возврат|return/i.test(String(c.last) + ' ' + String((c.msgs[0] || {}).t || ''));
   c.status = 'human';
   c.draft = null;
   c.owner = '客服 Kristin';
-  c.msgs.push({ r: 'sys', t: '已转人工 · 客服 Kristin 已接入，AI 停止应答', time: nowTime() });
+  c.handoff = {
+    tag: `${isReturn ? '退换货' : '常规咨询'}-${c.country}区`,
+    agent: '您好，我是人工客服小李，已查看您与 AI 的对话记录。…（无缝接续，无需客户重复描述）'
+  };
   renderChatPage();
-  toast('已转人工，客服 Kristin 接入会话');
+  toast('已转人工 · 人机协作转接面板已生成');
 }
 
 function backAI() {
   const c = cur();
   c.status = 'ai';
+  c.handoff = null;
   c.msgs.push({ r: 'sys', t: '已转回 AI 接待模式', time: nowTime() });
   renderChatPage();
   toast('已转回 AI 接待');
@@ -722,6 +862,184 @@ function sendMsg() {
   } else {
     renderChatPage();
   }
+}
+
+/* ========== 1.5 AI智能客服 · 配置中心 ========== */
+function handoffHTML(c) {
+  const h = c.handoff;
+  const cks = ['已同步对话记录与AI已尝试的答复', `已传递客户意图标签：${h.tag}`, '人工无缝接续，客户无需重复描述'];
+  return `<div class="handoff">
+    <div class="hh">${ic('transfer', 13, '#f5a524')}人机协作 · 转接面板</div>
+    <div class="hck">${cks.map(t => `<div>${ic('check', 12, '#f5a524')}<span>${esc(t)}</span></div>`).join('')}</div>
+    <div class="hbub">${esc(h.agent)}</div>
+  </div>`;
+}
+
+const CFG_CHIP = (g, v, onv) => `<span class="chip ${onv === v ? 'on' : ''}" data-act="cfg-chip" data-g="${g}" data-v="${esc(v)}">${esc(v)}</span>`;
+const CFG_SEG = (g, v, cur) => `<span class="seg-i ${cur === v ? 'on' : ''}" data-act="cfg-seg" data-g="${g}" data-v="${esc(v)}">${esc(v)}</span>`;
+const CFG_SW = (k, on) => `<span class="switch" data-act="cfg-sw" data-k="${esc(k)}"><span class="sw ${on ? 'on' : ''}"></span></span>`;
+
+function renderConfig() {
+  const c = CFG;
+  const wsum = c.wModel + c.wKb + c.wHist;
+  const bandsOk = c.bands.highLo > c.bands.midHi && c.bands.midLo > c.bands.lowHi;
+  return `<div class="pad">
+    <div class="pg-head">
+      <div class="ph-ico">🧠</div>
+      <div>
+        <h2>AI智能客服 · 配置中心</h2>
+        <div class="ph-sub">智能体 / 知识库 / 转人工 / 置信度评分 —— 四大模块闭环配置，无需代码，运营可自助完成</div>
+      </div>
+      <div class="ph-act">
+        <button class="btn btn-ghost" data-act="cfg-back">${ic('chat', 14)}返回工作台</button>
+        <button class="btn btn-green" data-act="cfg-save">${ic('check', 14)}保存配置</button>
+      </div>
+    </div>
+    <div class="cfg-grid">
+      <div>
+        <div class="cfg-card">
+          <div class="cfg-h"><span class="ci">🧠</span><span class="ct">智能体配置</span><span class="mod-tag mt-p">Agent Persona</span></div>
+          <div class="cfg-sub">定义 AI 客服的身份、语气与模型，冷启动 3 分钟可用</div>
+          <div class="fld"><label>智能体名称</label><input class="inp" id="cfgName" value="${esc(c.name)}"></div>
+          <div class="fld">
+            <label>角色设定（System Prompt）</label>
+            <textarea class="inp" id="cfgPrompt" rows="4">${esc(c.sysPrompt)}</textarea>
+            <div class="hintline">💡 冷启动时内置 3 套行业模板（电商 / 3C / 美妆），可一键套用后微调</div>
+          </div>
+          <div class="fld"><label>回复语气</label><div class="sel-chips">${['专业严谨', '亲切友好', '活泼幽默'].map(v => CFG_CHIP('tone', v, c.tone)).join('')}</div></div>
+          <div class="fld"><label>语音应答语速（语音客服场景）</label><div class="seg">${['较快 1.2x', '标准 1.0x', '舒缓 0.8x'].map(v => CFG_SEG('speed', v, c.speed)).join('')}</div></div>
+          <div class="fld"><label>话术风格</label><div class="sel-chips">${['极简（50字内）', '标准（100字内）', '详细+表情符号'].map(v => CFG_CHIP('style', v, c.style)).join('')}</div></div>
+          <div class="fld">
+            <label>模型选择</label>
+            ${[['gpt4o', 'GPT-4o', 'mo-tag', '当前使用', '多语种能力强 · 推理稳定 · 成本 ¥0.03/千token'],
+               ['mini', 'GPT-4o-mini', 'mo-tag b', '低成本', '高频简单问题分流 · 成本降低 80%'],
+               ['claude', 'Claude 3.5 Sonnet', 'mo-tag p', '备选', '长文本理解优 · 适合复杂售后场景']]
+              .map(([k, nm, cls, tg, desc]) => `<div class="model-opt ${c.model === k ? 'on' : ''}" data-act="cfg-model" data-v="${k}"><span class="mo-dot"></span><div style="flex:1"><div class="mo-nm">${nm}<span class="${cls}">${tg}</span></div><div class="mo-desc">${desc}</div></div></div>`).join('')}
+            <div class="hintline">💡 支持「模型路由」：按意图类型分流 —— 售前→mini降本，售后投诉→4o保质量</div>
+          </div>
+          <div class="fld" style="margin-bottom:0"><label>兜底话术（无法回答时）</label><input class="inp" id="cfgFallback" value="${esc(c.fallback)}"></div>
+        </div>
+        <div class="cfg-card">
+          <div class="cfg-h"><span class="ci">🤝</span><span class="ct">转人工配置</span><span class="mod-tag mt-y">人机协作</span></div>
+          <div class="cfg-sub">关键词 / 时段 / 置信度 / 敏感动作四重触发，避免 AI 硬答</div>
+          <div class="cfg-row">
+            <div style="flex:1"><div class="cfg-row-t">启用自动转人工</div><div class="mini-hint" style="margin-top:3px">开启后，命中任一触发条件即执行转接</div></div>
+            ${CFG_SW('autoTransfer', c.autoTransfer)}
+          </div>
+          <div class="soft-box">
+            <div class="soft-h">🔑 关键词触发 <span class="st st-ai">已启用</span></div>
+            <div class="kw-list">${c.keywords.map(k => `<span class="chipx">${esc(k)}<b data-act="cfg-kw-del" data-v="${esc(k)}">×</b></span>`).join('')}</div>
+            <div class="kw-box"><input class="inp" id="kwInput" placeholder="输入关键词，回车或点添加（支持多语种）"><button class="btn btn-ghost" data-act="cfg-kw-add">添加</button></div>
+            <div class="hintline">客户消息命中关键词 → 立即转人工（含语义近义词自动识别）</div>
+          </div>
+          <div class="fld">
+            <div class="cfg-row" style="margin-bottom:8px">
+              <div style="flex:1"><div class="cfg-row-t">🕐 非工作时间全量转人工</div></div>
+              ${CFG_SW('offhours', c.offhours)}
+            </div>
+            <div class="inline-line">工作时间 <input class="num" id="cfgWs" value="${esc(c.workStart)}"> 至 <input class="num" id="cfgWe" value="${esc(c.workEnd)}"> <span class="muted" style="font-size:11px">（时段外人工坐席离线）</span></div>
+            <div class="inline-line" style="margin-top:9px">${CFG_SW('peakQueue', c.peakQueue)}<span>用餐高峰（12:00–14:00）排队超过</span><input class="num" id="cfgPeak" value="${esc(c.peakMins)}"><span>分钟触发</span></div>
+          </div>
+          <div class="fld">
+            <div class="inline-line">📉 置信度持续走低：连续 <input class="num" id="cfgStreak" value="${esc(c.dropStreak)}"> 轮置信度低于 <input class="num" id="cfgDrop" value="${esc(c.dropConf)}"> 分 → 转人工</div>
+            <div class="hintline">防止AI在同一问题上反复答错，伤害客户体验</div>
+          </div>
+          <div class="fld" style="margin-bottom:0">
+            <div class="soft-h" style="color:#f87171;margin-bottom:2px">🚫 敏感动作强制人工审核 <span class="st st-human">建议开启</span></div>
+            ${['退款 / 赔付承诺', '修改收货地址 / 账户信息', '涉及法律合规的答复'].map(k => `<div class="sens-row"><span>${esc(k)}</span>${CFG_SW('sensitive.' + k, c.sensitive[k])}</div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="cfg-card">
+          <div class="cfg-h"><span class="ci">📚</span><span class="ct">知识库配置</span><span class="mod-tag mt-g">RAG</span></div>
+          <div class="cfg-sub">业务库优先、通用库兜底，全链路可追溯到知识来源</div>
+          <div class="soft-box" style="margin-top:10px">
+            <div class="cfg-row">
+              <div style="flex:1">
+                <div class="cfg-row-t">🛡️ 通用客服知识库 <span class="st st-closed">系统默认</span></div>
+                <div class="mini-hint" style="margin-top:3px">内置高频客服问答 2,000+ 条，覆盖物流 / 退换 / 话术规范。业务知识库配置为空时，自动启用此库。</div>
+              </div>
+              ${CFG_SW('commonKb', c.commonKb)}
+            </div>
+          </div>
+          <div class="kb-lab">业务知识库（用户自建，可多库叠加）</div>
+          ${[['🚚', '物流与订单政策库', '文档 86 篇 · 英语/西语/阿语 · 命中率 92%', '已启用'],
+             ['💄', '美妆品类专业库', '文档 54 篇 · 成分/肤质问答 · 命中率 88%', '已启用'],
+             ['🎯', '营销活动库（10月大促）', '文档 12 篇 · 与营销中心实时同步 · 命中率 95%', '仅大促启用']]
+            .map(([ico, nm, sub, chip]) => `<div class="kb-row"><span class="kbi">${ico}</span><div style="flex:1;min-width:0"><div class="kbn">${esc(nm)}</div><div class="kbs">${esc(sub)}</div></div><div class="kbr"><span class="st ${chip === '已启用' ? 'st-ai' : 'st-human'}">${chip}</span>${CFG_SW('bizKb.' + nm, c.bizKb[nm])}</div></div>`).join('')}
+          <button class="btn-dash" data-act="cfg-kb-new">${ic('plus', 13)}新建业务知识库</button>
+          <div class="fld" style="margin-top:15px">
+            <label>检索调用逻辑</label>
+            <div class="flow">
+              ${[['①', '业务库优先召回', 'Top-K × 权重'], ['②', '通用库补充召回', '业务未命中时兜底'], ['③', '综合重排序', '业务+通用融合'], ['④', '注入 Prompt', '附带来源标注']]
+                .map(([n, t, s]) => `<div class="flow-i"><div class="fn"><i>${n}</i></div><div class="ft">${t}</div><div class="fs">${s}</div></div>`).join('')}
+            </div>
+          </div>
+          <div class="fld" style="margin-bottom:0">
+            <div class="rng-row"><span class="rl">业务库召回权重</span><input type="range" min="0" max="100" value="${c.weight}" data-range="weight"><span class="rv" id="rvWeight">${c.weight}%</span></div>
+            <div class="hintline">💡 同一问题业务库与通用库均有答案时，按 7:3 加权融合排序，避免通用话术覆盖业务专属政策</div>
+          </div>
+        </div>
+        <div class="cfg-card">
+          <div class="cfg-h"><span class="ci">🎯</span><span class="ct">置信度评分</span><span class="mod-tag mt-r">风控引擎</span></div>
+          <div class="cfg-sub">多信号加权打分，分数区间决定「自动应答 / 人工审核 / 转人工」</div>
+          <div class="fld"><label>置信度来源</label><div class="seg">${['综合置信度（推荐）', '默认系统置信度', '纯人工配置'].map(v => CFG_SEG('confSource', v, c.confSource)).join('')}</div></div>
+          <div class="fld">
+            <label>多信号加权评分（总分100）</label>
+            <div class="rng-row"><span class="rl">模型自评置信度</span><input type="range" min="0" max="100" value="${c.wModel}" data-range="wModel"><span class="rv" id="rvModel">${c.wModel}%</span></div>
+            <div class="rng-row"><span class="rl">知识库匹配度</span><input type="range" min="0" max="100" value="${c.wKb}" data-range="wKb"><span class="rv" id="rvKb">${c.wKb}%</span></div>
+            <div class="rng-row"><span class="rl">历史采纳率加成</span><input type="range" min="0" max="100" value="${c.wHist}" data-range="wHist"><span class="rv" id="rvHist">${c.wHist}%</span></div>
+            <div class="mini-hint ${wsum === 100 ? 'ok' : 'err'}" id="wHint">${wsum === 100 ? '权重合计 100%，配置有效' : `权重合计 ${wsum}%（建议调整为 100%）`}</div>
+            <div class="hintline">💡 例：模型自评 85 分 × 50% + 知识命中率 0.9 × 100 × 30% + 历史采纳率加成 → 综合 89.5 分</div>
+          </div>
+          <div class="fld" style="margin-bottom:0">
+            <label>分数区间 → 置信度等级映射（可自定义边界）</label>
+            ${[['#22d39a', '高置信', 'highLo', 'highHi', '自动应答', 'st-ai'],
+               ['#f5a524', '中置信', 'midLo', 'midHi', '人工审核', 'st-human'],
+               ['#f2555a', '低置信', 'lowLo', 'lowHi', '转人工', 'st-dang']]
+              .map(([col, lab, k1, k2, act, cls]) => `<div class="score-row"><span class="sr-dot" style="background:${col}"></span><span class="sr-lab">${lab}</span><input class="num" data-band="${k1}" value="${c.bands[k1]}"><span class="sr-arrow">—</span><input class="num" data-band="${k2}" value="${c.bands[k2]}"><span class="sr-act st ${cls}">${act}</span></div>`).join('')}
+            <div class="mini-hint ${bandsOk ? 'ok' : 'err'}" id="bandHint">${bandsOk ? '✅ 区间边界实时校验，防止出现分数空档或重叠；调整后仅对新会话生效' : '⚠️ 区间存在重叠或空档，请调整边界'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderCfgPage() {
+  if (S.page !== 'config') return;
+  $('#page').innerHTML = renderConfig();
+  renderNav(); renderTopbar();
+}
+function cfgToggle(k) {
+  const i = k.indexOf('.');
+  if (i < 0) { CFG[k] = !CFG[k]; return; }
+  const root = CFG[k.slice(0, i)], sub = k.slice(i + 1);
+  root[sub] = !root[sub];
+}
+function addCfgKw() {
+  const inp = $('#kwInput');
+  const v = inp ? inp.value.trim() : '';
+  if (!v) { toast('请输入关键词'); return; }
+  if (CFG.keywords.indexOf(v) < 0) CFG.keywords.push(v);
+  renderCfgPage();
+  toast('关键词已添加：' + v);
+}
+function openCfgKbModal() {
+  openModal('新建业务知识库',
+    `<div class="field"><label>知识库名称</label><input class="inp" id="ckName" placeholder="如：俄罗斯区售后政策库"></div>
+     <div class="field"><label>来源说明</label><input class="inp" id="ckDesc" placeholder="文档来源 / 覆盖语种"></div>
+     <div class="hintline">创建后可上传文档，系统自动切片向量化（演示）</div>`,
+    `<button class="btn btn-ghost" data-act="close-overlay">取消</button><button class="btn btn-green" data-act="cfg-kb-save">创建</button>`);
+}
+function submitCfgKb() {
+  const nm = $('#ckName') ? $('#ckName').value.trim() : '';
+  if (!nm) { toast('请填写知识库名称'); return; }
+  CFG.bizKb[nm] = true;
+  closeOverlay();
+  renderCfgPage();
+  toast('知识库已创建并启用：' + nm);
 }
 
 /* ========== 2. 聚合聊天 ========== */
@@ -1255,12 +1573,54 @@ document.addEventListener('click', e => {
     case 'tag-cust': toast('演示：打开标签选择器'); break;
     case 'copy-camp': toast('活动已复制为草稿'); break;
     case 'copy-kb': toast('文档内容已复制'); break;
+    case 'cfg-open': go('config'); break;
+    case 'cfg-back': go('chat'); break;
+    case 'cfg-chip': CFG[a.dataset.g] = a.dataset.v; renderCfgPage(); break;
+    case 'cfg-seg': CFG[a.dataset.g] = a.dataset.v; renderCfgPage(); break;
+    case 'cfg-model': CFG.model = a.dataset.v; renderCfgPage(); break;
+    case 'cfg-sw': cfgToggle(a.dataset.k); renderCfgPage(); break;
+    case 'cfg-kw-add': addCfgKw(); break;
+    case 'cfg-kw-del': CFG.keywords = CFG.keywords.filter(k => k !== a.dataset.v); renderCfgPage(); break;
+    case 'cfg-kb-new': openCfgKbModal(); break;
+    case 'cfg-kb-save': submitCfgKb(); break;
+    case 'cfg-save': toast('配置已保存并生效（演示，仅当前浏览器会话有效）'); break;
     case 'noop': break;
     default: break;
   }
 });
 
 document.addEventListener('input', e => {
+  const tg = e.target;
+  if (tg.id === 'cfgName') CFG.name = tg.value;
+  else if (tg.id === 'cfgPrompt') CFG.sysPrompt = tg.value;
+  else if (tg.id === 'cfgFallback') CFG.fallback = tg.value;
+  else if (tg.id === 'cfgWs') CFG.workStart = tg.value;
+  else if (tg.id === 'cfgWe') CFG.workEnd = tg.value;
+  else if (tg.id === 'cfgPeak') CFG.peakMins = tg.value;
+  else if (tg.id === 'cfgStreak') CFG.dropStreak = tg.value;
+  else if (tg.id === 'cfgDrop') CFG.dropConf = tg.value;
+  else if (tg.dataset && tg.dataset.range) {
+    CFG[tg.dataset.range] = +tg.value;
+    const map = { weight: 'rvWeight', wModel: 'rvModel', wKb: 'rvKb', wHist: 'rvHist' };
+    const lab = $('#' + map[tg.dataset.range]);
+    if (lab) lab.textContent = tg.value + '%';
+    const total = CFG.wModel + CFG.wKb + CFG.wHist;
+    const h = $('#wHint');
+    if (h) {
+      const ok = total === 100;
+      h.className = 'mini-hint ' + (ok ? 'ok' : 'err');
+      h.textContent = ok ? '权重合计 100%，配置有效' : `权重合计 ${total}%（建议调整为 100%）`;
+    }
+  } else if (tg.dataset && tg.dataset.band) {
+    CFG.bands[tg.dataset.band] = +tg.value || 0;
+    const b = CFG.bands;
+    const ok = b.highLo > b.midHi && b.midLo > b.lowHi;
+    const h = $('#bandHint');
+    if (h) {
+      h.className = 'mini-hint ' + (ok ? 'ok' : 'err');
+      h.textContent = ok ? '✅ 区间边界实时校验，防止出现分数空档或重叠；调整后仅对新会话生效' : '⚠️ 区间存在重叠或空档，请调整边界';
+    }
+  }
   if (e.target.id === 'convQ') {
     const box = $('#convItems');
     if (box) box.innerHTML = convItemsHTML(e.target.value);
@@ -1287,6 +1647,7 @@ document.addEventListener('input', e => {
 });
 
 document.addEventListener('keydown', e => {
+  if (e.target.id === 'kwInput' && e.key === 'Enter') { e.preventDefault(); addCfgKw(); }
   if (e.target.id === 'msgInput' && e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
   if (e.target.id === 'msgInput') e.target.dataset.draft = '';
   if (e.key === 'Escape') closeOverlay();
