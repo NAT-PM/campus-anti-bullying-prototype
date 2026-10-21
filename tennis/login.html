@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>甜点网球 · 管理后台登录</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1280px;height:720px;overflow:hidden;font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#fff}
+.wrap{display:flex;width:100%;height:100%}
+
+/* 左侧品牌区 */
+.left{width:46%;position:relative;background:url('img/pex_35214663.jpg') center/cover no-repeat;overflow:hidden}
+.left .mask{position:absolute;inset:0;background:linear-gradient(160deg,rgba(8,30,10,.88) 0%,rgba(8,30,10,.94) 60%,rgba(8,30,10,.97) 100%)}
+.left .gr{position:absolute;inset:0;background-image:repeating-linear-gradient(58deg,rgba(216,245,90,.07) 0 1px,transparent 1px 42px),repeating-linear-gradient(-58deg,rgba(216,245,90,.05) 0 1px,transparent 1px 42px)}
+.left .in{position:relative;height:100%;padding:56px 58px;display:flex;flex-direction:column}
+.logo{display:flex;align-items:center;gap:13px}
+.logo .sq{width:42px;height:42px;border-radius:13px;background:#D8F55A;display:flex;align-items:center;justify-content:center}
+.logo .sq span{font-size:16px;font-weight:800;color:#0A2B0A;letter-spacing:1px}
+.logo b{font-size:18px;color:#fff;letter-spacing:2px;font-weight:800}
+.logo small{display:block;font-size:11px;color:#8FA88F;letter-spacing:3px;margin-top:3px;font-weight:400}
+
+.hero{flex:1;display:flex;flex-direction:column;justify-content:center}
+.hero h1{font-size:38px;color:#fff;line-height:1.35;letter-spacing:2px;font-weight:800}
+.hero h1 em{font-style:normal;color:#D8F55A}
+.hero p{font-size:14px;color:#9DB49D;margin-top:18px;line-height:2;letter-spacing:.5px}
+.hero .pts{margin-top:32px;display:flex;flex-direction:column;gap:13px}
+.hero .pts div{display:flex;align-items:center;gap:11px;font-size:13px;color:#C8DCC8}
+.hero .pts i{width:20px;height:20px;border-radius:7px;background:rgba(216,245,90,.14);display:flex;align-items:center;justify-content:center}
+.hero .pts i svg{width:12px;height:12px;stroke:#D8F55A;fill:none;stroke-width:2.6}
+
+.foot{font-size:11.5px;color:#6E8A6E;letter-spacing:.5px}
+
+/* 右侧表单 */
+.right{flex:1;display:flex;align-items:center;justify-content:center;background:#fff}
+.form{width:356px}
+.form h2{font-size:24px;color:#0A2B0A;font-weight:800;letter-spacing:1px}
+.form .sub{font-size:12.5px;color:#8A968A;margin-top:9px}
+.field{margin-top:26px}
+.field label{display:block;font-size:12px;color:#5F6E5F;margin-bottom:8px;font-weight:700}
+.field .box{display:flex;align-items:center;gap:10px;border:1.5px solid #E2EAE2;border-radius:11px;padding:13px 15px;background:#FAFCFA}
+.field .box svg{width:16px;height:16px;stroke:#B6C0B6;fill:none;stroke-width:1.8;flex:0 0 16px}
+.field .box input{border:0;background:transparent;outline:none;font-size:13.5px;color:#0A2B0A;width:100%;font-family:inherit}
+.field .box input::placeholder{color:#B6C0B6}
+.field .box.on{border-color:#14401A;background:#fff}
+.row{display:flex;align-items:center;justify-content:space-between;margin-top:18px;font-size:12px}
+.row .ck{display:flex;align-items:center;gap:7px;color:#5F6E5F}
+.row .ck i{width:15px;height:15px;border-radius:5px;background:#14401A;display:flex;align-items:center;justify-content:center;font-style:normal;color:#D8F55A;font-size:10px;font-weight:800}
+.row a{color:#4A7A16;text-decoration:none;font-weight:700}
+.btn{margin-top:26px;width:100%;background:#14401A;color:#D8F55A;border:0;border-radius:12px;padding:15px;font-size:14.5px;font-weight:800;letter-spacing:2px;font-family:inherit;cursor:pointer;display:block;text-align:center;text-decoration:none;box-sizing:border-box}
+.tip{margin-top:18px;font-size:11.5px;color:#9AA79A;line-height:1.8;text-align:center}
+.warn{margin-top:22px;background:#FFF8E8;border:1px solid #F0E0B8;border-radius:10px;padding:11px 13px;font-size:11.5px;color:#8A6A16;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="left">
+    <div class="mask"></div>
+    <div class="gr"></div>
+    <div class="in">
+      <div class="logo">
+        <div class="sq"><span>甜点</span></div>
+        <div><b>甜点网球</b><small>MANAGEMENT</small></div>
+      </div>
+
+      <div class="hero">
+        <h1>4 片场地，<br><em>一个人</em>就能管。</h1>
+        <p>预约、开门、开灯、断电，全在后台一键完成。</p>
+        <div class="pts">
+          <div><i><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></i>16 路设备远程控制，人不在店也能管</div>
+          <div><i><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></i>营收、利用率、时段热度，一屏看清</div>
+          <div><i><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></i>退款、改价、开门，每一步都留痕</div>
+        </div>
+      </div>
+
+      <div class="foot">© 2026 甜点网球 · 24 小时自助学训馆</div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="form">
+      <h2>登录管理后台</h2>
+      <div class="sub">请使用店长分配的账号登录</div>
+
+      <div class="field">
+        <label>账号</label>
+        <div class="box on">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+          <input value="chenming" readonly>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>密码</label>
+        <div class="box">
+          <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+          <input type="password" value="••••••••" readonly>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ck"><i>✓</i>7 天内免登录</div>
+        <a>忘记密码？</a>
+      </div>
+
+      <a href="admin.html" style="display:block;text-align:center;text-decoration:none" class="btn">登 录</a>
+
+      <div class="tip">首次登录请及时修改初始密码</div>
+
+      <div class="warn">敏感操作（退款、改价、手动控制设备）需要二次验证，且全部记入操作日志。</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
