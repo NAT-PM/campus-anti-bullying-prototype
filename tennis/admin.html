@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>管理后台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1280px;height:720px;overflow:hidden;font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#F4F7F4}
+:root{
+  --ink:#0A2B0A;--green:#14401A;--green2:#1E5A24;--lime:#D8F55A;
+  --bg:#F4F7F4;--line:#E2EAE2;--txt:#1A1A1A;--sub:#6B7A6B;
+}
+.app{display:flex;width:1280px;height:720px}
+/* 侧栏 */
+.side{width:186px;flex:0 0 186px;background:linear-gradient(180deg,#0A2B0A 0%,#14401A 100%);color:#fff;display:flex;flex-direction:column}
+.brand{padding:18px 16px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand .lg{width:30px;height:30px;border-radius:9px;background:rgba(216,245,90,.15);display:flex;align-items:center;justify-content:center}
+.brand .lg svg{width:17px;height:17px;stroke:#D8F55A;fill:none;stroke-width:2}
+.brand b{font-size:13.5px;letter-spacing:.5px}
+.brand small{display:block;font-size:9.5px;color:#9DB49D;margin-top:2px;letter-spacing:.3px}
+.nav{padding:10px 0;flex:1}
+.nav a{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;color:rgba(255,255,255,.68);text-decoration:none}
+.nav a svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.9}
+.nav a.on{background:rgba(216,245,90,.13);border-left:3px solid #D8F55A;color:#fff;font-weight:700}
+.side .foot{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);font-size:10.5px;color:#9DB49D;display:flex;align-items:center;gap:6px}
+.side .foot i{width:6px;height:6px;border-radius:50%;background:#D8F55A;display:block}
+/* 主区 */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.top{height:50px;flex:0 0 50px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:10px}
+.top h1{font-size:15px;font-weight:800;color:var(--ink)}
+.top .crumb{font-size:11px;color:var(--sub)}
+.top .r{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:11.5px;color:var(--sub)}
+.top .r b{color:var(--ink)}
+.body{flex:1;padding:13px 16px 14px;display:none;flex-direction:column;gap:11px;overflow:hidden}
+.body.on{display:flex}
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px 14px;position:relative;overflow:hidden}
+.kpi small{font-size:10.5px;color:var(--sub);display:block}
+.kpi b{font-size:25px;font-weight:800;color:var(--ink);display:block;margin-top:5px;letter-spacing:-.3px}
+.kpi b i{font-size:12px;font-style:normal;font-weight:600;color:var(--sub);margin-left:2px}
+.kpi .up{font-size:10px;color:#2E7D32;font-weight:700;margin-top:3px}
+.kpi .up.dn{color:#C0392B}
+.kpi::after{content:"";position:absolute;right:-18px;top:-18px;width:56px;height:56px;border-radius:50%;background:rgba(30,90,36,.05)}
+/* 面板 */
+.panel{background:#fff;border:1px solid var(--line);border-radius:9px;display:flex;flex-direction:column;overflow:hidden}
+.ph{height:34px;flex:0 0 34px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:700;color:var(--ink);gap:7px}
+.ph .lime{width:3px;height:12px;background:#1E5A24;border-radius:2px}
+.ph .r{margin-left:auto;font-size:10.5px;color:var(--sub);font-weight:400}
+.pb{flex:1;padding:11px 12px;overflow:hidden}
+.row2{display:grid;grid-template-columns:1.55fr 1fr;gap:11px;flex:1;min-height:0}
+.row2b{display:grid;grid-template-columns:1fr 1fr;gap:11px;flex:1;min-height:0}
+/* 表格 */
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{font-size:10px;padding:5.5px 7px;background:#F7FAF7;border-bottom:1px solid var(--line);color:var(--sub);font-weight:600;text-align:left}
+td{padding:6px 7px;border-bottom:1px solid #F0F5F0;white-space:nowrap;color:#2A332A}
+tr:last-child td{border-bottom:0}
+.pill{font-size:9.5px;padding:1.5px 7px;border-radius:10px;font-weight:700;display:inline-block}
+.p-g{background:#E8F5E9;color:#2E7D32}
+.p-o{background:#FFF3E0;color:#B26A00}
+.p-b{background:#E9F0FA;color:#2C5F9E}
+.p-r{background:#FDEAEA;color:#C0392B}
+.p-n{background:#F1F3F1;color:#8A968A}
+/* 图表 */
+.bars{display:flex;align-items:flex-end;gap:9px;height:132px;padding-top:6px}
+.bars .b{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:250px}
+.bars .b .v{width:100%;background:linear-gradient(180deg,#2E7D32,#14401A);border-radius:4px 4px 0 0;position:relative}
+.bars .b .v.hi{background:linear-gradient(180deg,#D8F55A,#A8CC2E)}
+.bars .b small{font-size:9.5px;color:var(--sub)}
+/* 设备状态 */
+.devlist{display:flex;flex-direction:column;gap:7px}
+.dev{display:flex;align-items:center;gap:9px;padding:7px 9px;border:1px solid #EFF4EF;border-radius:7px;background:#FBFDFB}
+.dev .n{font-size:11px;font-weight:700;color:var(--ink);width:70px}
+.dev .s{font-size:10px;color:var(--sub)}
+.dev .pill{margin-left:auto}
+/* 场地卡 */
+.courts{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.court{background:#fff;border:1px solid var(--line);border-radius:9px;padding:11px 12px}
+.court .hd{display:flex;align-items:center;justify-content:space-between}
+.court .hd b{font-size:13px;color:var(--ink)}
+.court .m{font-size:10.5px;color:var(--sub);margin-top:8px;line-height:1.8}
+.court .bar{height:5px;border-radius:3px;background:#EDF2ED;margin-top:9px;overflow:hidden}
+.court .bar i{display:block;height:100%;background:linear-gradient(90deg,#2E7D32,#D8F55A)}
+/* 价格表 */
+.pt th,.pt td{text-align:center;font-size:10.5px;padding:6px 4px}
+.pt td.wk{background:#FBFDFB;font-weight:700;color:var(--ink);text-align:left;padding-left:8px}
+.pt td.hi{background:#F4FBE8;color:#2E7D32;font-weight:700}
+/* 筛选条 */
+.filters{display:flex;gap:8px;align-items:center;margin-bottom:9px}
+.fi{height:28px;border:1px solid var(--line);border-radius:6px;padding:0 10px;font-size:11px;color:#3A463A;display:flex;align-items:center;gap:6px;background:#fff}
+.fi.sel{background:#F4F9F4;border-color:#C9DCC9;color:#14401A;font-weight:700}
+.fi.btn{background:#14401A;color:#D8F55A;border-color:#14401A;font-weight:700;padding:0 14px}
+/* 通道网格 */
+.chgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ch{border:1px solid #E7EEE7;border-radius:8px;padding:8px 10px;background:#FBFDFB;position:relative}
+.ch .no{font-size:9.5px;color:#8A968A;font-weight:700;letter-spacing:.5px}
+.ch .nm{font-size:11.5px;font-weight:700;color:var(--ink);margin-top:2px}
+.ch .st{font-size:9.5px;margin-top:4px;display:flex;align-items:center;gap:5px;color:#6B7A6B}
+.ch .st i{width:5px;height:5px;border-radius:50%;background:#2E7D32}
+.ch.on{background:#F2FAE6;border-color:#CDE3A8}
+.ch.off .st i{background:#C5CFC5}
+.ch.err{background:#FDF0F0;border-color:#F3CFCF}
+.ch.err .st i{background:#C0392B}
+.ch .sw{position:absolute;right:9px;top:9px;width:26px;height:15px;border-radius:9px;background:#DCE6DC}
+.ch.on .sw{background:#14401A}
+.ch .sw::after{content:"";position:absolute;width:11px;height:11px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s}
+.ch.on .sw::after{left:13px}
+/* 报表 */
+.line{height:150px;position:relative}
+.hm{display:grid;grid-template-columns:44px repeat(4,1fr);gap:3px;font-size:9px;color:var(--sub)}
+.hm div{height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#3A463A}
+.hm .hd{background:none;color:#8A968A;font-weight:600}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="lg"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5c3 3 3 14 0 17M3.5 12h17"/></svg></div>
+      <div><b>甜点网球</b><small>管理后台</small></div>
+    </div>
+    <nav class="nav">
+      <a class="on" data-p="1"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></svg>工作台</a>
+      <a data-p="2"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5c3 3 3 14 0 17M3.5 12h17"/></svg>场地与价格</a>
+      <a data-p="3"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 3v3M16 3v3M4 10h16"/></svg>订单管理</a>
+      <a data-p="4"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h8l-1 8 10-12h-8l1-8z"/></svg>设备控制</a>
+      <a data-p="5"><svg viewBox="0 0 24 24"><path d="M4.5 20V10.5M10 20V4M15.5 20v-6.5M21 20H3"/></svg>数据报表</a>
+      <a data-p="6"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>会员管理</a>
+      <a data-p="9"><svg viewBox="0 0 24 24"><path d="M3 8h18M3 8v11h18V8M3 8l2-4h14l2 4"/><path d="M9 12v4M15 12v4"/></svg>卡券管理</a>
+      
+      <a data-p="8"><svg viewBox="0 0 24 24"><path d="M5 3h11l4 4v14H5z"/><path d="M8 11h8M8 15h8M8 7h4"/></svg>操作日志</a>
+      <a data-p="7"><svg viewBox="0 0 24 24"><path d="M4 7h16v10H4zM8 7V5h8v2"/></svg>团购核销</a>
+      <a><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.6v2.6M12 18.8v2.6M4.4 7.6l2.2 1.3M17.4 15.1l2.2 1.3M4.4 16.4l2.2-1.3M17.4 8.9l2.2-1.3"/></svg>系统设置</a>
+    </nav>
+    <div class="foot"><i></i>继电器板在线 · 15/16</div>
+  </aside>
+
+  <div class="main">
+    <div class="top">
+      <h1 id="t1">工作台</h1>
+      <span class="crumb" id="t2">今日经营概览</span>
+      <div class="r"><span>甜点网球（城南店）</span><span>·</span><b>管理员</b><span style="margin-left:10px"><a href="login.html" style="color:#8A968A;text-decoration:none">退出</a></span></div>
+    </div>
+
+    <!-- ============ P1 工作台 ============ -->
+    <div class="body on" data-p="1">
+      <div class="kpis">
+        <div class="kpi"><small>今日营收</small><b>3,860<i>元</i></b><div class="up">↑ 12.4% 较昨日</div></div>
+        <div class="kpi"><small>今日订单</small><b>24<i>单</i></b><div class="up">↑ 3 单</div></div>
+        <div class="kpi"><small>场地利用率</small><b>68<i>%</i></b><div class="up">↑ 5.2%</div></div>
+        <div class="kpi"><small>待处理</small><b>3<i>项</i></b><div class="up dn">↓ 2 项待跟</div></div>
+      </div>
+      <div class="row2">
+        <div class="panel">
+          <div class="ph"><span class="lime"></span>今日时段营收<span class="r">19:00—22:00 为高峰</span></div>
+          <div class="pb">
+            <div class="bars">
+              <div class="b"><div class="v" style="height:34%"></div><small>08</small></div>
+              <div class="b"><div class="v" style="height:46%"></div><small>10</small></div>
+              <div class="b"><div class="v" style="height:52%"></div><small>12</small></div>
+              <div class="b"><div class="v" style="height:38%"></div><small>14</small></div>
+              <div class="b"><div class="v" style="height:44%"></div><small>16</small></div>
+              <div class="b"><div class="v" style="height:72%"></div><small>18</small></div>
+              <div class="b"><div class="v hi" style="height:100%"></div><small>20</small></div>
+              <div class="b"><div class="v hi" style="height:88%"></div><small>22</small></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#8A968A;margin-top:7px;padding-top:7px;border-top:1px solid #F0F5F0">
+              <span>合计 ¥3,860</span><span>客单价 ¥160.8</span><span>峰值 20:00</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="lime"></span>设备状态</div>
+          <div class="pb">
+            <div class="devlist">
+              <div class="dev"><span class="n">大门门锁</span><span class="s">CH1 · 已上锁</span><span class="pill p-g">正常</span></div>
+              <div class="dev"><span class="n">1 号场灯</span><span class="s">CH2 · 已亮 18:55</span><span class="pill p-g">正常</span></div>
+              <div class="dev"><span class="n">2 号场灯</span><span class="s">CH3 · 已亮 18:55</span><span class="pill p-g">正常</span></div>
+              <div class="dev"><span class="n">3 号场灯</span><span class="s">CH4 · 未通电</span><span class="pill p-n">空闲</span></div>
+              <div class="dev"><span class="n">发球机插座</span><span class="s">CH6—CH9 · 3 路通电</span><span class="pill p-o">1 路异常</span></div>
+              <div class="dev"><span class="n">4 号场灯</span><span class="s">CH5 · 已亮 18:55</span><span class="pill p-g">正常</span></div>
+              <div class="dev"><span class="n">走道照明</span><span class="s">CH10 · 已亮</span><span class="pill p-g">正常</span></div>
+              <div class="dev"><span class="n">监控与路由</span><span class="s">CH11 · 已通电</span><span class="pill p-g">正常</span></div>
+              <div class="dev"><span class="n">备用通道</span><span class="s">CH12 · 通讯异常</span><span class="pill p-r">待处理</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ P2 场地与价格 ============ -->
+    <div class="body" data-p="2">
+      <div class="courts">
+        <div class="court"><div class="hd"><b>1 号场地</b><span class="pill p-g">营业中</span></div><div class="m">今日 6 单 · 利用率 72%<br>灯光 CH2 · 插座 CH6</div><div class="bar"><i style="width:72%"></i></div></div>
+        <div class="court"><div class="hd"><b>2 号场地</b><span class="pill p-g">营业中</span></div><div class="m">今日 7 单 · 利用率 81%<br>灯光 CH3 · 插座 CH7</div><div class="bar"><i style="width:81%"></i></div></div>
+        <div class="court"><div class="hd"><b>3 号场地</b><span class="pill p-o">维护中</span></div><div class="m">今日 0 单 · 网柱维修<br>灯光 CH4 · 插座 CH8</div><div class="bar"><i style="width:0%"></i></div></div>
+        <div class="court"><div class="hd"><b>4 号场地</b><span class="pill p-g">营业中</span></div><div class="m">今日 5 单 · 利用率 63%<br>灯光 CH5 · 插座 CH9</div><div class="bar"><i style="width:63%"></i></div></div>
+      </div>
+      <div class="panel" style="flex:1;min-height:0">
+        <div class="ph"><span class="lime"></span>近 7 天价格日历<span class="r">单位：元 / 30 分钟 · 点击单元格可单日调价</span></div>
+        <div class="pb">
+          <table class="pt">
+            <tr><th style="text-align:left;padding-left:8px">日期</th><th>08—12</th><th>12—18</th><th>18—22</th><th>22—24</th><th>状态</th></tr>
+            <tr><td class="wk">10-21 今天</td><td>60</td><td>70</td><td class="hi">80</td><td>60</td><td><span class="pill p-g">平日</span></td></tr>
+            <tr><td class="wk">10-22 周三</td><td>60</td><td>70</td><td class="hi">80</td><td>60</td><td><span class="pill p-g">平日</span></td></tr>
+            <tr><td class="wk">10-23 周四</td><td>60</td><td>70</td><td class="hi">80</td><td>60</td><td><span class="pill p-g">平日</span></td></tr>
+            <tr><td class="wk">10-24 周五</td><td>60</td><td>70</td><td class="hi">90</td><td>70</td><td><span class="pill p-o">周末价</span></td></tr>
+            <tr><td class="wk">10-25 周六</td><td>80</td><td>90</td><td class="hi">110</td><td>80</td><td><span class="pill p-o">周末价</span></td></tr>
+            <tr><td class="wk">10-26 周日</td><td>80</td><td>90</td><td class="hi">110</td><td>80</td><td><span class="pill p-o">周末价</span></td></tr>
+            <tr><td class="wk">10-27 周一</td><td>60</td><td>70</td><td class="hi">80</td><td>60</td><td><span class="pill p-b">已改价</span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ P3 订单管理 ============ -->
+    <div class="body" data-p="3">
+      <div class="filters">
+        <div class="fi sel">今天 10-21 ▾</div>
+        <div class="fi">全部场地 ▾</div>
+        <div class="fi">全部状态 ▾</div>
+        <div class="fi">手机号 / 订单号</div>
+        <div class="fi btn">查询</div>
+        <div class="fi" style="margin-left:auto">导出 Excel</div>
+      </div>
+      <div class="panel" style="flex:1;min-height:0">
+        <div class="ph"><span class="lime"></span>订单列表<span class="r">共 24 单 · 合计 ¥3,860</span></div>
+        <div class="pb">
+          <table>
+            <tr><th>订单号</th><th>场地</th><th>时段</th><th>手机号</th><th>来源</th><th>金额</th><th>状态</th><th>操作</th></tr>
+            <tr><td>2026102119350201</td><td>2 号场</td><td>19:00—20:00</td><td>138****6688</td><td>小程序</td><td>¥124.00</td><td><span class="pill p-g">使用中</span></td><td>开门 · 延长</td></tr>
+            <tr><td>2026102120110503</td><td>4 号场</td><td>20:00—21:30</td><td>139****2210</td><td>小程序</td><td>¥180.00</td><td><span class="pill p-b">待使用</span></td><td>开门 · 退款</td></tr>
+            <tr><td>2026102118430117</td><td>1 号场</td><td>18:30—19:30</td><td>137****8891</td><td>团购券</td><td>¥0.00</td><td><span class="pill p-g">已完成</span></td><td>详情</td></tr>
+            <tr><td>2026102117020234</td><td>2 号场</td><td>17:00—18:00</td><td>135****4456</td><td>小程序</td><td>¥140.00</td><td><span class="pill p-g">已完成</span></td><td>详情</td></tr>
+            <tr><td>2026102116200188</td><td>4 号场</td><td>16:00—17:30</td><td>186****9902</td><td>后台代订</td><td>¥180.00</td><td><span class="pill p-g">已完成</span></td><td>详情</td></tr>
+            <tr><td>2026102115080042</td><td>1 号场</td><td>15:00—16:00</td><td>158****7733</td><td>小程序</td><td>¥120.00</td><td><span class="pill p-r">已退款</span></td><td>详情</td></tr>
+            <tr><td>2026102114020311</td><td>2 号场</td><td>14:00—15:00</td><td>133****1188</td><td>小程序</td><td>¥140.00</td><td><span class="pill p-g">已完成</span></td><td>详情</td></tr>
+            <tr><td>2026102112300095</td><td>4 号场</td><td>12:30—13:30</td><td>189****3301</td><td>团购券</td><td>¥0.00</td><td><span class="pill p-n">爽约</span></td><td>详情</td></tr>
+            <tr><td>2026102111050077</td><td>1 号场</td><td>11:00—12:00</td><td>136****5521</td><td>小程序</td><td>¥120.00</td><td><span class="pill p-g">已完成</span></td><td>详情</td></tr>
+            <tr><td>2026102110300219</td><td>2 号场</td><td>10:30—11:30</td><td>150****8802</td><td>团购券</td><td>¥0.00</td><td><span class="pill p-g">已完成</span></td><td>详情</td></tr>
+            <tr><td>2026102109450033</td><td>4 号场</td><td>09:45—10:45</td><td>188****6644</td><td>小程序</td><td>¥120.00</td><td><span class="pill p-g">已完成</span></td><td>详情</td></tr>
+            <tr><td>2026102109000112</td><td>1 号场</td><td>09:00—10:00</td><td>131****9977</td><td>小程序</td><td>¥120.00</td><td><span class="pill p-r">已退款</span></td><td>详情</td></tr>
+            <tr><td>2026102108450088</td><td>3 号场</td><td>08:45—09:45</td><td>176****3312</td><td>后台代订</td><td>¥140.00</td><td><span class="pill p-g">已完成</span></td><td>详情</td></tr>
+          </table>
+          <div style="display:flex;align-items:center;margin-top:9px;padding-top:9px;border-top:1px solid #F0F5F0;font-size:10.5px;color:#8A968A">
+            <span>共 24 条 · 每页 15 条</span>
+            <span style="margin-left:auto;display:flex;gap:5px">
+              <span style="padding:2px 8px;border:1px solid #DCE6DC;border-radius:4px;background:#14401A;color:#D8F55A;font-weight:700">1</span>
+              <span style="padding:2px 8px;border:1px solid #DCE6DC;border-radius:4px">2</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ P4 设备控制 ============ -->
+    <div class="body" data-p="4">
+      <div class="kpis">
+        <div class="kpi"><small>继电器板</small><b>在线</b><div class="up">最后心跳 3 秒前</div></div>
+        <div class="kpi"><small>大门门磁</small><b>已关</b><div class="up">IN1 · 常闭</div></div>
+        <div class="kpi"><small>已启用通道</small><b>15<i>/16</i></b><div class="up">CH12—16 备用</div></div>
+        <div class="kpi"><small>今日指令</small><b>186<i>条</i></b><div class="up dn">失败 2 条已重试</div></div>
+      </div>
+      <div class="panel" style="flex:1;min-height:0">
+        <div class="ph"><span class="lime"></span>通道控制面板<span class="r">点击开关立即下发 · 操作留痕 · 需填原因</span></div>
+        <div class="pb">
+          <div class="chgrid">
+            <div class="ch on"><div class="no">CH1</div><div class="nm">大门门锁</div><div class="sw"></div><div class="st"><i></i>已上锁</div></div>
+            <div class="ch on"><div class="no">CH2</div><div class="nm">1 号场照明</div><div class="sw"></div><div class="st"><i></i>已亮</div></div>
+            <div class="ch on"><div class="no">CH3</div><div class="nm">2 号场照明</div><div class="sw"></div><div class="st"><i></i>已亮</div></div>
+            <div class="ch off"><div class="no">CH4</div><div class="nm">3 号场照明</div><div class="sw"></div><div class="st"><i></i>未通电</div></div>
+            <div class="ch on"><div class="no">CH5</div><div class="nm">4 号场照明</div><div class="sw"></div><div class="st"><i></i>已亮</div></div>
+            <div class="ch on"><div class="no">CH6</div><div class="nm">1 号场插座</div><div class="sw"></div><div class="st"><i></i>已通电</div></div>
+            <div class="ch on"><div class="no">CH7</div><div class="nm">2 号场插座</div><div class="sw"></div><div class="st"><i></i>已通电</div></div>
+            <div class="ch off"><div class="no">CH8</div><div class="nm">3 号场插座</div><div class="sw"></div><div class="st"><i></i>未通电</div></div>
+            <div class="ch on"><div class="no">CH9</div><div class="nm">4 号场插座</div><div class="sw"></div><div class="st"><i></i>已通电</div></div>
+            <div class="ch on"><div class="no">CH10</div><div class="nm">走道照明</div><div class="sw"></div><div class="st"><i></i>已亮</div></div>
+            <div class="ch on"><div class="no">CH11</div><div class="nm">监控与路由</div><div class="sw"></div><div class="st"><i></i>已通电</div></div>
+            <div class="ch err"><div class="no">CH12</div><div class="nm">备用</div><div class="sw"></div><div class="st"><i></i>通讯异常</div></div>
+            <div class="ch off"><div class="no">CH13</div><div class="nm">备用</div><div class="sw"></div><div class="st"><i></i>未启用</div></div>
+            <div class="ch off"><div class="no">CH14</div><div class="nm">备用</div><div class="sw"></div><div class="st"><i></i>未启用</div></div>
+            <div class="ch off"><div class="no">CH15</div><div class="nm">备用</div><div class="sw"></div><div class="st"><i></i>未启用</div></div>
+            <div class="ch off"><div class="no">CH16</div><div class="nm">备用</div><div class="sw"></div><div class="st"><i></i>未启用</div></div>
+          </div>
+          <div style="margin-top:11px;border-top:1px solid #F0F5F0;padding-top:9px">
+            <table>
+              <tr><th style="width:80px">时间</th><th>通道</th><th>动作</th><th>触发来源</th><th>结果</th></tr>
+              <tr><td>19:01:12</td><td>CH1 大门门锁</td><td>断开（开门）</td><td>用户小程序 · 138****6688</td><td><span class="pill p-g">成功 210ms</span></td></tr>
+              <tr><td>19:00:00</td><td>CH7 2 号场插座</td><td>闭合（通电）</td><td>定时任务 · 订单 19350201</td><td><span class="pill p-g">成功 180ms</span></td></tr>
+              <tr><td>18:55:00</td><td>CH3 2 号场照明</td><td>闭合（开灯）</td><td>定时任务 · 开场前 5 分钟</td><td><span class="pill p-g">成功 165ms</span></td></tr>
+              <tr><td>18:54:32</td><td>CH12 备用</td><td>状态查询</td><td>心跳检测</td><td><span class="pill p-r">超时 3 次</span></td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ P5 数据报表 ============ -->
+    <div class="body" data-p="5">
+      <div class="kpis">
+        <div class="kpi"><small>本月营收</small><b>86,420<i>元</i></b><div class="up">↑ 18.6% 环比</div></div>
+        <div class="kpi"><small>本月订单</small><b>542<i>单</i></b><div class="up">↑ 76 单</div></div>
+        <div class="kpi"><small>平均利用率</small><b>64.3<i>%</i></b><div class="up">↑ 4.1%</div></div>
+        <div class="kpi"><small>爽约率</small><b>2.1<i>%</i></b><div class="up dn">↓ 0.4%</div></div>
+      </div>
+      <div class="row2b" style="flex:1;min-height:0">
+        <div class="panel">
+          <div class="ph"><span class="lime"></span>近 12 天营收趋势</div>
+          <div class="pb">
+            <svg width="100%" height="150" viewBox="0 0 520 150" preserveAspectRatio="none">
+              <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2E7D32" stop-opacity=".28"/>
+                <stop offset="100%" stop-color="#2E7D32" stop-opacity="0"/>
+              </linearGradient></defs>
+              <line x1="0" y1="120" x2="520" y2="120" stroke="#E8EFE8" stroke-width="1"/>
+              <line x1="0" y1="80" x2="520" y2="80" stroke="#E8EFE8" stroke-width="1"/>
+              <line x1="0" y1="40" x2="520" y2="40" stroke="#E8EFE8" stroke-width="1"/>
+              <path d="M0,96 L43,86 L87,92 L130,70 L174,78 L217,54 L261,62 L304,38 L348,46 L391,28 L435,34 L478,18 L520,26 L520,150 L0,150 Z" fill="url(#g1)"/>
+              <path d="M0,96 L43,86 L87,92 L130,70 L174,78 L217,54 L261,62 L304,38 L348,46 L391,28 L435,34 L478,18 L520,26" fill="none" stroke="#14401A" stroke-width="2.2"/>
+              <circle cx="478" cy="18" r="3.6" fill="#D8F55A" stroke="#14401A" stroke-width="2"/>
+            </svg>
+            <div style="display:flex;justify-content:space-between;font-size:9px;color:#8A968A;margin-top:2px">
+              <span>10-10</span><span>10-13</span><span>10-16</span><span>10-19</span><span>10-21</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="lime"></span>场地利用率对比</div>
+          <div class="pb">
+            <div style="display:flex;flex-direction:column;gap:11px;padding-top:4px">
+              <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><b>2 号场地</b><span style="color:#2E7D32;font-weight:700">81.2%</span></div><div style="height:7px;background:#EDF2ED;border-radius:4px"><i style="display:block;height:100%;width:81%;background:linear-gradient(90deg,#2E7D32,#D8F55A);border-radius:4px"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><b>1 号场地</b><span style="color:#2E7D32;font-weight:700">72.4%</span></div><div style="height:7px;background:#EDF2ED;border-radius:4px"><i style="display:block;height:100%;width:72%;background:linear-gradient(90deg,#2E7D32,#D8F55A);border-radius:4px"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><b>4 号场地</b><span style="color:#2E7D32;font-weight:700">63.1%</span></div><div style="height:7px;background:#EDF2ED;border-radius:4px"><i style="display:block;height:100%;width:63%;background:linear-gradient(90deg,#2E7D32,#D8F55A);border-radius:4px"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><b>3 号场地</b><span style="color:#C0392B;font-weight:700">40.7%</span></div><div style="height:7px;background:#EDF2ED;border-radius:4px"><i style="display:block;height:100%;width:41%;background:linear-gradient(90deg,#B7791F,#E8C86A);border-radius:4px"></i></div></div>
+            </div>
+            <div style="margin-top:14px;padding-top:11px;border-top:1px solid #F0F5F0;font-size:10.5px;color:#6B7A6B;line-height:1.8">
+              3 号场地本月有 6 天维护，利用率偏低属正常区间。
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel" style="flex:0 0 auto">
+        <div class="ph"><span class="lime"></span>时段热度（订单数）</div>
+        <div class="pb" style="padding-bottom:10px">
+          <div class="hm">
+            <div class="hd"></div><div class="hd">08—12</div><div class="hd">12—18</div><div class="hd">18—22</div><div class="hd">22—24</div>
+            <div>周一</div><div style="background:#F4FBE8">12</div><div style="background:#EDF7E2">18</div><div style="background:#C9E39A">42</div><div style="background:#F4FBE8">8</div>
+            <div>周二</div><div style="background:#F4FBE8">10</div><div style="background:#EDF7E2">16</div><div style="background:#C9E39A">38</div><div style="background:#F4FBE8">6</div>
+            <div>周三</div><div style="background:#F4FBE8">14</div><div style="background:#E4F2D2">22</div><div style="background:#D8F55A">48</div><div style="background:#EDF7E2">10</div>
+            <div>周四</div><div style="background:#F4FBE8">11</div><div style="background:#EDF7E2">19</div><div style="background:#D8F55A">45</div><div style="background:#EDF7E2">9</div>
+            <div>周五</div><div style="background:#EDF7E2">16</div><div style="background:#E4F2D2">26</div><div style="background:#B8E22E">52</div><div style="background:#E4F2D2">18</div>
+            <div>周六</div><div style="background:#D8F55A">28</div><div style="background:#B8E22E">34</div><div style="background:#A8CC2E">58</div><div style="background:#D8F55A">24</div>
+            <div>周日</div><div style="background:#D8F55A">26</div><div style="background:#C9E39A">30</div><div style="background:#B8E22E">54</div><div style="background:#E4F2D2">20</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ============ P6 会员管理 ============ -->
+    <div class="body" data-p="6">
+      <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center">
+        <div style="flex:1;background:#fff;border:1px solid #E2EAE2;border-radius:9px;padding:9px 13px;font-size:12px;color:#B6C0B6">搜索昵称 / 手机号</div>
+        <div style="background:#fff;border:1px solid #E2EAE2;border-radius:9px;padding:9px 13px;font-size:12px;color:#3F4C3F">全部等级 ▾</div>
+        <div style="background:#14401A;color:#D8F55A;border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700">导出</div>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#F4F7F4">
+          <th style="text-align:left;padding:10px 12px;font-size:11.5px;color:#5F6E5F;font-weight:700">会员</th>
+          <th style="text-align:left;padding:10px 12px;font-size:11.5px;color:#5F6E5F;font-weight:700">手机号</th>
+          <th style="text-align:left;padding:10px 12px;font-size:11.5px;color:#5F6E5F;font-weight:700">等级</th>
+          <th style="text-align:right;padding:10px 12px;font-size:11.5px;color:#5F6E5F;font-weight:700">储值余额</th>
+          <th style="text-align:right;padding:10px 12px;font-size:11.5px;color:#5F6E5F;font-weight:700">累计消费</th>
+          <th style="text-align:left;padding:10px 12px;font-size:11.5px;color:#5F6E5F;font-weight:700">最近到店</th>
+          <th style="text-align:left;padding:10px 12px;font-size:11.5px;color:#5F6E5F;font-weight:700">状态</th>
+        </tr></thead>
+        <tbody style="color:#1A1A1A">
+          <tr style="border-bottom:1px solid #F0F4F0"><td style="padding:11px 12px;font-weight:700">亮亮</td><td style="padding:11px 12px;color:#5F6E5F">138****8802</td><td style="padding:11px 12px"><span style="background:#EAF7C9;color:#4A7A16;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">金卡</span></td><td style="padding:11px 12px;text-align:right;font-weight:700">1,280.00</td><td style="padding:11px 12px;text-align:right;color:#5F6E5F">3,860.00</td><td style="padding:11px 12px;color:#5F6E5F">今天 20:41</td><td style="padding:11px 12px"><span style="color:#2E7D32">正常</span></td></tr>
+          <tr style="border-bottom:1px solid #F0F4F0"><td style="padding:11px 12px;font-weight:700">陈晓</td><td style="padding:11px 12px;color:#5F6E5F">136****5521</td><td style="padding:11px 12px"><span style="background:#F2F7EA;color:#5F6E5F;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">银卡</span></td><td style="padding:11px 12px;text-align:right;font-weight:700">420.00</td><td style="padding:11px 12px;text-align:right;color:#5F6E5F">1,920.00</td><td style="padding:11px 12px;color:#5F6E5F">今天 10:30</td><td style="padding:11px 12px"><span style="color:#2E7D32">正常</span></td></tr>
+          <tr style="border-bottom:1px solid #F0F4F0"><td style="padding:11px 12px;font-weight:700">张伟</td><td style="padding:11px 12px;color:#5F6E5F">139****6644</td><td style="padding:11px 12px"><span style="background:#F2F7EA;color:#5F6E5F;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">普卡</span></td><td style="padding:11px 12px;text-align:right;font-weight:700">0.00</td><td style="padding:11px 12px;text-align:right;color:#5F6E5F">640.00</td><td style="padding:11px 12px;color:#5F6E5F">昨天 19:12</td><td style="padding:11px 12px"><span style="color:#2E7D32">正常</span></td></tr>
+          <tr style="border-bottom:1px solid #F0F4F0"><td style="padding:11px 12px;font-weight:700">李静</td><td style="padding:11px 12px;color:#5F6E5F">135****9977</td><td style="padding:11px 12px"><span style="background:#EAF7C9;color:#4A7A16;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">金卡</span></td><td style="padding:11px 12px;text-align:right;font-weight:700">2,050.00</td><td style="padding:11px 12px;text-align:right;color:#5F6E5F">5,240.00</td><td style="padding:11px 12px;color:#5F6E5F">10-19 20:05</td><td style="padding:11px 12px"><span style="color:#2E7D32">正常</span></td></tr>
+          <tr style="border-bottom:1px solid #F0F4F0"><td style="padding:11px 12px;font-weight:700">王芳</td><td style="padding:11px 12px;color:#5F6E5F">137****3312</td><td style="padding:11px 12px"><span style="background:#F2F7EA;color:#5F6E5F;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">银卡</span></td><td style="padding:11px 12px;text-align:right;font-weight:700">760.00</td><td style="padding:11px 12px;text-align:right;color:#5F6E5F">1,460.00</td><td style="padding:11px 12px;color:#5F6E5F">10-18 18:40</td><td style="padding:11px 12px"><span style="color:#C25E00">待回访</span></td></tr>
+          <tr style="border-bottom:1px solid #F0F4F0"><td style="padding:11px 12px;font-weight:700">赵磊</td><td style="padding:11px 12px;color:#5F6E5F">150****7788</td><td style="padding:11px 12px"><span style="background:#F2F7EA;color:#5F6E5F;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">普卡</span></td><td style="padding:11px 12px;text-align:right;font-weight:700">0.00</td><td style="padding:11px 12px;text-align:right;color:#5F6E5F">320.00</td><td style="padding:11px 12px;color:#5F6E5F">10-15 21:30</td><td style="padding:11px 12px"><span style="color:#2E7D32">正常</span></td></tr>
+          <tr style="border-bottom:1px solid #F0F4F0"><td style="padding:11px 12px;font-weight:700">周敏</td><td style="padding:11px 12px;color:#5F6E5F">188****2244</td><td style="padding:11px 12px"><span style="background:#F2F7EA;color:#5F6E5F;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">银卡</span></td><td style="padding:11px 12px;text-align:right;font-weight:700">980.00</td><td style="padding:11px 12px;text-align:right;color:#5F6E5F">2,680.00</td><td style="padding:11px 12px;color:#5F6E5F">10-14 19:50</td><td style="padding:11px 12px"><span style="color:#2E7D32">正常</span></td></tr>
+          <tr style="border-bottom:1px solid #F0F4F0"><td style="padding:11px 12px;font-weight:700">吴强</td><td style="padding:11px 12px;color:#5F6E5F">133****9900</td><td style="padding:11px 12px"><span style="background:#F2F7EA;color:#5F6E5F;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">普卡</span></td><td style="padding:11px 12px;text-align:right;font-weight:700">0.00</td><td style="padding:11px 12px;text-align:right;color:#5F6E5F">180.00</td><td style="padding:11px 12px;color:#5F6E5F">10-11 20:20</td><td style="padding:11px 12px"><span style="color:#9AA79A">沉睡 40 天</span></td></tr>
+          <tr style="border-bottom:1px solid #F0F4F0"><td style="padding:11px 12px;font-weight:700">孙悦</td><td style="padding:11px 12px;color:#5F6E5F">159****1166</td><td style="padding:11px 12px"><span style="background:#EAF7C9;color:#4A7A16;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">金卡</span></td><td style="padding:11px 12px;text-align:right;font-weight:700">1,460.00</td><td style="padding:11px 12px;text-align:right;color:#5F6E5F">4,120.00</td><td style="padding:11px 12px;color:#5F6E5F">10-20 19:15</td><td style="padding:11px 12px"><span style="color:#2E7D32">正常</span></td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;font-size:11.5px;color:#8A968A">
+        <span>共 386 位会员 · 储值余额合计 ¥86,420 · 本月新增 42 位</span>
+        <span>1 2 3 … 43 ›</span>
+      </div>
+    </div>
+
+    <!-- ============ P7 团购核销 ============ -->
+    <div class="body" data-p="7">
+      <div style="display:flex;gap:16px">
+        <div style="flex:0 0 320px">
+          <div style="background:#0A2B0A;border-radius:12px;padding:18px">
+            <div style="font-size:11.5px;color:#9DB49D;margin-bottom:10px">输入券码核销</div>
+            <div style="display:flex;gap:8px">
+              <div style="flex:1;background:#14401A;border:1px solid #1F5A24;border-radius:9px;color:#fff;font-size:16px;letter-spacing:2px;padding:11px 13px">8823 4417 0092</div>
+              <div style="background:#D8F55A;color:#0A2B0A;border-radius:9px;font-size:12.5px;font-weight:800;padding:0 14px;display:flex;align-items:center">核销</div>
+            </div>
+            <div style="font-size:11px;color:#6E8A6E;margin-top:10px;line-height:1.7">支持美团、抖音券码。核销后自动生成订单并锁定时段。</div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <div style="flex:1;background:#fff;border:1px solid #E2EAE2;border-radius:10px;padding:13px 14px">
+              <div style="font-size:11px;color:#8A968A">本月核销</div>
+              <div style="font-size:20px;font-weight:800;color:#0A2B0A;margin-top:5px">126</div>
+            </div>
+            <div style="flex:1;background:#fff;border:1px solid #E2EAE2;border-radius:10px;padding:13px 14px">
+              <div style="font-size:11px;color:#8A968A">今日核销</div>
+              <div style="font-size:20px;font-weight:800;color:#0A2B0A;margin-top:5px">8</div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E2EAE2;border-radius:10px;padding:14px;margin-top:12px">
+            <div style="font-size:11.5px;color:#5F6E5F;font-weight:700;margin-bottom:9px">渠道占比</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;margin-bottom:7px"><span style="width:44px;color:#5F6E5F">美团</span><div style="flex:1;height:7px;background:#EEF3EE;border-radius:4px"><i style="display:block;width:64%;height:7px;background:#D8F55A;border-radius:4px"></i></div><span style="color:#3F4C3F;font-weight:700">64%</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:11.5px"><span style="width:44px;color:#5F6E5F">抖音</span><div style="flex:1;height:7px;background:#EEF3EE;border-radius:4px"><i style="display:block;width:36%;height:7px;background:#14401A;border-radius:4px"></i></div><span style="color:#3F4C3F;font-weight:700">36%</span></div>
+          </div>
+        </div>
+
+        <div style="flex:1;min-width:0;background:#fff;border:1px solid #E2EAE2;border-radius:10px;padding:14px 16px">
+          <div style="font-size:12.5px;font-weight:700;color:#0A2B0A;margin-bottom:10px">近期核销记录</div>
+          <table style="width:100%;border-collapse:collapse;font-size:11.5px">
+            <thead><tr style="background:#F4F7F4">
+              <th style="text-align:left;padding:8px 9px;color:#5F6E5F;font-size:11px">核销时间</th>
+              <th style="text-align:left;padding:8px 9px;color:#5F6E5F;font-size:11px">券码</th>
+              <th style="text-align:left;padding:8px 9px;color:#5F6E5F;font-size:11px">渠道</th>
+              <th style="text-align:left;padding:8px 9px;color:#5F6E5F;font-size:11px">券种</th>
+              <th style="text-align:left;padding:8px 9px;color:#5F6E5F;font-size:11px">操作人</th>
+              <th style="text-align:right;padding:8px 9px;color:#5F6E5F;font-size:11px">实收</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:9px">今天 20:41</td><td style="padding:9px">8823 4417 0092</td><td style="padding:9px"><span style="background:#FFF0E6;color:#C25E00;padding:2px 7px;border-radius:5px;font-size:10.5px;font-weight:700">美团</span></td><td style="padding:9px">三次卡</td><td style="padding:9px;color:#5F6E5F">店员小林</td><td style="padding:9px;text-align:right;font-weight:700">¥268</td></tr>
+              <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:9px">今天 19:12</td><td style="padding:9px">7731 2205 4481</td><td style="padding:9px"><span style="background:#1A1A1A;color:#fff;padding:2px 7px;border-radius:5px;font-size:10.5px;font-weight:700">抖音</span></td><td style="padding:9px">1 小时券</td><td style="padding:9px;color:#5F6E5F">系统自动</td><td style="padding:9px;text-align:right;font-weight:700">¥78</td></tr>
+              <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:9px">今天 16:30</td><td style="padding:9px">6620 1183 7752</td><td style="padding:9px"><span style="background:#FFF0E6;color:#C25E00;padding:2px 7px;border-radius:5px;font-size:10.5px;font-weight:700">美团</span></td><td style="padding:9px">三次卡</td><td style="padding:9px;color:#5F6E5F">店员小林</td><td style="padding:9px;text-align:right;font-weight:700">¥268</td></tr>
+              <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:9px">今天 14:05</td><td style="padding:9px">5508 9931 2246</td><td style="padding:9px"><span style="background:#1A1A1A;color:#fff;padding:2px 7px;border-radius:5px;font-size:10.5px;font-weight:700">抖音</span></td><td style="padding:9px">早场特惠</td><td style="padding:9px;color:#5F6E5F">系统自动</td><td style="padding:9px;text-align:right;font-weight:700">¥59</td></tr>
+              <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:9px">昨天 21:18</td><td style="padding:9px">4417 8826 3390</td><td style="padding:9px"><span style="background:#FFF0E6;color:#C25E00;padding:2px 7px;border-radius:5px;font-size:10.5px;font-weight:700">美团</span></td><td style="padding:9px">三次卡</td><td style="padding:9px;color:#5F6E5F">店员小林</td><td style="padding:9px;text-align:right;font-weight:700">¥268</td></tr>
+              <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:9px">昨天 19:40</td><td style="padding:9px">3391 6672 8810</td><td style="padding:9px"><span style="background:#1A1A1A;color:#fff;padding:2px 7px;border-radius:5px;font-size:10.5px;font-weight:700">抖音</span></td><td style="padding:9px">1 小时券</td><td style="padding:9px;color:#5F6E5F">系统自动</td><td style="padding:9px;text-align:right;font-weight:700">¥78</td></tr>
+              <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:9px">昨天 15:22</td><td style="padding:9px">2270 5541 9903</td><td style="padding:9px"><span style="background:#FFF0E6;color:#C25E00;padding:2px 7px;border-radius:5px;font-size:10.5px;font-weight:700">美团</span></td><td style="padding:9px">三次卡</td><td style="padding:9px;color:#5F6E5F">店长</td><td style="padding:9px;text-align:right;font-weight:700">¥268</td></tr>
+              <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:9px">10-19 20:05</td><td style="padding:9px">1188 3374 5520</td><td style="padding:9px"><span style="background:#1A1A1A;color:#fff;padding:2px 7px;border-radius:5px;font-size:10.5px;font-weight:700">抖音</span></td><td style="padding:9px">早场特惠</td><td style="padding:9px;color:#5F6E5F">系统自动</td><td style="padding:9px;text-align:right;font-weight:700">¥59</td></tr>
+              <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:9px">10-19 18:30</td><td style="padding:9px">9904 2257 6631</td><td style="padding:9px"><span style="background:#FFF0E6;color:#C25E00;padding:2px 7px;border-radius:5px;font-size:10.5px;font-weight:700">美团</span></td><td style="padding:9px">三次卡</td><td style="padding:9px;color:#5F6E5F">店员小林</td><td style="padding:9px;text-align:right;font-weight:700">¥268</td></tr>
+            </tbody>
+          </table>
+          <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:#8A968A">
+            <span>本月合计 126 笔 · 实收 ¥21,840</span><span>1 2 3 ›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ P8 操作日志 ============ -->
+    <div class="body" data-p="8">
+      <div style="display:flex;gap:10px;margin-bottom:14px;font-size:12px;color:#3F4C3F">
+        <div style="background:#fff;border:1px solid #E2EAE2;border-radius:9px;padding:9px 13px">2026-10-21 ~ 2026-10-21 ▾</div>
+        <div style="background:#fff;border:1px solid #E2EAE2;border-radius:9px;padding:9px 13px">全部操作人 ▾</div>
+        <div style="background:#fff;border:1px solid #E2EAE2;border-radius:9px;padding:9px 13px">全部模块 ▾</div>
+        <div style="flex:1;background:#fff;border:1px solid #E2EAE2;border-radius:9px;padding:9px 13px;color:#B6C0B6">搜索操作内容</div>
+        <div style="background:#14401A;color:#D8F55A;border-radius:9px;padding:9px 16px;font-weight:700">导出</div>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:11.5px">
+        <thead><tr style="background:#F4F7F4">
+          <th style="text-align:left;padding:10px 10px;color:#5F6E5F;font-size:11px">时间</th>
+          <th style="text-align:left;padding:10px 10px;color:#5F6E5F;font-size:11px">操作人</th>
+          <th style="text-align:left;padding:10px 10px;color:#5F6E5F;font-size:11px">模块</th>
+          <th style="text-align:left;padding:10px 10px;color:#5F6E5F;font-size:11px">操作内容</th>
+          <th style="text-align:left;padding:10px 10px;color:#5F6E5F;font-size:11px">IP</th>
+          <th style="text-align:left;padding:10px 10px;color:#5F6E5F;font-size:11px">结果</th>
+        </tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:10px">20:41:12</td><td style="padding:10px;font-weight:700">店长 陈明</td><td style="padding:10px">设备控制</td><td style="padding:10px">手动开门 CH1 · 2 号场客户迟到</td><td style="padding:10px;color:#5F6E5F">116.23.14.88</td><td style="padding:10px;color:#2E7D32">成功</td></tr>
+          <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:10px">20:12:03</td><td style="padding:10px;font-weight:700">店员 小林</td><td style="padding:10px">订单管理</td><td style="padding:10px">退款 ¥120 · 订单 2026102120120077</td><td style="padding:10px;color:#5F6E5F">116.23.14.90</td><td style="padding:10px;color:#2E7D32">成功</td></tr>
+          <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:10px">19:35:44</td><td style="padding:10px;font-weight:700">店长 陈明</td><td style="padding:10px">价格管理</td><td style="padding:10px">夜间时段 168 → 188 元</td><td style="padding:10px;color:#5F6E5F">116.23.14.88</td><td style="padding:10px;color:#2E7D32">成功</td></tr>
+          <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:10px">18:20:51</td><td style="padding:10px;font-weight:700">系统</td><td style="padding:10px">定时任务</td><td style="padding:10px">3 号场 19:00 开场 · 开灯 + 插座通电</td><td style="padding:10px;color:#5F6E5F">—</td><td style="padding:10px;color:#2E7D32">成功</td></tr>
+          <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:10px">17:08:29</td><td style="padding:10px;font-weight:700">店员 小林</td><td style="padding:10px">团购核销</td><td style="padding:10px">核销美团券 8823 4417 0092</td><td style="padding:10px;color:#5F6E5F">116.23.14.90</td><td style="padding:10px;color:#2E7D32">成功</td></tr>
+          <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:10px">16:44:10</td><td style="padding:10px;font-weight:700">店长 陈明</td><td style="padding:10px">会员管理</td><td style="padding:10px">为「王芳」调整储值余额 +200</td><td style="padding:10px;color:#5F6E5F">116.23.14.88</td><td style="padding:10px;color:#2E7D32">成功</td></tr>
+          <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:10px">15:12:07</td><td style="padding:10px;font-weight:700">店长 陈明</td><td style="padding:10px">系统设置</td><td style="padding:10px">修改取消规则：提前 2 小时免扣</td><td style="padding:10px;color:#5F6E5F">116.23.14.88</td><td style="padding:10px;color:#2E7D32">成功</td></tr>
+          <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:10px">14:30:22</td><td style="padding:10px;font-weight:700">系统</td><td style="padding:10px">设备控制</td><td style="padding:10px">指令超时 CH12 · 自动重试 1 次</td><td style="padding:10px;color:#5F6E5F">—</td><td style="padding:10px;color:#C25E00">重试成功</td></tr>
+          <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:10px">11:05:36</td><td style="padding:10px;font-weight:700">店员 小林</td><td style="padding:10px">订单管理</td><td style="padding:10px">标记爽约 · 订单 2026102110300055</td><td style="padding:10px;color:#5F6E5F">116.23.14.90</td><td style="padding:10px;color:#2E7D32">成功</td></tr>
+          <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:10px">09:48:15</td><td style="padding:10px;font-weight:700">未知账号</td><td style="padding:10px">登录</td><td style="padding:10px">密码错误 3 次 · 账号 admin</td><td style="padding:10px;color:#5F6E5F">203.88.11.4</td><td style="padding:10px;color:#C0392B">失败</td></tr>
+          <tr style="border-bottom:1px solid #F4F7F4"><td style="padding:10px">09:02:41</td><td style="padding:10px;font-weight:700">店长 陈明</td><td style="padding:10px">登录</td><td style="padding:10px">登录成功</td><td style="padding:10px;color:#5F6E5F">116.23.14.88</td><td style="padding:10px;color:#2E7D32">成功</td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:11.5px;color:#8A968A">
+        <span>今日 42 条 · 日志保留 180 天</span><span>1 2 3 … 8 ›</span>
+      </div>
+    </div>
+
+    <!-- ============ P9 卡券管理 ============ -->
+    <div class="body" data-p="9">
+      <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center">
+        <div style="flex:1;background:#fff;border:1px solid #E2EAE2;border-radius:9px;padding:9px 13px;font-size:12px;color:#B6C0B6">搜索卡券名称</div>
+        <div style="background:#fff;border:1px solid #E2EAE2;border-radius:9px;padding:9px 13px;font-size:12px;color:#3F4C3F">全部类型 ▾</div>
+        <div style="background:#14401A;color:#D8F55A;border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700">+ 新建卡券</div>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#F4F7F4">
+          <th style="text-align:left;padding:10px 12px;color:#5F6E5F;font-size:11.5px">卡券名称</th>
+          <th style="text-align:left;padding:10px 12px;color:#5F6E5F;font-size:11.5px">类型</th>
+          <th style="text-align:right;padding:10px 12px;color:#5F6E5F;font-size:11.5px">售价</th>
+          <th style="text-align:left;padding:10px 12px;color:#5F6E5F;font-size:11.5px">有效期</th>
+          <th style="text-align:right;padding:10px 12px;color:#5F6E5F;font-size:11.5px">已售</th>
+          <th style="text-align:left;padding:10px 12px;color:#5F6E5F;font-size:11.5px">邀请码</th>
+          <th style="text-align:left;padding:10px 12px;color:#5F6E5F;font-size:11.5px">状态</th>
+          <th style="text-align:left;padding:10px 12px;color:#5F6E5F;font-size:11.5px">操作</th>
+        </tr></thead>
+        <tbody style="color:#1A1A1A">
+          <tr style="border-bottom:1px solid #F0F4F0">
+            <td style="padding:12px"><b>10 次卡 · 全天可用</b><div style="font-size:10.5px;color:#8A968A;margin-top:3px">原价 ¥960，限 4 片场地通用</div></td>
+            <td style="padding:12px">次卡</td><td style="padding:12px;text-align:right;font-weight:700">¥580</td>
+            <td style="padding:12px;color:#5F6E5F">90 天</td><td style="padding:12px;text-align:right">86</td>
+            <td style="padding:12px"><span style="background:#EAF7C9;color:#4A7A16;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">已开启 · 12 张</span></td>
+            <td style="padding:12px"><span style="color:#2E7D32">在售</span></td>
+            <td style="padding:12px;color:#4A7A16;font-weight:700">编辑 · 邀请码</td>
+          </tr>
+          <tr style="border-bottom:1px solid #F0F4F0">
+            <td style="padding:12px"><b>3 次卡 · 全天可用</b><div style="font-size:10.5px;color:#8A968A;margin-top:3px">原价 ¥384</div></td>
+            <td style="padding:12px">次卡</td><td style="padding:12px;text-align:right;font-weight:700">¥268</td>
+            <td style="padding:12px;color:#5F6E5F">30 天</td><td style="padding:12px;text-align:right">142</td>
+            <td style="padding:12px"><span style="background:#F2F7EA;color:#5F6E5F;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">未开启</span></td>
+            <td style="padding:12px"><span style="color:#2E7D32">在售</span></td>
+            <td style="padding:12px;color:#4A7A16;font-weight:700">编辑 · 邀请码</td>
+          </tr>
+          <tr style="border-bottom:1px solid #F0F4F0">
+            <td style="padding:12px"><b>1 小时券</b><div style="font-size:10.5px;color:#8A968A;margin-top:3px">单次入场券</div></td>
+            <td style="padding:12px">时长券</td><td style="padding:12px;text-align:right;font-weight:700">¥108</td>
+            <td style="padding:12px;color:#5F6E5F">30 天</td><td style="padding:12px;text-align:right">268</td>
+            <td style="padding:12px"><span style="background:#F2F7EA;color:#5F6E5F;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">未开启</span></td>
+            <td style="padding:12px"><span style="color:#2E7D32">在售</span></td>
+            <td style="padding:12px;color:#4A7A16;font-weight:700">编辑 · 邀请码</td>
+          </tr>
+          <tr style="border-bottom:1px solid #F0F4F0">
+            <td style="padding:12px"><b>早场专用券</b><div style="font-size:10.5px;color:#8A968A;margin-top:3px">限工作日 8:00—18:00</div></td>
+            <td style="padding:12px">时段券</td><td style="padding:12px;text-align:right;font-weight:700">¥59</td>
+            <td style="padding:12px;color:#5F6E5F">60 天</td><td style="padding:12px;text-align:right">54</td>
+            <td style="padding:12px"><span style="background:#F2F7EA;color:#5F6E5F;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">未开启</span></td>
+            <td style="padding:12px"><span style="color:#2E7D32">在售</span></td>
+            <td style="padding:12px;color:#4A7A16;font-weight:700">编辑 · 邀请码</td>
+          </tr>
+          <tr style="border-bottom:1px solid #F0F4F0">
+            <td style="padding:12px"><b>体验券 · 1 小时</b><div style="font-size:10.5px;color:#8A968A;margin-top:3px">仅通过邀请码领取，不单独售卖</div></td>
+            <td style="padding:12px">体验券</td><td style="padding:12px;text-align:right;color:#8A968A">免费</td>
+            <td style="padding:12px;color:#5F6E5F">30 天</td><td style="padding:12px;text-align:right">—</td>
+            <td style="padding:12px"><span style="background:#EAF7C9;color:#4A7A16;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">已开启 · 已领 38</span></td>
+            <td style="padding:12px"><span style="color:#2E7D32">在售</span></td>
+            <td style="padding:12px;color:#4A7A16;font-weight:700">编辑 · 邀请码</td>
+          </tr>
+          <tr style="border-bottom:1px solid #F0F4F0">
+            <td style="padding:12px"><b>国庆 3 次卡</b><div style="font-size:10.5px;color:#8A968A;margin-top:3px">活动券，已下架</div></td>
+            <td style="padding:12px">次卡</td><td style="padding:12px;text-align:right;font-weight:700">¥228</td>
+            <td style="padding:12px;color:#5F6E5F">30 天</td><td style="padding:12px;text-align:right">76</td>
+            <td style="padding:12px"><span style="background:#F2F7EA;color:#5F6E5F;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">未开启</span></td>
+            <td style="padding:12px"><span style="color:#9AA79A">已下架</span></td>
+            <td style="padding:12px;color:#4A7A16;font-weight:700">编辑</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="display:flex;gap:14px;margin-top:16px">
+        <div style="flex:1;background:#fff;border:1px solid #E2EAE2;border-radius:10px;padding:14px 16px">
+          <div style="font-size:11.5px;color:#8A968A">本月卡券销售</div>
+          <div style="font-size:21px;font-weight:800;color:#0A2B0A;margin-top:5px">¥28,640</div>
+          <div style="font-size:11px;color:#2E7D32;margin-top:4px">比上月 +18%</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #E2EAE2;border-radius:10px;padding:14px 16px">
+          <div style="font-size:11.5px;color:#8A968A">已发放卡券</div>
+          <div style="font-size:21px;font-weight:800;color:#0A2B0A;margin-top:5px">626 张</div>
+          <div style="font-size:11px;color:#8A968A;margin-top:4px">其中邀请码领取 38 张</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #E2EAE2;border-radius:10px;padding:14px 16px">
+          <div style="font-size:11.5px;color:#8A968A">未核销余额</div>
+          <div style="font-size:21px;font-weight:800;color:#C25E00;margin-top:5px">1,842 次</div>
+          <div style="font-size:11px;color:#8A968A;margin-top:4px">折算约 ¥52,600 待履约</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #E2EAE2;border-radius:10px;padding:14px 16px">
+          <div style="font-size:11.5px;color:#8A968A">邀请码已用</div>
+          <div style="font-size:21px;font-weight:800;color:#0A2B0A;margin-top:5px">38 / 50</div>
+          <div style="font-size:11px;color:#8A968A;margin-top:4px">还有 12 张未领取</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script>
+var meta = {
+  1:["工作台","今日经营概览"],
+  2:["场地与价格","4 片场地 · 分时定价与日历调价"],
+  3:["订单管理","查询 · 退款 · 延长 · 导出"],
+  4:["设备控制","16 路继电器 · 门锁 / 照明 / 插座"],
+  5:["数据报表","营收 · 利用率 · 时段热度"],
+  6:["会员管理","会员档案 · 储值余额 · 消费记录"],
+  7:["团购核销","券码核销 · 渠道对账 · 核销记录"],
+  8:["操作日志","谁在什么时候改了什么"],
+  9:["卡券管理","创建卡券 · 设定价格 · 生成邀请码"]
+};
+function go(n){
+  document.querySelectorAll('.body').forEach(function(b){ b.classList.toggle('on', b.dataset.p==n); });
+  document.querySelectorAll('.nav a').forEach(function(a){ a.classList.toggle('on', a.dataset.p==n); });
+  document.getElementById('t1').textContent = meta[n][0];
+  document.getElementById('t2').textContent = meta[n][1];
+}
+document.querySelectorAll('.nav a[data-p]').forEach(function(a){
+  a.addEventListener('click', function(){ go(a.dataset.p); });
+});
+var q = new URLSearchParams(location.search).get('p');
+if(q) go(q);
+</script>
+</body>
+</html>
