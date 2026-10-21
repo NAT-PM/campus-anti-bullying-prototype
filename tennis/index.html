@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>甜点网球 · 24 小时自助学训馆 · 小程序原型</title>
+<style>
+:root{
+  --ink:#0A2B0A;          /* 最深墨绿 */
+  --green:#14401A;        /* 主绿 */
+  --green2:#1E5A24;       /* 浅一级绿 */
+  --lime:#D8F55A;         /* 荧光黄绿 */
+  --lime2:#C2E93C;
+  --gray:#F3F5F3;
+  --txt:#1A1A1A;
+  --sub:#6B7A6B;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+body{
+  background:#E8EBE8;
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  padding:28px;
+}
+.board{
+  display:grid;
+  grid-template-columns:repeat(5,375px);
+  gap:22px 20px;
+  transform:scale(.62);
+  transform-origin:top left;
+  width:1960px;
+}
+.phone{
+  width:375px;height:812px;background:#fff;border-radius:34px;
+  overflow:hidden;position:relative;
+  box-shadow:0 10px 30px rgba(10,43,10,.18);
+  display:flex;flex-direction:column;
+}
+/* ---- 状态栏 ---- */
+.status{
+  height:44px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;font-size:13px;font-weight:600;flex:0 0 auto;z-index:20;
+}
+.status.on-dark{color:#fff}
+.status .dots{display:flex;gap:3px;align-items:center}
+.status .bar{width:3px;height:9px;background:currentColor;border-radius:1px;opacity:.85}
+.status .bar:nth-child(2){height:11px}
+.status .bar:nth-child(3){height:13px}
+.status .bat{width:20px;height:10px;border:1.3px solid currentColor;border-radius:3px;position:relative;opacity:.9}
+.status .bat::after{content:"";position:absolute;right:-3px;top:3px;width:2px;height:4px;background:currentColor;border-radius:1px}
+.status .bat i{position:absolute;left:1px;top:1px;bottom:1px;width:72%;background:currentColor;border-radius:1.5px;display:block}
+/* ---- 通用 ---- */
+.scroll{flex:1;overflow:hidden;position:relative}
+.pad{padding:0 16px}
+.tabbar{
+  height:76px;flex:0 0 auto;background:#fff;border-top:1px solid #EFF1EF;
+  display:flex;align-items:flex-start;padding-top:9px;
+}
+.tabbar .t{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:#9AA79A}
+.tabbar .t.on{color:#2E7D32;font-weight:600}
+.tabbar svg{width:22px;height:22px}
+.homebar{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:120px;height:4px;background:#111;border-radius:3px;opacity:.25;z-index:30}
+/* ---- 首页 ---- */
+.hero{
+  position:absolute;left:0;right:0;top:0;height:430px;
+  background:
+    radial-gradient(120% 70% at 50% 0%, #2C6B33 0%, #14401A 55%, #0A2B0A 100%);
+  overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;inset:-40px;
+  background-image:
+    repeating-linear-gradient(58deg, rgba(216,245,90,.09) 0 1px, transparent 1px 34px),
+    repeating-linear-gradient(-58deg, rgba(216,245,90,.09) 0 1px, transparent 1px 34px);
+}
+.hero::after{
+  content:"";position:absolute;right:-70px;bottom:-90px;width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, rgba(216,245,90,.55), rgba(216,245,90,0) 70%);
+  filter:blur(2px);
+}
+.brand{position:relative;z-index:2;text-align:center;padding-top:52px}
+.brand h1{font-size:31px;letter-spacing:7px;color:#fff;font-weight:800;text-shadow:0 2px 12px rgba(0,0,0,.3)}
+.brand .tag{
+  display:inline-block;margin-top:10px;background:var(--green);color:#fff;
+  font-size:12px;letter-spacing:2px;padding:5px 14px;border-radius:4px;
+}
+.dots-nav{position:relative;z-index:2;display:flex;justify-content:flex-end;gap:5px;padding:16px 20px 0}
+.dots-nav i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4)}
+.dots-nav i:first-child{background:#fff;width:14px;border-radius:3px}
+/* 门店卡 */
+.store{
+  position:relative;z-index:3;margin:14px 16px 0;background:rgba(255,255,255,.96);
+  border-radius:16px;padding:14px 14px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 6px 18px rgba(0,0,0,.12);
+}
+.store .info{flex:1;min-width:0}
+.store .row1{display:flex;align-items:center;gap:8px}
+.store h3{font-size:16px;color:#111;font-weight:800}
+.chg{font-size:10px;color:#2E7D32;border:1px solid #C9DCC9;border-radius:20px;padding:2px 7px;white-space:nowrap}
+.store p{font-size:11px;color:var(--sub);margin-top:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav-btn{width:52px;flex:0 0 52px;text-align:center}
+.nav-btn .cir{
+  width:36px;height:36px;border-radius:50%;border:1.5px solid #17361A;margin:0 auto 4px;
+  display:flex;align-items:center;justify-content:center;
+}
+.nav-btn span{font-size:10px;color:#17361A}
+/* 两个大按钮 */
+.bigbtns{position:relative;z-index:3;display:flex;gap:12px;margin:14px 16px 0}
+.bigbtn{
+  flex:1;height:132px;border-radius:18px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden;
+}
+.bigbtn .ic{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.bigbtn b{font-size:17px;font-weight:800;letter-spacing:1px}
+.b1{background:linear-gradient(160deg,#EAF9A8,#D8F55A)}
+.b1 .ic{background:#fff}
+.b1 b{color:#17361A}
+.b2{background:linear-gradient(160deg,#D8F55A,#B8E22E)}
+.b2 .ic{background:rgba(255,255,255,.55)}
+.b2 b{color:#17361A}
+/* 进行中订单 */
+.live{
+  position:relative;z-index:3;margin:14px 16px 0;background:#14401A;border-radius:16px;
+  padding:13px 15px;display:flex;align-items:center;gap:12px;color:#fff;
+}
+.live .dot{width:7px;height:7px;border-radius:50%;background:#D8F55A;box-shadow:0 0 0 4px rgba(216,245,90,.2)}
+.live .t1{font-size:11px;color:#A9C4A9}
+.live .t2{font-size:17px;font-weight:800;letter-spacing:1px;margin-top:2px;font-variant-numeric:tabular-nums}
+.live .go{margin-left:auto;background:#D8F55A;color:#17361A;font-size:12px;font-weight:800;padding:8px 16px;border-radius:20px}
+/* 卡券 */
+.sec{margin:18px 16px 0;display:flex;align-items:baseline;justify-content:space-between}
+.sec h2{font-size:15px;font-weight:800;color:#111}
+.sec span{font-size:11px;color:var(--sub)}
+.packs{margin:10px 16px 0;display:flex;flex-direction:column;gap:10px}
+.pack{
+  background:linear-gradient(120deg,#0E3312 0%,#1E5A24 55%,#2A6E30 100%);
+  border-radius:14px;padding:12px 15px;color:#fff;position:relative;overflow:hidden;
+}
+.pack::before{
+  content:"";position:absolute;right:-30px;top:-40px;width:150px;height:150px;
+  background:repeating-conic-gradient(from 0deg, rgba(216,245,90,.12) 0deg 6deg, transparent 6deg 18deg);
+  border-radius:50%;
+}
+.pack h4{font-size:13px;font-weight:700;position:relative}
+.pack .meta{font-size:10px;color:#A9C4A9;margin-top:6px;position:relative}
+.pack .p{display:flex;align-items:baseline;gap:7px;margin-top:12px;position:relative}
+.pack .p b{font-size:24px;color:#D8F55A;font-weight:900}
+.pack .p b i{font-size:13px;font-style:normal;margin-right:1px}
+.pack .p del{font-size:11px;color:#8FA88F}
+.pack .arrow{position:absolute;right:14px;bottom:14px;color:#D8F55A;font-size:16px}
+/* 悬浮按钮 */
+.float{position:absolute;right:14px;bottom:96px;z-index:15;display:flex;flex-direction:column;gap:10px}
+.float .f{
+  width:52px;height:52px;border-radius:50%;background:#fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.16);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;
+}
+.float .f span{font-size:8.5px;color:#2E7D32;font-weight:600}
+.float .f.key{background:#D8F55A}
+.float .f.key span{color:#17361A}
+/* ---- 通用头部 ---- */
+.nav{
+  height:50px;display:flex;align-items:center;padding:0 16px;gap:10px;
+  background:#fff;flex:0 0 auto;border-bottom:1px solid #F0F2F0;
+}
+.nav .back{font-size:20px;color:#111;line-height:1}
+.nav h1{font-size:16px;font-weight:800;color:#111}
+.nav .r{margin-left:auto;font-size:11px;color:var(--sub)}
+/* ---- 时段选择 ---- */
+.dates{display:flex;gap:8px;padding:13px 16px;overflow:hidden;background:#fff;flex:0 0 auto}
+.date{
+  flex:0 0 52px;height:66px;border-radius:12px;background:#F4F6F4;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+}
+.date small{font-size:10px;color:#8A968A}
+.date b{font-size:15px;color:#333}
+.date.on{background:#14401A}
+.date.on small{color:#A9C4A9}
+.date.on b{color:#D8F55A}
+.legend{display:flex;gap:14px;padding:0 16px 10px;font-size:10px;color:var(--sub);background:#fff;flex:0 0 auto}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.grid-wrap{flex:1;overflow:hidden;background:#fff;padding:0 16px}
+.ghead{display:flex;font-size:10px;color:var(--sub);padding-bottom:6px}
+.ghead div:first-child{width:48px}
+.ghead div:not(:first-child){flex:1;text-align:center}
+.grow{display:flex;align-items:center;margin-bottom:6px}
+.grow .cname{width:48px;font-size:11px;font-weight:700;color:#333}
+.grow .cells{flex:1;display:flex;gap:3px}
+.cell{
+  flex:1;height:34px;border-radius:6px;background:#EDF7E8;border:1px solid #DDEFD6;
+  display:flex;align-items:center;justify-content:center;font-size:9px;color:#2E7D32;font-weight:600;
+}
+.cell.booked{background:#F3F4F3;border-color:#E8EAE8;color:#B9C1B9}
+.cell.past{background:#FAFAFA;border-color:#F0F0F0;color:#D2D7D2}
+.cell.sel{background:#14401A;border-color:#14401A;color:#D8F55A}
+.bottombar{
+  flex:0 0 auto;background:#fff;border-top:1px solid #EFF1EF;padding:12px 16px 26px;
+  display:flex;align-items:center;gap:14px;
+}
+.bottombar .sum{flex:1}
+.bottombar .sum small{font-size:10px;color:var(--sub);display:block}
+.bottombar .sum b{font-size:22px;color:#111;font-weight:900;font-variant-numeric:tabular-nums}
+.bottombar .sum b i{font-size:13px;font-style:normal}
+.btn{
+  background:#14401A;color:#D8F55A;font-size:15px;font-weight:800;
+  padding:14px 34px;border-radius:26px;border:0;
+}
+.btn.lime{background:#D8F55A;color:#17361A}
+/* ---- 确认页 ---- */
+.card{background:#fff;border-radius:16px;margin:12px 16px 0;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.card .ttl{font-size:13px;font-weight:800;color:#111;margin-bottom:12px}
+.kv{display:flex;justify-content:space-between;font-size:12px;padding:7px 0;color:#333}
+.kv span{color:var(--sub)}
+.kv b{font-weight:700}
+.kv.total b{font-size:19px;color:#C0392B}
+.line{height:1px;background:#F0F2F0;margin:8px 0}
+.rowlink{display:flex;align-items:center;justify-content:space-between;padding:12px 0;font-size:12.5px;color:#333;border-bottom:1px solid #F4F6F4}
+.rowlink:last-child{border:0}
+.rowlink .r{color:#2E7D32;font-weight:700}
+.check{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:#555;margin:14px 16px 0;line-height:1.6}
+.check .box{width:15px;height:15px;border-radius:4px;background:#14401A;flex:0 0 15px;margin-top:1px;position:relative}
+.check .box::after{content:"";position:absolute;left:4px;top:1px;width:5px;height:9px;border:solid #D8F55A;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.check a{color:#2E7D32;text-decoration:underline}
+/* ---- 支付结果 / 使用中 ---- */
+.dark-wrap{flex:1;background:linear-gradient(180deg,#0A2B0A 0%,#14401A 42%,#0A2B0A 100%);position:relative;overflow:hidden}
+.dark-wrap::before{
+  content:"";position:absolute;inset:0;
+  background-image:
+    repeating-linear-gradient(58deg, rgba(216,245,90,.05) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(-58deg, rgba(216,245,90,.05) 0 1px, transparent 1px 40px);
+}
+.res{position:relative;z-index:2;text-align:center;padding-top:44px}
+.res .ok{
+  width:74px;height:74px;border-radius:50%;background:rgba(216,245,90,.15);
+  border:2px solid rgba(216,245,90,.5);margin:0 auto;display:flex;align-items:center;justify-content:center;
+}
+.res h2{font-size:20px;color:#fff;font-weight:800;margin-top:18px}
+.res p{font-size:12px;color:#A9C4A9;margin-top:7px}
+.cd{position:relative;z-index:2;text-align:center;margin-top:26px}
+.cd small{font-size:11px;color:#A9C4A9;letter-spacing:1px}
+.cd .big{font-size:56px;color:#D8F55A;font-weight:900;letter-spacing:2px;font-variant-numeric:tabular-nums;line-height:1.1}
+.cd .big span{font-size:20px;color:#A9C4A9;font-weight:600}
+.stats{position:relative;z-index:2;display:flex;gap:10px;margin:22px 16px 0}
+.stat{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:13px}
+.stat small{font-size:10px;color:#9DB49D;display:block}
+.stat b{font-size:14px;color:#fff;font-weight:800;display:flex;align-items:center;gap:6px;margin-top:6px}
+.stat .d{width:6px;height:6px;border-radius:50%;background:#D8F55A}
+.stat .d.off{background:#E07A7A}
+.bigopen{
+  position:absolute;left:16px;right:16px;bottom:92px;z-index:5;
+  background:#D8F55A;border-radius:20px;height:66px;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-size:18px;font-weight:900;color:#17361A;
+  box-shadow:0 10px 26px rgba(216,245,90,.3);
+}
+.quick{position:absolute;left:16px;right:16px;bottom:30px;z-index:5;display:flex;gap:10px}
+.quick div{
+  flex:1;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);
+  border-radius:12px;padding:9px 0;text-align:center;font-size:11px;color:#DCE9DC;
+}
+/* ---- 订单列表 ---- */
+.tabs{display:flex;gap:20px;padding:0 16px;background:#fff;border-bottom:1px solid #F0F2F0;flex:0 0 auto}
+.tabs div{padding:13px 0;font-size:13px;color:#7A877A;position:relative}
+.tabs div.on{color:#111;font-weight:800}
+.tabs div.on::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:#2E7D32;border-radius:2px}
+.ocard{background:#fff;border-radius:16px;margin:12px 16px 0;padding:15px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.ocard .top{display:flex;justify-content:space-between;align-items:center}
+.ocard .top b{font-size:14px;color:#111}
+.tag{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700}
+.tag.wait{background:#FFF4E0;color:#B7791F}
+.tag.live{background:#E7F7E7;color:#2E7D32}
+.tag.done{background:#F1F3F1;color:#8A968A}
+.ocard .m{font-size:12px;color:#555;margin-top:9px;line-height:1.7}
+.ocard .foot{display:flex;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid #F4F6F4}
+.ocard .foot .amt{font-size:17px;font-weight:900;color:#111}
+.ocard .foot .amt i{font-size:11px;font-style:normal}
+.ocard .foot .btns{margin-left:auto;display:flex;gap:8px}
+.mini{font-size:11.5px;padding:7px 15px;border-radius:18px;border:1px solid #DCE3DC;color:#444;font-weight:600}
+.mini.pri{background:#14401A;color:#D8F55A;border-color:#14401A}
+/* ---- 时间线 ---- */
+.tl{position:relative;padding-left:22px}
+.tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:1.5px;background:#E4EAE4}
+.tl .it{position:relative;padding-bottom:16px}
+.tl .it:last-child{padding-bottom:0}
+.tl .it::before{
+  content:"";position:absolute;left:-22px;top:3px;width:11px;height:11px;border-radius:50%;
+  background:#fff;border:2.5px solid #C9DCC9;
+}
+.tl .it.on::before{border-color:#2E7D32;background:#2E7D32}
+.tl .it .h{display:flex;justify-content:space-between;font-size:12px;color:#111;font-weight:700}
+.tl .it .h span{font-size:10.5px;color:#9AA79A;font-weight:400}
+.tl .it .b{font-size:11px;color:#77857 7;margin-top:4px;color:#7A877A}
+/* ---- 个人中心 ---- */
+.prof{display:flex;align-items:center;gap:14px;padding:16px}
+.prof .av{width:62px;height:62px;border-radius:50%;background:linear-gradient(140deg,#2E7D32,#14401A);display:flex;align-items:center;justify-content:center;color:#D8F55A;font-size:22px;font-weight:800}
+.prof h3{font-size:17px;font-weight:800;color:#111}
+.prof p{font-size:11px;color:#8A968A;margin-top:5px}
+.prof .set{margin-left:auto;background:#EAF3EA;color:#2E7D32;font-size:11.5px;font-weight:700;padding:8px 15px;border-radius:20px}
+.nums{display:flex;padding:6px 0 18px}
+.nums div{flex:1;text-align:center}
+.nums b{font-size:22px;font-weight:900;color:#111;display:block}
+.nums small{font-size:11px;color:#8A968A;margin-top:3px;display:block}
+.tools{display:flex;flex-wrap:wrap;padding:6px 0 4px}
+.tools a{width:25%;text-align:center;padding:12px 0;text-decoration:none;display:block}
+.tools .ic{width:40px;height:40px;border-radius:12px;background:#F1F7F1;margin:0 auto 7px;display:flex;align-items:center;justify-content:center}
+.tools span{font-size:11px;color:#4A554A}
+/* ---- 续场 ---- */
+.slot{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #F4F6F4}
+.slot:last-child{border:0}
+.slot .tm{font-size:13px;font-weight:800;color:#111;width:96px}
+.slot .dur{font-size:11px;color:var(--sub)}
+.slot .pr{margin-left:auto;font-size:15px;font-weight:900;color:#111}
+.slot .pr i{font-size:10px;font-style:normal}
+.slot .pick{background:#14401A;color:#D8F55A;font-size:11px;font-weight:700;padding:7px 13px;border-radius:16px}
+
+
+
+/* ===== 卡券体系 ===== */
+.pkg{position:relative;margin:0 16px 14px;border-radius:16px;overflow:hidden;background:linear-gradient(150deg,#14401A 0%,#0A2B0A 65%);padding:16px 16px 14px}
+.pkg::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(58deg,rgba(216,245,90,.055) 0 1px,transparent 1px 40px),repeating-linear-gradient(-58deg,rgba(216,245,90,.055) 0 1px,transparent 1px 40px)}
+.pkg .in{position:relative}
+.pkg .tp{font-size:15px;color:#fff;font-weight:800;letter-spacing:.5px}
+.pkg .tp em{font-style:normal;background:#D8F55A;color:#0A2B0A;font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;margin-left:7px;vertical-align:2px}
+.pkg .mt{font-size:11px;color:#9DB49D;margin-top:7px;line-height:1.7}
+.pkg .bt{display:flex;align-items:flex-end;justify-content:space-between;margin-top:14px}
+.pkg .pr b{font-size:25px;color:#D8F55A;font-weight:800;letter-spacing:.5px}
+.pkg .pr b small{font-size:13px}
+.pkg .pr del{font-size:11.5px;color:#6E8A6E;margin-left:7px}
+.pkg .pr span{font-size:10.5px;color:#0A2B0A;background:#D8F55A;padding:2px 6px;border-radius:5px;margin-left:7px;font-weight:800;vertical-align:2px}
+.pkg .buy{background:#D8F55A;color:#0A2B0A;border:0;border-radius:999px;font-size:12.5px;font-weight:800;padding:9px 18px;font-family:inherit}
+.pkg.off{background:linear-gradient(150deg,#DDE3DD,#CBD3CB)}
+.pkg.off .tp{color:#6E7A6E}
+.pkg.off .pr b{color:#8A968A}
+.pkg.off .buy{background:#EDF1ED;color:#9AA79A}
+
+.mycard{display:flex;background:#fff;border-radius:14px;margin:0 16px 12px;overflow:hidden;border:1px solid #E8EDE8}
+.mycard .l{width:88px;background:linear-gradient(160deg,#14401A,#0A2B0A);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 0}
+.mycard .l b{font-size:24px;color:#D8F55A;line-height:1}
+.mycard .l b small{font-size:11px;color:#D8F55A}
+.mycard .l span{font-size:10px;color:#9DB49D;margin-top:5px}
+.mycard .r{flex:1;padding:13px 14px;position:relative}
+.mycard .r b{font-size:13.5px;color:#0A2B0A}
+.mycard .r p{font-size:11px;color:#8A968A;margin-top:5px}
+.mycard .r em{display:inline-block;font-style:normal;font-size:10px;color:#4A7A16;background:#EAF7C9;padding:2px 7px;border-radius:5px;margin-top:7px;font-weight:700}
+.mycard .r em.buy{color:#5F6E5F;background:#F0F3F0}
+.mycard.off .l{background:#DDE3DD}.mycard.off .l b{color:#9AA79A}
+.mycard.off .r b{color:#9AA79A}
+
+.invite{margin:0 16px 14px;background:#0A2B0A;border-radius:16px;padding:18px;position:relative;overflow:hidden}
+.invite::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(58deg,rgba(216,245,90,.06) 0 1px,transparent 1px 32px)}
+.invite .in{position:relative}
+.invite .t{font-size:13.5px;color:#fff;font-weight:800}
+.invite .d{font-size:11px;color:#9DB49D;margin-top:6px;line-height:1.7}
+.invite .row{display:flex;gap:9px;margin-top:13px}
+.invite input{flex:1;background:#14401A;border:1px solid #1F5A24;border-radius:10px;color:#fff;font-size:15px;letter-spacing:5px;text-align:center;padding:12px;font-family:inherit}
+.invite button{background:#D8F55A;color:#0A2B0A;border:0;border-radius:10px;font-size:13px;font-weight:800;padding:0 18px;font-family:inherit}
+
+.code-big{display:flex;align-items:center;justify-content:center;gap:9px;margin:26px 16px 0}
+.code-big i{width:44px;height:56px;border-radius:10px;background:#F4F7F4;border:1.5px solid #E2EAE2;display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:800;color:#0A2B0A;font-style:normal}
+.code-big i.f{border-color:#14401A;background:#fff}
+
+/* ===== 细节页补充 ===== */
+.rule-card{background:#fff;border-radius:14px;padding:16px 16px;margin:0 16px 12px;border:1px solid #E8EDE8}
+.rule-card h4{font-size:14px;color:#0A2B0A;margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.rule-card h4 i{width:20px;height:20px;border-radius:7px;background:#EAF7C9;color:#4A7A16;font-style:normal;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:800}
+.rule-card p{font-size:12.5px;color:#5F6E5F;line-height:1.85}
+.rule-card p b{color:#0A2B0A}
+.ck{display:flex;align-items:flex-start;gap:9px;margin:16px 20px}
+.ck i{flex:0 0 18px;height:18px;border-radius:6px;background:#14401A;color:#D8F55A;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:12px;font-weight:800;margin-top:1px}
+.ck span{font-size:11.5px;color:#5F6E5F;line-height:1.65}
+.ck span b{color:#14401A}
+
+.coupon{position:relative;display:flex;background:#fff;border-radius:14px;margin:0 16px 12px;overflow:hidden;border:1px solid #E8EDE8}
+.coupon .l{width:96px;background:linear-gradient(160deg,#14401A,#0A2B0A);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 0}
+.coupon .l b{font-size:26px;color:#D8F55A;line-height:1}
+.coupon .l b small{font-size:12px;color:#D8F55A}
+.coupon .l span{font-size:10.5px;color:#9DB49D;margin-top:6px}
+.coupon .r{flex:1;padding:13px 14px;display:flex;flex-direction:column;justify-content:center}
+.coupon .r b{font-size:13.5px;color:#0A2B0A}
+.coupon .r p{font-size:11px;color:#8A968A;margin-top:5px}
+.coupon .r em{font-style:normal;font-size:10.5px;color:#9AA79A;margin-top:6px}
+.coupon .r .go{position:absolute;right:14px;bottom:13px;background:#D8F55A;color:#0A2B0A;font-size:11px;font-weight:800;padding:6px 12px;border-radius:999px}
+.coupon.off .l{background:#DDE3DD}
+.coupon.off .l b{color:#9AA79A}
+.coupon.off .r b{color:#9AA79A}
+.coupon.off .r .go{background:#EDF1ED;color:#9AA79A}
+
+.plan{display:flex;gap:12px;margin:14px 16px 0}
+.plan .p{flex:1;background:#fff;border:1.5px solid #E8EDE8;border-radius:14px;padding:14px 8px;text-align:center;position:relative}
+.plan .p.hot{border-color:#14401A;background:#F6FCEB}
+.plan .p .am{font-size:19px;font-weight:800;color:#0A2B0A}
+.plan .p .am small{font-size:11px;font-weight:700}
+.plan .p .gn{font-size:11px;color:#4A7A16;margin-top:5px;font-weight:700}
+.plan .p .pr{font-size:10.5px;color:#9AA79A;margin-top:4px;text-decoration:line-through}
+.plan .p .bd{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#D8F55A;color:#0A2B0A;font-size:9.5px;font-weight:800;padding:2px 9px;border-radius:999px;white-space:nowrap}
+
+.tabs2{display:flex;gap:22px;padding:0 16px;background:#fff;border-bottom:1px solid #EEF2EE}
+.tabs2 div{font-size:13px;color:#8A968A;padding:13px 0;position:relative}
+.tabs2 div.on{color:#0A2B0A;font-weight:800}
+.tabs2 div.on::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:#D8F55A;border-radius:3px}
+
+.frow{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;background:#fff;border-bottom:1px solid #F2F5F2}
+.frow .k{font-size:13px;color:#0A2B0A}
+.frow .v{font-size:13px;color:#5F6E5F;display:flex;align-items:center;gap:6px}
+.frow .v.ph{color:#B6C0B6}
+.ftit{font-size:11.5px;color:#9AA79A;padding:16px 20px 8px;letter-spacing:.5px}
+
+.codebox{margin:16px;background:#0A2B0A;border-radius:16px;padding:18px}
+.codebox .lb{font-size:11.5px;color:#9DB49D;margin-bottom:10px}
+.codebox .in{display:flex;gap:9px}
+.codebox .in input{flex:1;background:#14401A;border:1px solid #1F5A24;border-radius:10px;color:#fff;font-size:16px;letter-spacing:3px;padding:12px 14px;font-family:inherit}
+.codebox .in button{background:#D8F55A;color:#0A2B0A;border:0;border-radius:10px;font-size:13px;font-weight:800;padding:0 16px}
+
+.logo-big{width:88px;height:88px;border-radius:26px;background:linear-gradient(160deg,#14401A,#0A2B0A);margin:0 auto;display:flex;align-items:center;justify-content:center}
+.logo-big span{font-size:26px;color:#D8F55A;font-weight:800;letter-spacing:2px}
+
+/* ===== 二期页面：约球 / AI分析 / 抓拍视频 ===== */
+
+.vbox.photo{background-size:cover;background-position:center}
+.vbox.photo::before{background:linear-gradient(180deg,rgba(8,26,10,.18) 0%,rgba(8,26,10,.62) 100%)}
+.vcard .thumb.photo{background-size:cover;background-position:center}
+.vcard .thumb.photo::before{background:linear-gradient(180deg,rgba(8,26,10,.08) 0%,rgba(8,26,10,.5) 100%)}
+
+.chips{display:flex;gap:8px;padding:12px 16px;background:#fff;flex:0 0 auto;overflow:hidden}
+.chip{font-size:11.5px;padding:6px 13px;border-radius:16px;background:#F2F5F2;color:#5F6E5F;white-space:nowrap}
+.chip.on{background:#14401A;color:#D8F55A;font-weight:700}
+.qcard{background:#fff;border-radius:16px;margin:10px 16px 0;padding:14px 15px;box-shadow:0 2px 10px rgba(10,43,10,.05);border:1px solid #EFF3EF}
+.qcard .hd{display:flex;align-items:center;gap:9px}
+.qcard .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(140deg,#2E7D32,#14401A);color:#D8F55A;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 34px}
+.qcard .nm{font-size:13px;font-weight:800;color:#111}
+.qcard .cr{font-size:10px;color:#8A968A;margin-top:2px}
+.qcard .lv{margin-left:auto;font-size:10px;background:#F2FAE6;color:#4A7A16;border:1px solid #D6E9B8;padding:3px 8px;border-radius:10px;font-weight:700}
+.qcard .meta{display:flex;gap:14px;margin-top:11px;font-size:11.5px;color:#5F6E5F}
+.qcard .meta b{color:#111}
+.qcard .ft{display:flex;align-items:center;margin-top:12px;padding-top:11px;border-top:1px solid #F2F5F2}
+.qcard .pp{font-size:10.5px;color:#8A968A}
+.qcard .pp b{font-size:17px;color:#111;font-weight:900}
+.qcard .pp b i{font-size:10px;font-style:normal}
+.qcard .join{margin-left:auto;background:#14401A;color:#D8F55A;font-size:12px;font-weight:800;padding:8px 18px;border-radius:18px}
+.qcard .join.full{background:#F1F3F1;color:#9AA79A}
+.slots{display:flex;gap:7px;margin-top:10px}
+.slots .s{width:32px;height:32px;border-radius:50%;background:#F2F5F2;border:1.5px dashed #D6DED6;display:flex;align-items:center;justify-content:center;font-size:14px;color:#B9C4B9}
+.slots .s.f{background:linear-gradient(140deg,#2E7D32,#14401A);border:0;color:#D8F55A;font-size:11px;font-weight:800}
+.vbox{height:172px;background:linear-gradient(140deg,#0E3312,#1E5A24);border-radius:14px;margin:12px 16px 0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.vbox::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(58deg,rgba(216,245,90,.06) 0 1px,transparent 1px 30px),repeating-linear-gradient(-58deg,rgba(216,245,90,.06) 0 1px,transparent 1px 30px)}
+.vbox .play{width:52px;height:52px;border-radius:50%;background:rgba(216,245,90,.92);display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
+.vbox .tag{position:absolute;left:12px;top:11px;font-size:10px;color:#D8F55A;background:rgba(216,245,90,.16);padding:3px 9px;border-radius:10px;font-weight:700;z-index:2}
+.vbox .dur{position:absolute;right:12px;bottom:11px;font-size:10px;color:#C8DCC8;z-index:2}
+.scorebox{background:#fff;border-radius:16px;margin:12px 16px 0;padding:16px;border:1px solid #EFF3EF}
+.scorebox .tot{display:flex;align-items:baseline;gap:6px}
+.scorebox .tot b{font-size:42px;font-weight:900;color:#14401A;letter-spacing:-1px;line-height:1}
+.scorebox .tot i{font-size:13px;font-style:normal;color:#8A968A}
+.scorebox .tot .up{margin-left:auto;font-size:11px;color:#2E7D32;font-weight:700}
+.dim{margin-top:14px}
+.dim .r1{display:flex;justify-content:space-between;font-size:11.5px;color:#3B483B;margin-bottom:5px}
+.dim .r1 b{font-weight:800;color:#111}
+.dim .bar{height:6px;background:#EDF2ED;border-radius:3px;overflow:hidden}
+.dim .bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#2E7D32,#B8E22E)}
+.dim .bar i.warn{background:linear-gradient(90deg,#B7791F,#E8C86A)}
+.tips{background:#FFFBF0;border:1px solid #F5E3B8;border-radius:14px;margin:12px 16px 0;padding:13px 15px}
+.tips b{font-size:12.5px;color:#8A6A1F;display:block;margin-bottom:7px}
+.tips p{font-size:11.5px;color:#6E5A28;line-height:1.85}
+.vcard{background:#fff;border-radius:14px;margin:10px 16px 0;overflow:hidden;border:1px solid #EFF3EF}
+.vcard .thumb{height:132px;background:linear-gradient(140deg,#0E3312,#1E5A24);position:relative;display:flex;align-items:center;justify-content:center}
+.vcard .thumb::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(58deg,rgba(216,245,90,.06) 0 1px,transparent 1px 28px),repeating-linear-gradient(-58deg,rgba(216,245,90,.06) 0 1px,transparent 1px 28px)}
+.vcard .thumb .ic{width:40px;height:40px;border-radius:50%;background:rgba(216,245,90,.9);display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
+.vcard .thumb .wm{position:absolute;right:10px;bottom:9px;font-size:9.5px;color:#D8F55A;background:rgba(0,0,0,.35);padding:2px 7px;border-radius:8px;z-index:2}
+.vcard .thumb .tm{position:absolute;left:10px;top:9px;font-size:9.5px;color:#fff;background:rgba(0,0,0,.35);padding:2px 7px;border-radius:8px;z-index:2}
+.vcard .bd{padding:12px 14px;display:flex;align-items:center}
+.vcard .bd .t{font-size:13px;font-weight:800;color:#111}
+.vcard .bd .s{font-size:10.5px;color:#8A968A;margin-top:4px}
+.vcard .bd .buy{margin-left:auto;background:#D8F55A;color:#17361A;font-size:11.5px;font-weight:800;padding:7px 15px;border-radius:16px}
+.vcard .bd .free{background:#F1F3F1;color:#8A968A}
+
+/* ---- 报障 ---- */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.tile{border:1.5px solid #E4EAE4;border-radius:14px;padding:16px 12px;text-align:center}
+.tile.on{border-color:#2E7D32;background:#F3FAF3}
+.tile .ic{font-size:22px;margin-bottom:6px}
+.tile span{font-size:12px;color:#333;font-weight:600}
+.upload{display:flex;gap:10px;margin-top:12px}
+.upbox{width:74px;height:74px;border-radius:12px;border:1.5px dashed #CBD5CB;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#9AA79A;font-size:10px}
+.ta{border:1.5px solid #E4EAE4;border-radius:12px;padding:12px;font-size:12px;color:#B0BBB0;margin-top:12px;height:82px}
+.label{font-size:12px;font-weight:800;color:#111;margin:18px 16px 10px}
+
+/* ===== INTERACTIVE_LAYER：可点击演示模式 ===== */
+body.demo{background:#E9EFE9;display:block;padding:0;margin:0}
+body.demo .board{transform:none!important;display:block!important;width:375px!important;
+  gap:0!important;padding:0!important;margin:0 auto!important}
+body.demo .phone{display:none!important;border-radius:0!important;box-shadow:none!important;margin:0 auto!important}
+body.demo .phone.active{display:flex!important}
+#demo-bar{position:fixed;top:0;left:0;right:0;height:52px;background:#0A2B0A;color:#fff;
+  display:flex;align-items:center;gap:9px;padding:0 12px;z-index:9999;white-space:nowrap;overflow:hidden;
+  font-family:"Microsoft YaHei",sans-serif;font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+#demo-bar .bd{font-weight:800;letter-spacing:1px;color:#D8F55A;flex:0 0 auto;font-size:13.5px}
+#demo-bar .hint{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;color:#9DB49D;font-size:12px}
+#demo-bar .sp{flex:0 0 auto}
+#demo-bar select{background:#14401A;color:#fff;border:1px solid #1F5A24;border-radius:7px;
+  padding:6px 8px;font-size:12px;font-family:inherit;outline:none;flex:0 0 auto;max-width:150px}
+#demo-bar button{background:#D8F55A;color:#0A2B0A;border:0;border-radius:7px;flex:0 0 auto;
+  padding:7px 11px;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer;white-space:nowrap}
+#demo-bar .idx{font-size:12px;color:#9DB49D;min-width:56px;text-align:right}
+#demo-stage{padding:76px 0 44px;display:flex;justify-content:center}
+#demo-tip{position:fixed;bottom:0;left:0;right:0;height:34px;background:rgba(10,43,10,.92);
+  color:#C8DCC8;font-size:11.5px;display:flex;align-items:center;justify-content:center;
+  letter-spacing:.5px;font-family:"Microsoft YaHei",sans-serif;z-index:9999}
+body.demo .phone *[data-go]{cursor:pointer}
+body.demo .phone *[data-go]:active{opacity:.75}
+
+</style>
+</head>
+<body>
+<div class="board">
+
+<!-- ================= 1 首页 ================= -->
+<div class="phone">
+  <div class="hero"></div>
+  <div class="status on-dark" style="position:relative;z-index:10">
+    <span>11:52</span>
+    <div class="dots">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <span style="margin:0 5px">5G</span>
+      <div class="bat"><i></i></div>
+    </div>
+  </div>
+  <div class="scroll">
+    <div class="brand">
+      <h1>甜点网球</h1>
+      <div class="tag">24 小时自助学训馆</div>
+    </div>
+    <div class="dots-nav"><i></i><i></i><i></i></div>
+
+    <div class="store">
+      <div class="info">
+        <div class="row1">
+          <h3>甜点网球（城南店）</h3>
+          <span class="chg">⇄ 切换门店</span>
+        </div>
+        <p>📍 城南体育公园东门内直行 200 米</p>
+      </div>
+      <div class="nav-btn">
+        <div class="cir">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#17361A" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+        </div>
+        <span>导航</span>
+      </div>
+    </div>
+
+    <div class="bigbtns">
+      <div class="bigbtn b1">
+        <div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#17361A" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3c3 3 3 15 0 18M3 12h18"/></svg></div>
+        <b>立即预订</b>
+      </div>
+      <div class="bigbtn b2">
+        <div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#17361A" stroke-width="2"><path d="M3 8h18v4H3zM5 12v8h14v-8M9 8V5h6v3"/></svg></div>
+        <b>团购验券</b>
+      </div>
+    </div>
+
+    <div class="live">
+      <div class="dot"></div>
+      <div>
+        <div class="t1">进行中 · 2 号场地</div>
+        <div class="t2">01:12:36</div>
+      </div>
+      <div class="go">去开门</div>
+    </div>
+
+    <div class="sec"><h2>次卡与套餐</h2><span>全部 ›</span></div>
+    <div class="packs">
+      <div class="pack">
+        <h4>1 小时套餐 · 3 次卡</h4>
+        <div class="meta">全天可用 · 购买后 30 天内有效</div>
+        <div class="p"><b><i>¥</i>268</b><del>原价 384</del><span class="arrow">→</span></div>
+      </div>
+      <div class="pack">
+        <h4>早场特惠 · 3 次卡</h4>
+        <div class="meta">工作日 8:00—12:00 可用</div>
+        <div class="p"><b><i>¥</i>198</b><del>原价 324</del><span class="arrow">→</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="float">
+    <div class="f key">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#17361A" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+      <span>开门</span>
+    </div>
+    <div class="f">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg>
+      <span>续单</span>
+    </div>
+    <div class="f">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M15 4h4v16h-4M9 16l-4-4 4-4M5 12h11"/></svg>
+      <span>离店</span>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <div class="t on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>首页</div>
+    <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>卡券套餐</div>
+    <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>我的订单</div>
+    <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>个人中心</div>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 2 时段选择 ================= -->
+<div class="phone">
+  <div class="status"><span>11:52</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="nav"><div class="back">‹</div><h1>选择时段</h1><div class="r">甜点网球·城南店</div></div>
+  <div class="dates">
+    <div class="date on"><small>今天</small><b>21</b></div>
+    <div class="date"><small>周三</small><b>22</b></div>
+    <div class="date"><small>周四</small><b>23</b></div>
+    <div class="date"><small>周五</small><b>24</b></div>
+    <div class="date"><small>周六</small><b>25</b></div>
+    <div class="date"><small>周日</small><b>26</b></div>
+  </div>
+  <div class="legend">
+    <span><i style="background:#EDF7E8;border:1px solid #DDEFD6"></i>可订</span>
+    <span><i style="background:#F3F4F3"></i>已订</span>
+    <span><i style="background:#14401A"></i>已选</span>
+    <span><i style="background:#FAFAFA;border:1px solid #EEE"></i>已过</span>
+  </div>
+  <div class="grid-wrap">
+    <div class="ghead"><div>场地</div><div>19:00</div><div>19:30</div><div>20:00</div><div>20:30</div><div>21:00</div></div>
+    <div class="grow"><div class="cname">1 号场</div>
+      <div class="cells"><div class="cell">80</div><div class="cell">80</div><div class="cell booked">已订</div><div class="cell">80</div><div class="cell">80</div></div></div>
+    <div class="grow"><div class="cname">2 号场</div>
+      <div class="cells"><div class="cell sel">80</div><div class="cell sel">80</div><div class="cell">80</div><div class="cell past">—</div><div class="cell past">—</div></div></div>
+    <div class="grow"><div class="cname">3 号场</div>
+      <div class="cells"><div class="cell">80</div><div class="cell booked">已订</div><div class="cell booked">已订</div><div class="cell">80</div><div class="cell">80</div></div></div>
+    <div class="grow"><div class="cname">4 号场</div>
+      <div class="cells"><div class="cell">80</div><div class="cell">80</div><div class="cell">80</div><div class="cell">80</div><div class="cell past">—</div></div></div>
+
+    <div class="ghead" style="margin-top:16px"><div>场地</div><div>21:30</div><div>22:00</div><div>22:30</div><div>23:00</div><div>23:30</div></div>
+    <div class="grow"><div class="cname">1 号场</div>
+      <div class="cells"><div class="cell">60</div><div class="cell">60</div><div class="cell">60</div><div class="cell past">—</div><div class="cell past">—</div></div></div>
+    <div class="grow"><div class="cname">2 号场</div>
+      <div class="cells"><div class="cell">60</div><div class="cell">60</div><div class="cell">60</div><div class="cell">60</div><div class="cell past">—</div></div></div>
+    <div class="grow"><div class="cname">3 号场</div>
+      <div class="cells"><div class="cell">60</div><div class="cell">60</div><div class="cell past">—</div><div class="cell past">—</div><div class="cell past">—</div></div></div>
+    <div class="grow"><div class="cname">4 号场</div>
+      <div class="cells"><div class="cell">60</div><div class="cell booked">已订</div><div class="cell">60</div><div class="cell">60</div><div class="cell past">—</div></div></div>
+
+    <div style="margin-top:14px;font-size:10.5px;color:#8A968A;line-height:1.7">
+      · 19:00—22:00 为夜间时段 ¥80/30分钟<br>
+      · 22:00 后为夜猫场 ¥60/30分钟
+    </div>
+  </div>
+  <div class="bottombar">
+    <div class="sum"><small>2 号场 · 19:00—20:00</small><b><i>¥</i>160</b></div>
+    <button class="btn">去支付</button>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 3 订单确认 ================= -->
+<div class="phone">
+  <div class="status"><span>11:52</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="nav"><div class="back">‹</div><h1>确认订单</h1></div>
+  <div class="scroll" style="background:#F7F9F7">
+    <div class="card" style="margin-top:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:54px;height:54px;border-radius:14px;background:linear-gradient(140deg,#2E7D32,#14401A);display:flex;align-items:center;justify-content:center">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D8F55A" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3c3 3 3 15 0 18M3 12h18"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:800;color:#111">2 号场地</div>
+          <div style="font-size:11.5px;color:#7A877A;margin-top:5px">今天 21 日 · 19:00—20:00</div>
+        </div>
+        <div style="font-size:11px;color:#2E7D32;font-weight:700">改 ›</div>
+      </div>
+      <div class="line"></div>
+      <div class="kv"><span>场地费（2 × 30 分钟）</span><b>¥160</b></div>
+      <div class="kv"><span>会员折扣</span><b style="color:#2E7D32">-¥16</b></div>
+      <div class="kv"><span>优惠券</span><b style="color:#2E7D32">-¥20</b></div>
+    </div>
+
+    <div class="card">
+      <div class="rowlink"><span>优惠券</span><div class="r">满 100 减 20 ›</div></div>
+      <div class="rowlink"><span>余额抵扣</span><div class="r">可用 ¥38.50</div></div>
+      <div class="rowlink"><span>手机号</span><div class="r">138****6688</div></div>
+    </div>
+
+    <div class="card">
+      <div class="kv total"><span>应付金额</span><b>¥124.00</b></div>
+    </div>
+
+    <div class="check">
+      <div class="box"></div>
+      <div>我已阅读并同意 <a>《入场须知》</a>与<a>《用户协议》</a>，知悉开场前 2 小时内取消将扣除 20% 费用。</div>
+    </div>
+    <div style="height:20px"></div>
+  </div>
+  <div class="bottombar">
+    <div class="sum"><small>实付</small><b><i>¥</i>124.00</b></div>
+    <button class="btn lime">微信支付</button>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 4 支付结果 ================= -->
+<div class="phone">
+  <div class="status on-dark"><span>11:53</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="dark-wrap">
+    <div class="res">
+      <div class="ok">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#D8F55A" stroke-width="2.5"><path d="M4 12.5l5 5L20 6.5"/></svg>
+      </div>
+      <h2>预约成功</h2>
+      <p>2 号场地 · 今天 19:00—20:00</p>
+    </div>
+    <div class="cd">
+      <small>距离开场</small>
+      <div class="big">01:12:36</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><small>大门</small><b><span class="d off"></span>未开启</b></div>
+      <div class="stat"><small>本场灯光</small><b><span class="d off"></span>未亮</b></div>
+    </div>
+    <div style="position:relative;z-index:3;margin:14px 16px 0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px">
+      <div style="font-size:11.5px;color:#A9C4A9;line-height:1.9">
+        开场前 5 分钟灯光自动开启<br>
+        到店后点下方按钮开门，无需等店员
+      </div>
+    </div>
+    <div class="bigopen">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#17361A" stroke-width="2.2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+      到店后点这里开门
+    </div>
+    <div class="quick"><div>查看订单</div><div>联系店长</div></div>
+  </div>
+  <div class="homebar" style="background:#fff"></div>
+</div>
+
+<!-- ================= 5 使用中 ================= -->
+<div class="phone">
+  <div class="status on-dark"><span>19:24</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="dark-wrap">
+    <div style="position:relative;z-index:2;padding:10px 16px 0;display:flex;align-items:center">
+      <div style="font-size:20px;color:#fff;line-height:1">‹</div>
+      <div style="font-size:15px;font-weight:800;color:#fff;margin-left:auto;margin-right:auto">2 号场地 · 使用中</div>
+    </div>
+
+    <div class="cd" style="margin-top:26px">
+      <small>剩余时间</small>
+      <div class="big">00:35<span>:</span>24</div>
+    </div>
+
+    <div class="stats" style="margin-top:24px">
+      <div class="stat"><small>大门</small><b><span class="d"></span>已开启</b></div>
+      <div class="stat"><small>本场灯光</small><b><span class="d"></span>已亮</b></div>
+    </div>
+
+    <div style="position:relative;z-index:2;margin:16px 16px 0;background:rgba(216,245,90,.1);border:1px solid rgba(216,245,90,.25);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:10px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D8F55A" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+      <div style="font-size:11.5px;color:#D8F55A;line-height:1.6">发球机已通电，结束前 5 分钟会提醒你</div>
+    </div>
+
+    <div style="position:relative;z-index:2;margin:14px 16px 0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 15px">
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#9DB49D;padding:4px 0">
+        <span>订单号</span><span style="color:#DCE9DC">2026102119350201</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#9DB49D;padding:4px 0">
+        <span>场次</span><span style="color:#DCE9DC">19:00 — 20:00（60 分钟）</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#9DB49D;padding:4px 0">
+        <span>已付金额</span><span style="color:#D8F55A;font-weight:700">¥124.00</span>
+      </div>
+    </div>
+
+    <div class="bigopen" style="background:#1E5A24;color:#D8F55A;box-shadow:none">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D8F55A" stroke-width="2.2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+      已开门 · 再开一次
+    </div>
+    <div class="quick"><div>续场加时</div><div>设备报障</div><div>联系店长</div></div>
+  </div>
+  <div class="homebar" style="background:#fff"></div>
+</div>
+
+<!-- ================= 6 我的订单 ================= -->
+<div class="phone">
+  <div class="status"><span>11:53</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="nav"><div class="back">‹</div><h1>我的订单</h1><div class="r">筛选</div></div>
+  <div class="tabs">
+    <div class="on">待使用</div><div>使用中</div><div>已完成</div><div>已取消</div>
+  </div>
+  <div class="scroll" style="background:#F7F9F7">
+    <div class="ocard">
+      <div class="top"><b>2 号场地</b><span class="tag live">使用中</span></div>
+      <div class="m">今天 19:00—20:00 · 60 分钟<br>订单号 2026102119350201</div>
+      <div class="foot">
+        <div class="amt"><i>¥</i>124.00</div>
+        <div class="btns"><span class="mini">订单详情</span><span class="mini pri">去开门</span></div>
+      </div>
+    </div>
+
+    <div class="ocard">
+      <div class="top"><b>4 号场地</b><span class="tag wait">待使用</span></div>
+      <div class="m">明天 22 日 20:00—21:30 · 90 分钟<br>订单号 2026102120110503</div>
+      <div class="foot">
+        <div class="amt"><i>¥</i>180.00</div>
+        <div class="btns"><span class="mini">取消预约</span><span class="mini pri">查看详情</span></div>
+      </div>
+    </div>
+
+    <div class="ocard">
+      <div class="top"><b>1 号场地</b><span class="tag done">已完成</span></div>
+      <div class="m">10 月 18 日 19:00—20:00 · 60 分钟<br>订单号 2026101819020133</div>
+      <div class="foot">
+        <div class="amt"><i>¥</i>140.00</div>
+        <div class="btns"><span class="mini">开发票</span><span class="mini pri">再来一单</span></div>
+      </div>
+    </div>
+
+    <div class="ocard">
+      <div class="top"><b>3 号场地</b><span class="tag done">已完成</span></div>
+      <div class="m">10 月 15 日 21:00—22:00 · 60 分钟<br>订单号 2026101521030227</div>
+      <div class="foot">
+        <div class="amt"><i>¥</i>120.00</div>
+        <div class="btns"><span class="mini">开发票</span><span class="mini pri">再来一单</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>首页</div>
+    <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>卡券套餐</div>
+    <div class="t on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>我的订单</div>
+    <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>个人中心</div>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 7 订单详情 ================= -->
+<div class="phone">
+  <div class="status"><span>11:53</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="nav"><div class="back">‹</div><h1>订单详情</h1><div class="r">客服</div></div>
+  <div class="scroll" style="background:#F7F9F7">
+    <div class="card" style="background:linear-gradient(120deg,#0E3312,#1E5A24);color:#fff">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:15px;font-weight:800">2 号场地</div>
+          <div style="font-size:11.5px;color:#A9C4A9;margin-top:7px">今天 19:00—20:00 · 60 分钟</div>
+        </div>
+        <span style="background:rgba(216,245,90,.2);color:#D8F55A;font-size:10px;padding:4px 10px;border-radius:20px;font-weight:700">使用中</span>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,.12);margin:14px 0"></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#C8D8C8">
+        <span>实付金额</span><b style="color:#D8F55A;font-size:20px">¥124.00</b>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ttl">订单信息</div>
+      <div class="kv"><span>订单号</span><b>2026102119350201</b></div>
+      <div class="kv"><span>支付方式</span><b>微信支付</b></div>
+      <div class="kv"><span>手机号</span><b>138****6688</b></div>
+      <div class="kv"><span>优惠券</span><b>满 100 减 20</b></div>
+    </div>
+
+    <div class="card">
+      <div class="ttl">设备动作记录</div>
+      <div class="tl">
+        <div class="it on"><div class="h">下单成功 <span>18:35</span></div><div class="b">2 号场地 19:00—20:00</div></div>
+        <div class="it on"><div class="h">支付成功 <span>18:36</span></div><div class="b">微信支付 ¥124.00</div></div>
+        <div class="it on"><div class="h">大门开启 <span>19:01</span></div><div class="b">用户主动开门 · 门磁已确认</div></div>
+        <div class="it on"><div class="h">灯光开启 <span>18:55</span></div><div class="b">开场前 5 分钟自动开启</div></div>
+        <div class="it on"><div class="h">发球机通电 <span>19:00</span></div><div class="b">2 号场插座已送电</div></div>
+        <div class="it"><div class="h">预计结束 <span>20:05</span></div><div class="b">结束后 5 分钟自动断电关灯</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="bottombar" style="padding-bottom:26px">
+    <span class="mini" style="flex:1;text-align:center">申请取消</span>
+    <span class="mini" style="flex:1;text-align:center">设备报障</span>
+    <button class="btn" style="padding:13px 26px;font-size:14px">续场加时</button>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 8 个人中心 ================= -->
+<div class="phone">
+  <div class="status"><span>11:53</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="scroll" style="background:#F7F9F7">
+    <div style="background:#fff;padding-top:8px">
+      <div class="prof">
+        <div class="av">亮</div>
+        <div>
+          <h3>亮亮</h3>
+          <p>ID: 45873111</p>
+        </div>
+        <div class="set">账户设置</div>
+      </div>
+      <div class="nums">
+        <div><b>3</b><small>我的卡券</small></div>
+        <div><b>256</b><small>我的积分</small></div>
+        <div><b>0</b><small>待付订单</small></div>
+      </div>
+    </div>
+
+    <div class="card" style="display:flex;align-items:center;gap:12px">
+      <div style="width:42px;height:42px;border-radius:12px;background:#FFF3D6;display:flex;align-items:center;justify-content:center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C79A20" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 11h18"/></svg>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:800;color:#111">超多卡券</div>
+        <div style="font-size:11px;color:#8A968A;margin-top:4px">办卡享更多优惠</div>
+      </div>
+      <div style="font-size:11.5px;color:#B0BBB0">立即办卡 ›</div>
+    </div>
+
+    <div class="card">
+      <div class="ttl" style="display:flex;align-items:center;gap:8px">
+        <span style="width:3px;height:13px;background:#2E7D32;border-radius:2px"></span>我的工具
+      </div>
+      <div class="tools">
+        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M4 7h16v10H4zM8 7V5h8v2"/></svg></div><span>团购验券</span></a>
+        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M4 9h16v10H4zM4 9l3-5 5 5 5-5 3 5"/></svg></div><span>储值充值</span></a>
+        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div><span>优惠券</span></a>
+        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg></div><span>设备报障</span></a>
+        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div><span>开发票</span></a>
+        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span>联系店长</span></a>
+        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><span>使用记录</span></a>
+        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M12 3l8 4v6c0 5-3.5 7.5-8 8-4.5-.5-8-3-8-8V7z"/></svg></div><span>协议须知</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>首页</div>
+    <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>卡券套餐</div>
+    <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>我的订单</div>
+    <div class="t on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>个人中心</div>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 9 续场加时 ================= -->
+<div class="phone">
+  <div class="status"><span>19:28</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="nav"><div class="back">‹</div><h1>续场加时</h1></div>
+  <div class="scroll" style="background:#F7F9F7">
+    <div class="card" style="background:linear-gradient(120deg,#0E3312,#1E5A24);color:#fff">
+      <div style="font-size:11.5px;color:#A9C4A9">当前订单</div>
+      <div style="font-size:15px;font-weight:800;margin-top:6px">2 号场地 · 至 20:00 结束</div>
+      <div style="font-size:11px;color:#D8F55A;margin-top:8px">剩余 32 分钟，可续到 21:00</div>
+    </div>
+    <div class="card">
+      <div class="ttl">可选续场时段</div>
+      <div class="slot"><div class="tm">20:00—20:30</div><div class="dur">+30 分钟</div><div class="pr"><i>¥</i>80</div><div class="pick">选择</div></div>
+      <div class="slot"><div class="tm">20:00—21:00</div><div class="dur">+60 分钟</div><div class="pr"><i>¥</i>160</div><div class="pick">选择</div></div>
+      <div class="slot"><div class="tm">20:30—21:00</div><div class="dur">+30 分钟</div><div class="pr"><i>¥</i>80</div><div class="pick">选择</div></div>
+    </div>
+    <div class="card" style="background:#FFFBF0;border:1px solid #F5E3B8">
+      <div style="font-size:11.5px;color:#8A6A1F;line-height:1.8">
+        续场支付成功后，灯光与发球机电源会自动延长到新结束时间，无需额外操作。
+      </div>
+    </div>
+  </div>
+  <div class="bottombar"><div class="sum"><small>已选 +60 分钟</small><b><i>¥</i>160</b></div><button class="btn lime">立即续场</button></div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 10 设备报障 ================= -->
+<div class="phone">
+  <div class="status"><span>19:33</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="nav"><div class="back">‹</div><h1>设备报障</h1><div class="r">历史记录</div></div>
+  <div class="scroll">
+    <div class="label">出了什么问题？</div>
+    <div class="pad">
+      <div class="tiles">
+        <div class="tile on"><div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="1.8"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2h5c0-.8.4-1.5 1-2A6 6 0 0012 3z"/></svg></div><span>灯不亮</span></div>
+        <div class="tile"><div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3A4A3A" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="1.5"/><circle cx="15.5" cy="12" r="1"/></svg></div><span>门打不开</span></div>
+        <div class="tile"><div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3A4A3A" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5c3 3 3 14 0 17M3.5 12h17"/></svg></div><span>发球机不通电</span></div>
+        <div class="tile"><div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3A4A3A" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M9.5 9.5a2.5 2.5 0 115 0c0 1.5-2.5 1.8-2.5 3.5M12 17h.01"/></svg></div><span>其他问题</span></div>
+      </div>
+      <div class="label" style="margin-left:0;margin-right:0">补充说明</div>
+      <div class="ta">2 号场地第一盏灯不亮，其他正常…</div>
+      <div class="label" style="margin-left:0;margin-right:0">上传照片（选填）</div>
+      <div class="upload">
+        <div class="upbox"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA79A" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg><span>添加</span></div>
+        <div style="width:74px;height:74px;border-radius:12px;background:#EDF2ED;display:flex;align-items:center;justify-content:center;font-size:9px;color:#8A968A">现场照片</div>
+      </div>
+      <div style="margin-top:18px;background:#F3FAF3;border-radius:12px;padding:13px;font-size:11px;color:#3A6B3A;line-height:1.8">
+        提交后系统会自动带上订单号与场地信息，店长会收到通知。紧急情况请直接拨打店长电话。
+      </div>
+    </div>
+  </div>
+  <div class="bottombar"><button class="btn" style="width:100%">提交报障</button></div>
+  <div class="homebar"></div>
+</div>
+
+</div>
+
+
+<!-- ================= 11 约球社群·列表 ================= -->
+<div class="phone">
+  <div class="status"><span>20:10</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="nav"><div class="back">‹</div><h1>约球社群</h1><div class="r">我的局</div></div>
+  <div class="chips">
+    <div class="chip on">全部</div><div class="chip">2.0—3.0</div><div class="chip">3.0—4.0</div><div class="chip">4.0 以上</div>
+  </div>
+  <div class="scroll" style="background:#F7F9F7">
+    <div class="qcard">
+      <div class="hd">
+        <div class="av">陈</div>
+        <div><div class="nm">陈教练</div><div class="cr">信用 98 · 已组织 23 局</div></div>
+        <div class="lv">要求 3.5</div>
+      </div>
+      <div class="meta"><span>时间 <b>今晚 20:30</b></span><span>场地 <b>2 号场</b></span><span>已报 <b>3/4 人</b></span></div>
+      <div class="ft"><div class="pp"><b><i>¥</i>40</b> /人（AA）</div><div class="join">报名</div></div>
+    </div>
+    <div class="qcard">
+      <div class="hd">
+        <div class="av">李</div>
+        <div><div class="nm">小李</div><div class="cr">信用 95 · 已组织 8 局</div></div>
+        <div class="lv">要求 3.0</div>
+      </div>
+      <div class="meta"><span>时间 <b>明晚 19:00</b></span><span>场地 <b>4 号场</b></span><span>已报 <b>2/4 人</b></span></div>
+      <div class="slots"><div class="s f">李</div><div class="s f">王</div><div class="s">+</div><div class="s">+</div></div>
+      <div class="ft"><div class="pp"><b><i>¥</i>45</b> /人（AA）</div><div class="join">报名</div></div>
+    </div>
+    <div class="qcard">
+      <div class="hd">
+        <div class="av">张</div>
+        <div><div class="nm">张女士</div><div class="cr">信用 100 · 已组织 41 局</div></div>
+        <div class="lv">要求 2.5</div>
+      </div>
+      <div class="meta"><span>时间 <b>周六 09:00</b></span><span>场地 <b>1 号场</b></span><span>已报 <b>4/4 人</b></span></div>
+      <div class="ft"><div class="pp"><b><i>¥</i>30</b> /人（AA）</div><div class="join full">已满</div></div>
+    </div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="bottombar"><button class="btn" style="width:100%">发布我的约球</button></div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 12 约球社群·报名详情 ================= -->
+<div class="phone">
+  <div class="status"><span>20:11</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="nav"><div class="back">‹</div><h1>约球详情</h1><div class="r">举报</div></div>
+  <div class="scroll" style="background:#F7F9F7">
+    <div style="background:linear-gradient(140deg,#0E3312,#1E5A24);padding:20px 18px;color:#fff">
+      <div style="font-size:11.5px;color:#A9C4A9">今晚 20:30 — 22:00 · 2 号场</div>
+      <div style="font-size:22px;font-weight:900;margin-top:8px">双打凑一局 · 中等水平</div>
+      <div style="display:flex;gap:18px;margin-top:14px;font-size:12px;color:#C8DCC8">
+        <span>水平要求 <b style="color:#D8F55A">3.0—4.0</b></span>
+        <span>已报 <b style="color:#D8F55A">3 / 4</b></span>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="ttl">发起人</div>
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(140deg,#2E7D32,#14401A);color:#D8F55A;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center">陈</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:800;color:#111">陈教练</div>
+          <div style="font-size:11px;color:#8A968A;margin-top:3px">信用 98 · 组织 23 局 · 爽约 0 次</div>
+        </div>
+        <div style="font-size:11px;color:#2E7D32;font-weight:700">私信</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ttl">已报名（3/4）</div>
+      <div class="slots" style="margin-top:2px">
+        <div class="s f" style="width:42px;height:42px">陈</div>
+        <div class="s f" style="width:42px;height:42px">李</div>
+        <div class="s f" style="width:42px;height:42px">王</div>
+        <div class="s" style="width:42px;height:42px">+</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ttl">费用</div>
+      <div class="kv"><span>场地费（90 分钟）</span><b>¥180</b></div>
+      <div class="kv"><span>按 4 人平摊</span><b style="color:#2E7D32">¥45 /人</b></div>
+      <div class="line"></div>
+      <div class="kv total"><span>报名需支付</span><b>¥45.00</b></div>
+    </div>
+    <div style="margin:12px 16px 0;background:#FFFBF0;border:1px solid #F5E3B8;border-radius:12px;padding:12px 14px;font-size:11px;color:#8A6A1F;line-height:1.8">
+      报名后如需取消，请提前 4 小时操作；无故爽约将扣 5 点信用，信用低于 80 分将限制报名。
+    </div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="bottombar"><div class="sum"><small>AA 费用</small><b><i>¥</i>45.00</b></div><button class="btn lime">确认报名</button></div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 13 AI 动作分析·报告 ================= -->
+<div class="phone">
+  <div class="status"><span>21:02</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="nav"><div class="back">‹</div><h1>动作分析报告</h1><div class="r">分享</div></div>
+  <div class="scroll" style="background:#F7F9F7">
+    <div class="vbox photo" style="background-image:url('img/pex_35214663.jpg')">
+      <div class="tag">AI 分析 · 已处理</div>
+      <div class="play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#17361A"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="dur">03:12 / 正手 12 拍</div>
+    </div>
+    <div class="scorebox">
+      <div class="tot"><b>78</b><i>分</i><div class="up">↑ 比上次 +6</div></div>
+      <div style="font-size:11px;color:#8A968A;margin-top:6px">本次训练综合评分 · 已超过 62% 同水平用户</div>
+      <div class="dim"><div class="r1"><span>力量</span><b>82</b></div><div class="bar"><i style="width:82%"></i></div></div>
+      <div class="dim"><div class="r1"><span>稳定性</span><b>74</b></div><div class="bar"><i style="width:74%"></i></div></div>
+      <div class="dim"><div class="r1"><span>节奏</span><b>68</b></div><div class="bar"><i class="warn" style="width:68%"></i></div></div>
+      <div class="dim"><div class="r1"><span>落点控制</span><b>80</b></div><div class="bar"><i style="width:80%"></i></div></div>
+    </div>
+    <div class="tips">
+      <b>发现两个问题</b>
+      <p>1. 引拍幅度偏小，导致力量只发挥出 7 成<br>2. 击球点偏后，节奏项扣分主要来自这里</p>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="ttl">建议练习</div>
+      <div class="rowlink"><span>原地引拍分解练习</span><div class="r">3 组 × 20 次</div></div>
+      <div class="rowlink"><span>击球点前置标记练习</span><div class="r">10 分钟</div></div>
+    </div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="bottombar"><button class="btn" style="width:100%">查看历史对比</button></div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 14 AI 动作分析·历史对比 ================= -->
+<div class="phone">
+  <div class="status"><span>21:05</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="nav"><div class="back">‹</div><h1>历史对比</h1><div class="r">近 8 次</div></div>
+  <div class="scroll" style="background:#F7F9F7">
+    <div class="card" style="margin-top:12px">
+      <div class="ttl">综合评分趋势</div>
+      <svg width="100%" height="120" viewBox="0 0 320 120" preserveAspectRatio="none" style="margin-top:4px">
+        <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2E7D32" stop-opacity=".26"/>
+          <stop offset="100%" stop-color="#2E7D32" stop-opacity="0"/>
+        </linearGradient></defs>
+        <line x1="0" y1="100" x2="320" y2="100" stroke="#E8EFE8"/>
+        <line x1="0" y1="60" x2="320" y2="60" stroke="#E8EFE8"/>
+        <line x1="0" y1="20" x2="320" y2="20" stroke="#E8EFE8"/>
+        <path d="M10,86 L54,80 L98,74 L142,78 L186,64 L230,56 L274,46 L310,32 L310,120 L10,120 Z" fill="url(#ag)"/>
+        <path d="M10,86 L54,80 L98,74 L142,78 L186,64 L230,56 L274,46 L310,32" fill="none" stroke="#14401A" stroke-width="2.4"/>
+        <circle cx="310" cy="32" r="4" fill="#D8F55A" stroke="#14401A" stroke-width="2"/>
+      </svg>
+      <div style="display:flex;justify-content:space-between;font-size:9.5px;color:#8A968A;margin-top:2px">
+        <span>09-12</span><span>09-20</span><span>09-28</span><span>10-06</span><span>10-21</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ttl">各项对比</div>
+      <div class="kv"><span>力量</span><b>82 <span style="color:#2E7D32;font-size:10px">↑ 8</span></b></div>
+      <div class="kv"><span>稳定性</span><b>74 <span style="color:#2E7D32;font-size:10px">↑ 3</span></b></div>
+      <div class="kv"><span>节奏</span><b>68 <span style="color:#B7791F;font-size:10px">持平</span></b></div>
+      <div class="kv"><span>落点控制</span><b>80 <span style="color:#2E7D32;font-size:10px">↑ 11</span></b></div>
+    </div>
+    <div class="card">
+      <div class="ttl">进步点</div>
+      <div style="font-size:12px;color:#3B483B;line-height:2">
+        · 落点控制提升最明显，稳定打到底线深区<br>
+        · 正手引拍已经开始加大，力量评分看得出来<br>
+        · 反手还在拖后腿，建议下次单独练反手
+      </div>
+    </div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="bottombar"><button class="btn lime" style="width:100%">再约一场练球</button></div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 15 AI 抓拍·视频列表 ================= -->
+<div class="phone">
+  <div class="status"><span>21:15</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div class="nav"><div class="back">‹</div><h1>我的精彩瞬间</h1><div class="r">筛选</div></div>
+  <div class="chips">
+    <div class="chip on">全部</div><div class="chip">今天</div><div class="chip">本周</div><div class="chip">已购</div>
+  </div>
+  <div class="scroll" style="background:#F7F9F7">
+    <div class="vcard">
+      <div class="thumb photo" style="background-image:url('img/pex_39460468.jpg')">
+        <div class="tm">今晚 20:41</div>
+        <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="#17361A"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="wm">水印预览</div>
+      </div>
+      <div class="bd">
+        <div><div class="t">三拍连续对拉 · 2 号场</div><div class="s">00:18 · ★★★ 精彩度 · 已配 BGM</div></div>
+        <div class="buy">¥9.9 解锁</div>
+      </div>
+    </div>
+    <div class="vcard">
+      <div class="thumb photo" style="background-image:url('img/pex_35214639.jpg');background-position:center 22%">
+        <div class="tm">今晚 20:28</div>
+        <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="#17361A"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="wm">水印预览</div>
+      </div>
+      <div class="bd">
+        <div><div class="t">一记正手制胜球 · 2 号场</div><div class="s">00:12 · ★★ 精彩度 · 已配 BGM</div></div>
+        <div class="buy">¥9.9 解锁</div>
+      </div>
+    </div>
+    <div class="vcard">
+      <div class="thumb photo" style="background-image:url('img/pex_28407221.jpg')">
+        <div class="tm">10-18 19:52</div>
+        <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="#17361A"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="bd">
+        <div><div class="t">反手直线穿越 · 1 号场</div><div class="s">00:22 · 已购 · 含 BGM 可下载</div></div>
+        <div class="buy free">下载</div>
+      </div>
+    </div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="bottombar"><button class="btn" style="width:100%">开通包月 39 元 · 无限下载</button></div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ================= 16 AI 抓拍·播放与购买 ================= -->
+<div class="phone">
+  <div class="status" style="color:#fff;background:#0A2B0A;flex:0 0 44px;position:relative;z-index:20"><span>21:16</span><div class="dots"><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="margin:0 5px">5G</span><div class="bat"><i></i></div></div></div>
+  <div style="flex:1;background:#0A2B0A;display:flex;flex-direction:column;overflow:hidden">
+    <div style="height:40px;display:flex;align-items:center;padding:0 16px;color:#fff;flex:0 0 auto">
+      <div style="font-size:20px;line-height:1">‹</div>
+      <div style="margin:0 auto;font-size:15px;font-weight:800">精彩回放</div>
+    </div>
+    <div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center;background:url('img/pex_39460468.jpg') center/cover no-repeat">
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,26,10,.28) 0%,rgba(8,26,10,.66) 100%)"></div>
+      <div style="position:relative;z-index:2;text-align:center">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(216,245,90,.92);display:flex;align-items:center;justify-content:center;margin:0 auto">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#17361A"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div style="color:#C8DCC8;font-size:11.5px;margin-top:14px">00:06 / 00:18</div>
+      </div>
+      <div style="position:absolute;left:0;right:0;top:46%;font-size:32px;color:rgba(255,255,255,.12);text-align:center;letter-spacing:5px;transform:rotate(-18deg);z-index:1">甜点网球 预览</div>
+    </div>
+    <div style="background:#fff;border-radius:20px 20px 0 0;padding:16px 18px 22px;flex:0 0 auto">
+      <div style="font-size:16px;font-weight:900;color:#111">三拍连续对拉</div>
+      <div style="font-size:11.5px;color:#8A968A;margin-top:5px">今晚 20:41 · 2 号场 · 00:18</div>
+      <div style="display:flex;align-items:center;gap:7px;margin-top:9px;background:#F2FAE6;border:1px solid #D6E9B8;border-radius:9px;padding:7px 11px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4A7A16" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <div style="font-size:11px;color:#4A7A16;font-weight:700">AI 自动配乐</div>
+        <div style="font-size:10.5px;color:#7A8A5A">电子燃向 · 已按击球节奏卡点</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:13px">
+        <div style="flex:1;background:#F4F7F4;border-radius:10px;padding:8px 10px;font-size:11px;color:#5F6E5F">1080P 无水印</div>
+        <div style="flex:1;background:#F4F7F4;border-radius:10px;padding:8px 10px;font-size:11px;color:#5F6E5F">自带 BGM</div>
+        <div style="flex:1;background:#F4F7F4;border-radius:10px;padding:8px 10px;font-size:11px;color:#5F6E5F">带门店标识</div>
+      </div>
+      <div style="display:flex;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid #F2F5F2">
+        <div><span style="font-size:22px;font-weight:900;color:#C0392B">¥9.9</span><span style="font-size:11px;color:#8A968A;margin-left:6px">单条买断</span></div>
+        <button class="btn lime" style="margin-left:auto;padding:11px 22px;font-size:14px">解锁高清版</button>
+      </div>
+    </div>
+  </div>
+  <div class="homebar" style="background:#111"></div>
+</div>
+
+
+<!-- ============ 17 使用须知 ============ -->
+<div class="phone">
+  <div class="status"><span>21:20</span><span>5G ▮▮▮ 100%</span></div>
+  <div class="nav"><div class="back">‹</div><h1>使用须知</h1><div class="r"></div></div>
+  <div class="scroll">
+    <div style="padding:4px 20px 14px"><div style="font-size:12px;color:#8A968A;line-height:1.7">第一次来？看完这 5 条，进场不用问人。</div></div>
+
+    <div class="rule-card">
+      <h4><i>1</i>怎么进场</h4>
+      <p>到店后在「我的订单」或首页悬浮按钮点 <b>开门</b>，大门 3 秒内自动开锁，推门进入即可。
+      门锁是断电常开型，断电时会自动开，不用担心被锁在里面。</p>
+    </div>
+
+    <div class="rule-card">
+      <h4><i>2</i>灯和发球机</h4>
+      <p>开场前 5 分钟，你订的那片场地灯会自动亮；订单开始后发球机插座通电，插上就能用。
+      <b>不需要自己找开关</b>，到点自动断电。</p>
+    </div>
+
+    <div class="rule-card">
+      <h4><i>3</i>时间怎么算</h4>
+      <p>按 30 分钟为一格计费，从订单开始时间算起。结束前 10 分钟会推送提醒，
+      想多打一会可以在「使用中」页面点 <b>续场</b>，有空场就能续。</p>
+    </div>
+
+    <div class="rule-card">
+      <h4><i>4</i>退改规则</h4>
+      <p>开场前 2 小时以上取消，全额退款；2 小时内取消，扣当次费用的 30%；
+      <b>开场后不支持退款</b>。因天气原因场馆关闭的，全额退款。</p>
+    </div>
+
+    <div class="rule-card">
+      <h4><i>5</i>安全提醒</h4>
+      <p>请穿运动鞋入场，场内禁止吸烟、禁止携带宠物。发球机运行时请勿将手伸入出球口。
+      如遇设备故障，点「设备报障」或直接联系店长。</p>
+    </div>
+
+    <div class="ck"><i>✓</i><span>我已阅读并同意上述使用规则，以及《用户服务协议》和《隐私政策》</span></div>
+    <div style="padding:0 16px 24px"><button class="btn" style="width:100%">我知道了，开始订场</button></div>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ============ 18 团购验券 ============ -->
+<div class="phone">
+  <div class="status"><span>21:20</span><span>5G ▮▮▮ 100%</span></div>
+  <div class="nav"><div class="back">‹</div><h1>团购验券</h1><div class="r"></div></div>
+  <div class="scroll">
+    <div class="codebox">
+      <div class="lb">输入券码，或点右上角扫码</div>
+      <div class="in">
+        <input value="8823 4417 0092" readonly>
+        <button>验券</button>
+      </div>
+    </div>
+
+    <div class="ftit">我的团购券 · 2 张可用</div>
+
+    <div class="coupon">
+      <div class="l"><b>3<small>次</small></b><span>次卡</span></div>
+      <div class="r">
+        <b>美团 · 三次卡 全天可用</b>
+        <p>有效期至 2026-11-20 · 剩 3 次</p>
+        <em>适用 1—4 号场，需提前预约时段</em>
+        <div class="go">去使用</div>
+      </div>
+    </div>
+
+    <div class="coupon">
+      <div class="l"><b>1<small>小时</small></b><span>时长券</span></div>
+      <div class="r">
+        <b>抖音 · 1 小时券 平日可用</b>
+        <p>有效期至 2026-11-08 · 剩 1 次</p>
+        <em>限周一至周五 8:00—18:00 使用</em>
+        <div class="go">去使用</div>
+      </div>
+    </div>
+
+    <div style="margin:18px 16px 0;background:#F6F8F4;border-radius:12px;padding:14px 15px">
+      <div style="font-size:12px;color:#5F6E5F;line-height:1.85">
+        <b style="color:#0A2B0A">怎么用</b><br>
+        1. 在美团／抖音买券后，券码会发到你的订单里<br>
+        2. 到店后在下方输入券码，点验券<br>
+        3. 验券成功后自动锁定当前时段，直接进场
+      </div>
+    </div>
+
+    <div style="margin:14px 16px 24px;font-size:11px;color:#9AA79A;line-height:1.7">
+      券码由美团／抖音平台发放，本店仅做核销。核销后不支持退券，如有疑问请联系购买平台。
+    </div>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ============ 19 卡券套餐 ============ -->
+<div class="phone">
+  <div class="status"><span>21:20</span><span>5G ▮▮▮ 100%</span></div>
+  <div class="nav"><div class="back">‹</div><h1>卡券套餐</h1><div class="r">邀请码</div></div>
+  <div class="tabs2"><div class="on">全部</div><div>次卡</div><div>时长券</div><div>早场</div></div>
+  <div class="scroll">
+    <div style="height:14px"></div>
+
+    <div class="pkg">
+      <div class="in">
+        <div class="tp">10 次卡 · 全天可用<em>最超值</em></div>
+        <div class="mt">有效期 90 天 · 不限时段 · 4 片场地通用</div>
+        <div class="bt">
+          <div class="pr"><b><small>¥</small>580</b><del>¥960</del><span>省 380</span></div>
+          <button class="buy">立即购买</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pkg">
+      <div class="in">
+        <div class="tp">3 次卡 · 全天可用</div>
+        <div class="mt">有效期 30 天 · 每次 1 小时 · 需提前预约</div>
+        <div class="bt">
+          <div class="pr"><b><small>¥</small>268</b><del>¥384</del><span>省 116</span></div>
+          <button class="buy">立即购买</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pkg">
+      <div class="in">
+        <div class="tp">1 小时券</div>
+        <div class="mt">有效期 30 天 · 全天可用 · 单次入场</div>
+        <div class="bt">
+          <div class="pr"><b><small>¥</small>108</b><del>¥128</del></div>
+          <button class="buy">立即购买</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="invite">
+      <div class="in">
+        <div class="t">有邀请码？可以免费领券</div>
+        <div class="d">店长发给你的邀请码，输入即可免费领取指定卡券</div>
+        <div class="row">
+          <input value="TD8826" readonly>
+          <button>领取</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin:4px 16px 24px;font-size:11px;color:#9AA79A;line-height:1.85">
+      · 卡券购买后立即到账，可在「我的卡券」查看<br>
+      · 下单时自动匹配可用的卡券，也可手动切换<br>
+      · 卡券有效期从购买之日起算，过期作废，不支持退款
+    </div>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ============ 20 我的卡券 ============ -->
+<div class="phone">
+  <div class="status"><span>21:20</span><span>5G ▮▮▮ 100%</span></div>
+  <div class="nav"><div class="back">‹</div><h1>我的卡券</h1><div class="r">邀请码</div></div>
+  <div class="tabs2"><div class="on">可用 3</div><div>已用完 2</div><div>已过期 1</div></div>
+  <div class="scroll">
+    <div style="height:14px"></div>
+
+    <div class="mycard">
+      <div class="l"><b>7<small>次</small></b><span>剩余</span></div>
+      <div class="r">
+        <b>10 次卡 · 全天可用</b>
+        <p>2026-10-05 购买 · 有效期至 2027-01-03</p>
+        <em>自购</em>
+      </div>
+    </div>
+
+    <div class="mycard">
+      <div class="l"><b>1<small>次</small></b><span>剩余</span></div>
+      <div class="r">
+        <b>体验券 · 1 小时</b>
+        <p>2026-10-18 领取 · 有效期至 2026-11-17</p>
+        <em>邀请码领取</em>
+      </div>
+    </div>
+
+    <div class="mycard">
+      <div class="l"><b>2<small>张</small></b><span>剩余</span></div>
+      <div class="r">
+        <b>早场专用券</b>
+        <p>2026-09-28 购买 · 有效期至 2026-12-27</p>
+        <em>自购</em>
+      </div>
+    </div>
+
+    <div class="invite">
+      <div class="in">
+        <div class="t">输入邀请码，再领一张</div>
+        <div class="d">每张邀请码仅可使用一次，领到的卡券会出现在上方</div>
+        <div class="row">
+          <input value="" placeholder="6 位邀请码">
+          <button>领取</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ftit">已过期</div>
+
+    <div class="mycard off">
+      <div class="l"><b>0<small>次</small></b><span>剩余</span></div>
+      <div class="r">
+        <b>3 次卡 · 全天可用</b>
+        <p>2026-08-12 购买 · 已于 2026-09-11 过期</p>
+        <em class="buy">已过期</em>
+      </div>
+    </div>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ============ 21 发票申请 ============ -->
+<div class="phone">
+  <div class="status"><span>21:20</span><span>5G ▮▮▮ 100%</span></div>
+  <div class="nav"><div class="back">‹</div><h1>申请发票</h1><div class="r"></div></div>
+  <div class="scroll">
+    <div class="ftit">选择要开票的订单</div>
+
+    <div style="margin:0 16px 10px;background:#fff;border:1.5px solid #14401A;border-radius:14px;padding:14px 15px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:18px;height:18px;border-radius:6px;background:#14401A;color:#D8F55A;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800">✓</div>
+        <div style="flex:1">
+          <div style="font-size:13px;color:#0A2B0A;font-weight:700">2 号场 · 2 小时</div>
+          <div style="font-size:11px;color:#8A968A;margin-top:3px">2026-10-21 20:41 · 订单号 2026102120410088</div>
+        </div>
+        <div style="font-size:14px;color:#0A2B0A;font-weight:800">¥240</div>
+      </div>
+    </div>
+
+    <div style="margin:0 16px 10px;background:#fff;border:1px solid #E8EDE8;border-radius:14px;padding:14px 15px;opacity:.55">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:18px;height:18px;border-radius:6px;border:1.5px solid #D6DED6"></div>
+        <div style="flex:1">
+          <div style="font-size:13px;color:#0A2B0A;font-weight:700">1 号场 · 1 小时</div>
+          <div style="font-size:11px;color:#8A968A;margin-top:3px">2026-10-14 19:20 · 已开票</div>
+        </div>
+        <div style="font-size:14px;color:#0A2B0A;font-weight:800">¥120</div>
+      </div>
+    </div>
+
+    <div class="ftit">发票信息</div>
+    <div style="background:#fff">
+      <div class="frow"><div class="k">发票类型</div><div class="v">电子普通发票 ›</div></div>
+      <div class="frow"><div class="k">发票抬头</div><div class="v">广州某某科技有限公司 ›</div></div>
+      <div class="frow"><div class="k">税号</div><div class="v">91440101MA5XXXXX2Q ›</div></div>
+      <div class="frow"><div class="k">接收邮箱</div><div class="v ph">请输入邮箱 ›</div></div>
+    </div>
+
+    <div style="margin:16px;background:#F6F8F4;border-radius:12px;padding:13px 15px">
+      <div style="font-size:11.5px;color:#7A8A7A;line-height:1.85">
+        电子发票将在 3 个工作日内发送至你的邮箱。发票金额为实付金额，不含储值赠送部分。
+      </div>
+    </div>
+
+    <div style="padding:6px 16px 24px"><button class="btn" style="width:100%">提交申请（¥240）</button></div>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<!-- ============ 22 登录授权 ============ -->
+<div class="phone">
+  <div class="status"><span>21:20</span><span>5G ▮▮▮ 100%</span></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 32px 60px">
+    <div class="logo-big"><span>甜点</span></div>
+    <div style="text-align:center;margin-top:20px">
+      <div style="font-size:21px;font-weight:800;color:#0A2B0A;letter-spacing:2px">甜点网球</div>
+      <div style="font-size:12px;color:#8A968A;margin-top:7px;letter-spacing:1px">24 小时自助学训馆</div>
+    </div>
+
+    <div style="margin-top:44px">
+      <button class="btn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0A2B0A" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+        手机号快捷登录
+      </button>
+      <div style="text-align:center;font-size:11px;color:#9AA79A;margin-top:14px">未注册的手机号将自动创建账号</div>
+    </div>
+
+    <div style="margin-top:26px;display:flex;align-items:center;justify-content:center;gap:6px">
+      <div style="width:15px;height:15px;border-radius:5px;border:1.5px solid #C9D3C9;display:flex;align-items:center;justify-content:center">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#14401A" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div style="font-size:11px;color:#8A968A">已阅读并同意 <span style="color:#14401A">《用户协议》</span> 和 <span style="color:#14401A">《隐私政策》</span></div>
+    </div>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+
+<!-- ============ 23 邀请码领取 ============ -->
+<div class="phone">
+  <div class="status"><span>21:20</span><span>5G ▮▮▮ 100%</span></div>
+  <div class="nav"><div class="back">‹</div><h1>邀请码领券</h1><div class="r"></div></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:40px">
+    <div style="text-align:center;padding:0 32px">
+      <div style="width:64px;height:64px;border-radius:22px;background:#EAF7C9;margin:0 auto;display:flex;align-items:center;justify-content:center">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4A7A16" stroke-width="1.9"><path d="M3 8h18M3 8v11h18V8M3 8l2-4h14l2 4"/><path d="M9 12v4M15 12v4"/></svg>
+      </div>
+      <div style="font-size:18px;font-weight:800;color:#0A2B0A;margin-top:18px">输入邀请码领卡券</div>
+      <div style="font-size:12px;color:#8A968A;margin-top:8px;line-height:1.7">店长给你一张邀请码，输入后即可免费领取对应的卡券</div>
+    </div>
+
+    <div class="code-big">
+      <i class="f">T</i><i class="f">D</i><i class="f">8</i><i class="f">8</i><i>2</i><i>6</i>
+    </div>
+
+    <div style="margin:22px 16px 0;background:#fff;border:1px solid #E8EDE8;border-radius:14px;padding:15px 16px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:13px;color:#0A2B0A;font-weight:700">体验券 · 1 小时</div>
+          <div style="font-size:11px;color:#8A968A;margin-top:5px">有效期 30 天 · 全天可用 · 限领 1 次</div>
+        </div>
+        <div style="font-size:19px;font-weight:800;color:#4A7A16">免费</div>
+      </div>
+    </div>
+
+    <div style="padding:20px 16px 0"><button class="btn" style="width:100%">立即领取</button></div>
+
+    <div style="margin:16px 20px 0;font-size:11px;color:#9AA79A;line-height:1.85">
+      · 每张邀请码只能使用一次，领取后即失效<br>
+      · 邀请码由店长在后台生成，不对外公开<br>
+      · 领到的卡券会出现在「我的卡券」里
+    </div>
+  </div>
+  <div class="homebar"></div>
+</div>
+
+<script>
+/* SHOT_MODE_JS: ?p=N 单页截图模式 */
+(function(){
+  var m = new URLSearchParams(location.search).get('p');
+  if(!m) return;
+  var i = parseInt(m,10)-1;
+  document.documentElement.style.overflow='hidden';
+  document.body.style.padding='0';
+  document.body.style.margin='0';
+  document.body.style.background='#fff';
+  var b=document.querySelector('.board');
+  var phones=[].slice.call(document.querySelectorAll('.phone'));
+  phones.forEach(function(el,k){ el.style.display = (k===i)?'flex':'none'; });
+  b.style.transform='none';
+  b.style.gridTemplateColumns='375px';
+  b.style.gap='0';
+  b.style.width='375px';
+})();
+</script>
+
+<script>
+/* ===== INTERACTIVE_LAYER：hash 路由 + 按钮跳转 ===== */
+(function(){
+  var qs = new URLSearchParams(location.search);
+  if (qs.get('p')) return;   // ?p=N 是截图模式，不启用交互
+
+  var NAMES = ["首页","时段选择","确认订单","支付结果","使用中","我的订单","订单详情","个人中心",
+               "续场加时","设备报障","约球局列表","约球报名","AI 分析报告","历史对比",
+               "精彩视频","视频购买","使用须知","团购验券","卡券套餐","我的卡券",
+               "发票申请","登录授权","邀请码领券"];
+
+  /* 每页可点元素 -> 目标页（1 起） */
+  var GO = {
+    1:  {"立即预订":2, "团购验券":18, "次卡":19, "查看全部":19, "去开门":5},
+    2:  {"去支付":3},
+    3:  {"立即支付":4, "确认支付":4},
+    4:  {"开门":5, "查看订单":7, "返回首页":1},
+    5:  {"续场":9, "报障":10, "查看订单":7, "开门":5},
+    6:  {"待使用":7, "使用中":5},
+    7:  {"续场":9, "报障":10},
+    8:  {"我的卡券":20, "我的订单":6, "发票":21, "使用须知":17, "设备报障":10},
+    9:  {"确认加时":5, "立即加时":5},
+    10: {"提交报障":5, "提交":5},
+    11: {"报名":12, "我要报名":12},
+    12: {"确认报名":6, "报名":6},
+    13: {"历史":14},
+    15: {"查看":16},
+    16: {"解锁":20, "立即解锁":20},
+    17: {"开始订场":1, "我知道了":1},
+    18: {"去使用":2, "验券":2},
+    19: {"立即购买":4, "邀请码":23, "领取":23},
+    20: {"邀请码":23, "领取":23},
+    21: {"提交申请":8, "提交":8},
+    22: {"手机号快捷登录":1, "登录":1},
+    23: {"立即领取":20, "领取":20}
+  };
+
+  var phones = [].slice.call(document.querySelectorAll('.phone'));
+  if (!phones.length) return;
+
+  document.body.classList.add('demo');
+
+  /* 顶部工具条 */
+  var bar = document.createElement('div');
+  bar.id = 'demo-bar';
+  var opts = NAMES.map(function(n,i){ return '<option value="'+i+'">'+(i+1)+'. '+n+'</option>'; }).join('');
+  bar.innerHTML = '<span class="bd">甜点网球</span><span class="hint">原型演示 · 点按钮跳转</span>'
+    + '<button id="demo-prev">‹</button>'
+    + '<select id="demo-sel">'+opts+'</select>'
+    + '<button id="demo-next">›</button>'
+    + '<span class="idx" id="demo-idx"></span>';
+  document.body.appendChild(bar);
+
+  var tip = document.createElement('div');
+  tip.id = 'demo-tip';
+  tip.textContent = '这是可交互原型：点页面里的按钮会跳到下一页，顶部可自由切换页面';
+  document.body.appendChild(tip);
+
+  var stage = document.createElement('div');
+  stage.id = 'demo-stage';
+  var board = document.querySelector('.board');
+  board.parentNode.insertBefore(stage, board);
+  stage.appendChild(board);
+
+  var cur = 0;
+  function show(i, push){
+    if (i < 0) i = 0;
+    if (i >= phones.length) i = phones.length - 1;
+    cur = i;
+    phones.forEach(function(p,k){ p.classList.toggle('active', k === i); });
+    document.getElementById('demo-idx').textContent = (i+1) + ' / ' + phones.length;
+    document.getElementById('demo-sel').value = String(i);
+    var h = '#p' + (i+1);
+    if (push !== false && location.hash !== h) history.replaceState(null,'',h);
+    window.scrollTo(0,0);
+  }
+
+  /* 绑定跳转 */
+  phones.forEach(function(ph, idx){
+    var map = GO[idx+1] || {};
+    var cands = ph.querySelectorAll('button,.btn,.btn2,.bigbtn,.bigopen,.tab,.tabs2 div,.back,.nav .r,.coupon .go,.mycard,.vcard,.ocards .card,.pkg .buy,.invite button,.ck,.mcard,.sect,.pt');
+    cands.forEach(function(el){
+      var t = (el.textContent || '').replace(/\s+/g,'');
+      for (var k in map){
+        if (t.indexOf(k.replace(/\s+/g,'')) !== -1){
+          el.setAttribute('data-go', map[k]);
+          el.addEventListener('click', function(e){ e.stopPropagation(); show(map[k]-1); });
+          break;
+        }
+      }
+    });
+    /* 返回键：回首页（除非有专门映射） */
+    var back = ph.querySelector('.back');
+    if (back && !back.getAttribute('data-go')){
+      back.addEventListener('click', function(){ show(0); });
+    }
+    /* 底部 tab：首页 / 卡券 / 订单 / 我的 */
+    var tabs = ph.querySelectorAll('.tabbar .tab, .tabs .tab');
+    if (tabs.length >= 4){
+      var targets = [1, 19, 6, 8];
+      tabs.forEach(function(tb, ti){
+        if (targets[ti]) tb.addEventListener('click', function(){ show(targets[ti]-1); });
+      });
+    }
+  });
+
+  document.getElementById('demo-prev').onclick = function(){ show(cur-1); };
+  document.getElementById('demo-next').onclick = function(){ show(cur+1); };
+  document.getElementById('demo-sel').onchange = function(e){ show(parseInt(e.target.value,10)); };
+
+  /* 从 hash 进入 */
+  var m = (location.hash || '').match(/#p(\d+)/);
+  show(m ? parseInt(m[1],10)-1 : 0, false);
+
+  window.addEventListener('hashchange', function(){
+    var mm = (location.hash || '').match(/#p(\d+)/);
+    if (mm){ var n = parseInt(mm[1],10)-1; if (n !== cur) show(n, false); }
+  });
+})();
+</script>
+
+</body>
+</html>
