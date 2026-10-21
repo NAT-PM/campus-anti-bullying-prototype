@@ -481,7 +481,8 @@ body{
 .ta{border:1.5px solid #E4EAE4;border-radius:12px;padding:12px;font-size:12px;color:#B0BBB0;margin-top:12px;height:82px}
 .label{font-size:12px;font-weight:800;color:#111;margin:18px 16px 10px}
 
-/* ===== INTERACTIVE_LAYER：可点击演示模式 ===== */
+
+/* ===== INTERACTIVE_LAYER v2：可点击演示模式 ===== */
 body.demo{background:#E9EFE9;display:block;padding:0;margin:0}
 body.demo .board{transform:none!important;display:block!important;width:375px!important;
   gap:0!important;padding:0!important;margin:0 auto!important}
@@ -492,18 +493,17 @@ body.demo .phone.active{display:flex!important}
   font-family:"Microsoft YaHei",sans-serif;font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.18)}
 #demo-bar .bd{font-weight:800;letter-spacing:1px;color:#D8F55A;flex:0 0 auto;font-size:13.5px}
 #demo-bar .hint{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;color:#9DB49D;font-size:12px}
-#demo-bar .sp{flex:0 0 auto}
 #demo-bar select{background:#14401A;color:#fff;border:1px solid #1F5A24;border-radius:7px;
   padding:6px 8px;font-size:12px;font-family:inherit;outline:none;flex:0 0 auto;max-width:150px}
 #demo-bar button{background:#D8F55A;color:#0A2B0A;border:0;border-radius:7px;flex:0 0 auto;
   padding:7px 11px;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer;white-space:nowrap}
-#demo-bar .idx{font-size:12px;color:#9DB49D;min-width:56px;text-align:right}
+#demo-bar .idx{font-size:12px;color:#9DB49D;min-width:56px;text-align:right;flex:0 0 auto}
 #demo-stage{padding:76px 0 44px;display:flex;justify-content:center}
 #demo-tip{position:fixed;bottom:0;left:0;right:0;height:34px;background:rgba(10,43,10,.92);
   color:#C8DCC8;font-size:11.5px;display:flex;align-items:center;justify-content:center;
   letter-spacing:.5px;font-family:"Microsoft YaHei",sans-serif;z-index:9999}
-body.demo .phone *[data-go]{cursor:pointer}
-body.demo .phone *[data-go]:active{opacity:.75}
+body.demo [data-go]{cursor:pointer}
+body.demo [data-go]:active{opacity:.7}
 
 </style>
 </head>
@@ -915,8 +915,8 @@ body.demo .phone *[data-go]:active{opacity:.75}
       </div>
       <div class="tools">
         <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M4 7h16v10H4zM8 7V5h8v2"/></svg></div><span>团购验券</span></a>
-        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M4 9h16v10H4zM4 9l3-5 5 5 5-5 3 5"/></svg></div><span>储值充值</span></a>
-        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div><span>优惠券</span></a>
+        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M4 9h16v10H4zM4 9l3-5 5 5 5-5 3 5"/></svg></div><span>卡券套餐</span></a>
+        <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M4 7h16v10H4zM9 7V4M15 7V4"/></svg></div><span>我的卡券</span></a>
         <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg></div><span>设备报障</span></a>
         <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div><span>开发票</span></a>
         <a><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span>联系店长</span></a>
@@ -1501,7 +1501,7 @@ body.demo .phone *[data-go]:active{opacity:.75}
 
     <div style="margin:16px;background:#F6F8F4;border-radius:12px;padding:13px 15px">
       <div style="font-size:11.5px;color:#7A8A7A;line-height:1.85">
-        电子发票将在 3 个工作日内发送至你的邮箱。发票金额为实付金额，不含储值赠送部分。
+        电子发票将在 3 个工作日内发送至你的邮箱。发票金额为实付金额，卡券优惠部分不开票。
       </div>
     </div>
 
@@ -1597,62 +1597,67 @@ body.demo .phone *[data-go]:active{opacity:.75}
 })();
 </script>
 
+
+
+
 <script>
-/* ===== INTERACTIVE_LAYER：hash 路由 + 按钮跳转 ===== */
+/* ===== INTERACTIVE_LAYER v2：按真实按钮文字绑定跳转 ===== */
 (function(){
   var qs = new URLSearchParams(location.search);
-  if (qs.get('p')) return;   // ?p=N 是截图模式，不启用交互
+  if (qs.get('p')) return;
 
   var NAMES = ["首页","时段选择","确认订单","支付结果","使用中","我的订单","订单详情","个人中心",
                "续场加时","设备报障","约球局列表","约球报名","AI 分析报告","历史对比",
                "精彩视频","视频购买","使用须知","团购验券","卡券套餐","我的卡券",
                "发票申请","登录授权","邀请码领券"];
 
-  /* 每页可点元素 -> 目标页（1 起） */
+  /* 每页：[按钮文字, 目标页] —— 文字按真实按钮写，匹配时取最内层元素 */
   var GO = {
-    1:  {"立即预订":2, "团购验券":18, "次卡":19, "查看全部":19, "去开门":5},
-    2:  {"去支付":3},
-    3:  {"立即支付":4, "确认支付":4},
-    4:  {"开门":5, "查看订单":7, "返回首页":1},
-    5:  {"续场":9, "报障":10, "查看订单":7, "开门":5},
-    6:  {"待使用":7, "使用中":5},
-    7:  {"续场":9, "报障":10},
-    8:  {"我的卡券":20, "我的订单":6, "发票":21, "使用须知":17, "设备报障":10},
-    9:  {"确认加时":5, "立即加时":5},
-    10: {"提交报障":5, "提交":5},
-    11: {"报名":12, "我要报名":12},
-    12: {"确认报名":6, "报名":6},
-    13: {"历史":14},
-    15: {"查看":16},
-    16: {"解锁":20, "立即解锁":20},
-    17: {"开始订场":1, "我知道了":1},
-    18: {"去使用":2, "验券":2},
-    19: {"立即购买":4, "邀请码":23, "领取":23},
-    20: {"邀请码":23, "领取":23},
-    21: {"提交申请":8, "提交":8},
-    22: {"手机号快捷登录":1, "登录":1},
-    23: {"立即领取":20, "领取":20}
+    1:  [["立即预订",2],["团购验券",18],["去开门",5],["1 小时套餐",19],["早场特惠",19]],
+    2:  [["去支付",3]],
+    3:  [["微信支付",4],["确认支付",4],["入场须知",17],["用户协议",17]],
+    4:  [["开门",5],["查看订单",7],["返回首页",1]],
+    5:  [["续场",9],["报障",10],["查看订单",7]],
+    6:  [["订单详情",7],["去开门",5],["查看详情",7],["查看订单",7]],
+    7:  [["续场",9],["报障",10],["申请发票",21]],
+    8:  [["团购验券",18],["卡券套餐",19],["我的卡券",20],["设备报障",10],
+         ["开发票",21],["使用记录",6],["协议须知",17],["超多卡券",19],["立即办卡",19]],
+    9:  [["立即续场",5],["确认续场",5]],
+    10: [["提交报障",5],["提交",5]],
+    11: [["发布我的约球",12],["报名",12],["我要报名",12]],
+    12: [["确认报名",6],["立即报名",6],["报名",6]],
+    13: [["历史对比",14],["看历史",14]],
+    14: [["再约一场练球",2],["再约一场",2]],
+    15: [["解锁",16],["开通包月",16],["下载",16]],
+    16: [["解锁",20],["立即解锁",20],["下载",20]],
+    17: [["开始订场",1],["我知道了",1]],
+    18: [["去使用",2],["验券",2]],
+    19: [["立即购买",4],["领取",23],["邀请码",23]],
+    20: [["领取",23],["邀请码",23]],
+    21: [["提交申请",8],["提交",8]],
+    22: [["手机号快捷登录",1],["登录",1]],
+    23: [["立即领取",20],["领取",20]]
   };
+
+  var SEL = 'button,.btn,.bigbtn,.bigopen,.go,.back,.r,.t,.tab,.tabs2 div,.ocard,.vcard,.pack,.mycard,'
+          + '.qcard,.rule-card,.ck,.buy,.pick,a,.quick div,.tools a,.paybar button,.coupon,.pkg .buy,'
+          + '.invite button,.chips div,.slots .s,.sec-t';
 
   var phones = [].slice.call(document.querySelectorAll('.phone'));
   if (!phones.length) return;
-
   document.body.classList.add('demo');
 
-  /* 顶部工具条 */
   var bar = document.createElement('div');
   bar.id = 'demo-bar';
   var opts = NAMES.map(function(n,i){ return '<option value="'+i+'">'+(i+1)+'. '+n+'</option>'; }).join('');
   bar.innerHTML = '<span class="bd">甜点网球</span><span class="hint">原型演示 · 点按钮跳转</span>'
-    + '<button id="demo-prev">‹</button>'
-    + '<select id="demo-sel">'+opts+'</select>'
-    + '<button id="demo-next">›</button>'
-    + '<span class="idx" id="demo-idx"></span>';
+    + '<button id="demo-prev">‹</button><select id="demo-sel">'+opts+'</select>'
+    + '<button id="demo-next">›</button><span class="idx" id="demo-idx"></span>';
   document.body.appendChild(bar);
 
   var tip = document.createElement('div');
   tip.id = 'demo-tip';
-  tip.textContent = '这是可交互原型：点页面里的按钮会跳到下一页，顶部可自由切换页面';
+  tip.textContent = '可交互原型：点页面里的按钮会跳到下一页，顶部可自由切换页面';
   document.body.appendChild(tip);
 
   var stage = document.createElement('div');
@@ -1669,36 +1674,36 @@ body.demo .phone *[data-go]:active{opacity:.75}
     phones.forEach(function(p,k){ p.classList.toggle('active', k === i); });
     document.getElementById('demo-idx').textContent = (i+1) + ' / ' + phones.length;
     document.getElementById('demo-sel').value = String(i);
-    var h = '#p' + (i+1);
-    if (push !== false && location.hash !== h) history.replaceState(null,'',h);
+    if (push !== false) history.replaceState(null,'','#p'+(i+1));
     window.scrollTo(0,0);
   }
 
-  /* 绑定跳转 */
+  function norm(t){ return (t||'').replace(/\s+/g,''); }
+
   phones.forEach(function(ph, idx){
-    var map = GO[idx+1] || {};
-    var cands = ph.querySelectorAll('button,.btn,.btn2,.bigbtn,.bigopen,.tab,.tabs2 div,.back,.nav .r,.coupon .go,.mycard,.vcard,.ocards .card,.pkg .buy,.invite button,.ck,.mcard,.sect,.pt');
-    cands.forEach(function(el){
-      var t = (el.textContent || '').replace(/\s+/g,'');
-      for (var k in map){
-        if (t.indexOf(k.replace(/\s+/g,'')) !== -1){
-          el.setAttribute('data-go', map[k]);
-          el.addEventListener('click', function(e){ e.stopPropagation(); show(map[k]-1); });
-          break;
-        }
-      }
+    var pairs = GO[idx+1] || [];
+    var all = [].slice.call(ph.querySelectorAll(SEL));
+    pairs.forEach(function(pair){
+      var key = norm(pair[0]), to = pair[1];
+      var hits = all.filter(function(el){ return norm(el.textContent).indexOf(key) !== -1; })
+                    .sort(function(a,b){ return a.textContent.length - b.textContent.length; });
+      if (!hits.length) return;
+      var el = hits[0];
+      if (el.hasAttribute('data-go')) return;      /* 已被更短的匹配占用 */
+      el.setAttribute('data-go', to);
+      el.addEventListener('click', function(e){ e.stopPropagation(); show(to-1); });
     });
-    /* 返回键：回首页（除非有专门映射） */
+
+    /* 返回键 */
     var back = ph.querySelector('.back');
-    if (back && !back.getAttribute('data-go')){
-      back.addEventListener('click', function(){ show(0); });
-    }
-    /* 底部 tab：首页 / 卡券 / 订单 / 我的 */
-    var tabs = ph.querySelectorAll('.tabbar .tab, .tabs .tab');
-    if (tabs.length >= 4){
-      var targets = [1, 19, 6, 8];
-      tabs.forEach(function(tb, ti){
-        if (targets[ti]) tb.addEventListener('click', function(){ show(targets[ti]-1); });
+    if (back) back.addEventListener('click', function(){ show(0); });
+
+    /* 底部 tab：首页 / 卡券套餐 / 我的订单 / 个人中心 */
+    var tabs = ph.querySelectorAll('.tabbar .t');
+    if (tabs.length === 4){
+      [1,19,6,8].forEach(function(t,i){
+        tabs[i].setAttribute('data-go', t);
+        tabs[i].addEventListener('click', function(){ show(t-1); });
       });
     }
   });
@@ -1707,12 +1712,10 @@ body.demo .phone *[data-go]:active{opacity:.75}
   document.getElementById('demo-next').onclick = function(){ show(cur+1); };
   document.getElementById('demo-sel').onchange = function(e){ show(parseInt(e.target.value,10)); };
 
-  /* 从 hash 进入 */
-  var m = (location.hash || '').match(/#p(\d+)/);
+  var m = (location.hash||'').match(/#p(\d+)/);
   show(m ? parseInt(m[1],10)-1 : 0, false);
-
   window.addEventListener('hashchange', function(){
-    var mm = (location.hash || '').match(/#p(\d+)/);
+    var mm = (location.hash||'').match(/#p(\d+)/);
     if (mm){ var n = parseInt(mm[1],10)-1; if (n !== cur) show(n, false); }
   });
 })();
